@@ -30,5 +30,5 @@ class Deck:
             exit(-1)
         self.cards = cards
 
-    def pop_card(self, player):
+    def pop_card(self):
         return self.cards.pop()
