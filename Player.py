@@ -12,6 +12,3 @@ class Player:
         
     def play_card(self, card_index):
         return self.cards.pop(card_index)
-
-        
-
