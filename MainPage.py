@@ -1,7 +1,7 @@
 import pygame
 import sys
 from SettingPage import draw_settings_screen
-#
+
 # 게임 윈도우 초기화
 pygame.init()
 screen_width = 800
