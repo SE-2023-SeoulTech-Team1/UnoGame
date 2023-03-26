@@ -1,6 +1,6 @@
 import pygame
 import sys
-# from SettingPage import draw_settings_screen
+from GamePage import startGamePage
 
 # 게임 윈도우 초기화
 pygame.init()
@@ -56,6 +56,7 @@ class Button():
             self.buttonSurface.fill(self.fillColors['hover'])
             if pygame.mouse.get_pressed()[0]:
                 self.buttonSurface.fill(self.fillColors['pressed'])
+
                 if not self.alreadyPressed:
                     self.onclickFunction()
                     self.alreadyPressed = True
@@ -91,13 +92,12 @@ class Title():
     def process(self):
         screen.blit(self.titleText, [self.x, self.y])
 
-
-
-
 nextPage = False
 
 def startFunction():
-    print("startFunction!!")
+    print("startFunction!!") 
+    startGamePage()
+
 def startFunction2():
     print("startFunction2!!")   
     
@@ -107,11 +107,12 @@ def exitFunction():
     print("exitFunction!!")
     pygame.quit()
     sys.exit()
-def backFunction():
+def changeFunction():
     objects[0], objects[4] = objects[4], objects[0] 
     objects[1], objects[5] = objects[5], objects[1] 
     objects[2], objects[6] = objects[6], objects[2] 
-    nextPage = False
+
+
 
 # 타이틀 생성 
 Title(310, 50, 'UNO GAME')
@@ -120,7 +121,7 @@ Title(310, 50, 'UNO GAME')
 Button1 = Button(300, 150, 200, 50, 'START', startFunction)
 Button2 = Button(300, 230, 200, 50, 'SETTINGS', settingFunction)
 Button3 = Button(300, 310, 200, 50, 'EXIT', exitFunction)
-Button4 = Button(325, 390, 150, 50, 'BACK', backFunction)
+Button4 = Button(325, 390, 150, 50, 'BACK', changeFunction)
 Button5 = Button(300, 150, 200, 50, 'START2', startFunction2)
 Button6 = Button(300, 230, 200, 50, 'SETTINGS2', settingFunction)
 Button7 = Button(300, 310, 200, 50, 'EXIT2', exitFunction)
@@ -138,17 +139,13 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mousePos = pygame.mouse.get_pos()
             if Button2.buttonRect.collidepoint(mousePos) and nextPage == False:
-                objects[0], objects[4] = objects[4], objects[0] 
-                objects[1], objects[5] = objects[5], objects[1] 
-                objects[2], objects[6] = objects[6], objects[2] 
+                changeFunction()
                 if nextPage == True:
                     nextPage = False
                 elif nextPage == False:
                     nextPage = True
             elif Button4.buttonRect.collidepoint(mousePos):
-                objects[0], objects[4] = objects[4], objects[0] 
-                objects[1], objects[5] = objects[5], objects[1] 
-                objects[2], objects[6] = objects[6], objects[2] 
+                changeFunction()
                 nextPage = False
 
         if event.type == pygame.KEYDOWN:
@@ -162,9 +159,7 @@ while running:
             elif event.key == pygame.K_RETURN:
                 objects[i].onclickFunction()
                 if i == 1 and nextPage == False:
-                    objects[0], objects[4] = objects[4], objects[0] 
-                    objects[1], objects[5] = objects[5], objects[1] 
-                    objects[2], objects[6] = objects[6], objects[2] 
+                    changeFunction()
                     if nextPage == True:
                         nextPage = False
                     elif nextPage == False:
@@ -187,8 +182,6 @@ while running:
             objects[3].process()
             if i == 3:
                 objects[i].process(True)
-
-            
 
 
     pygame.display.flip()
