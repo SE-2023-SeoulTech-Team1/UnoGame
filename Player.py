@@ -5,6 +5,7 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.cards = []
+        self.auto = False
         
     def draw_card(self, deck):
         card = deck.pop_card()
