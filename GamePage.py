@@ -39,55 +39,65 @@ myBgColor = DARKRED
 totalTime = 11
 startTicks = pg.time.get_ticks()
 
+def cardFrontImg(color, type):
+    return pg.image.load('Cards/' + color + type + '.png').convert_alpha()
+
 
 # game start
 def initGame(gamePlayers):
 
     computer = Player("COMPUTER")
     gamePlayers.append(computer)
-
     game = Game(gamePlayers)
     # print(game.players[0].cards[0].color)
     global DECK
     DECK = game.deck
     cardBackList = []
-    cardBackImg = pg.image.load('unoCardBack.png').convert_alpha()
+    cardFrontList = []
+    cardBackImg = pg.image.load('Cards/unoCardBack.png').convert_alpha()
     cardBackRec = cardBackImg.get_rect()
+
+
+    # Deck 
     for i in range(len(DECK.cards)):
         cardBackRec.left = screenWidth*0.25-i/10
         cardBackRec.top = screenHeight*0.25-i/10
         cardBackList.append(cardBackRec)
         screen.blit(cardBackImg, cardBackRec)
 
+    # My Deck 초기화 
+    for i in range(len(game.players[0].cards)):
+        cardFrontRect = cardFrontImg(str(game.players[0].cards[i].color), str(game.players[0].cards[i].type)).get_rect()
+        cardFrontList.append(cardFrontRect)
+
+    # Computer Deck
     for i in range(len(game.players[1].cards)):
         cardBackList[i].left = screenWidth*0.92-i*20
         cardBackList[i].top = screenHeight*0.15
         playerCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0]*0.6, cardBackRec.size[1]*0.6))
         screen.blit(playerCard, cardBackList[i])
     
-    
+    # 하나의 카드에 반응하도록 설정 
     card_reacted = False
-
+    # My Deck
     for i in range(len(game.players[0].cards)):
         if i == 0:
-            cardBackList[i].left = screenWidth*0.05
-            cardBackList[i].top = screenHeight*0.80
+            cardFrontList[i].left = screenWidth*0.05
+            cardFrontList[i].top = screenHeight*0.80
 
         else:
-            cardBackList[i].left = cardBackList[i-1].left + (screenWidth*0.05)
+            cardFrontList[i].left = cardFrontList[i-1].left + (screenWidth*0.05)
+            cardFrontList[i].top = screenHeight*0.80
 
         mousePos = pg.mouse.get_pos()
 
-        if not card_reacted and cardBackList[i].collidepoint(mousePos):
-            print(i)
-            cardBackList[i].top = screenHeight*0.75
-            myCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0], cardBackRec.size[1]))
-            screen.blit(myCard, cardBackList[i])
+        if not card_reacted and cardFrontList[i].collidepoint(mousePos):
+            cardFrontList[i].top = screenHeight*0.75
+            screen.blit(cardFrontImg(str(game.players[0].cards[i].color), str(game.players[0].cards[i].type)), cardFrontList[i])
             card_reacted = True 
         else:
-            cardBackList[i].top = screenHeight*0.80
-            myCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0], cardBackRec.size[1]))
-            screen.blit(myCard, cardBackList[i])    
+            cardFrontList[i].top = screenHeight*0.80
+            screen.blit(cardFrontImg(str(game.players[0].cards[i].color), str(game.players[0].cards[i].type)), cardFrontList[i])    
         
 
 
@@ -155,6 +165,7 @@ def startGamePage():
         player1 = Player("PLAYER 1")
         gamePlayers = [player1]
         initGame(gamePlayers)   
+        ini = False
             
 
         # 타이머 삽입
