@@ -47,6 +47,7 @@ def initGame(gamePlayers):
     gamePlayers.append(computer)
 
     game = Game(gamePlayers)
+    # print(game.players[0].cards[0].color)
     global DECK
     DECK = game.deck
     cardBackList = []
@@ -58,26 +59,36 @@ def initGame(gamePlayers):
         cardBackList.append(cardBackRec)
         screen.blit(cardBackImg, cardBackRec)
 
-    for i in range(7):
+    for i in range(len(game.players[1].cards)):
         cardBackList[i].left = screenWidth*0.92-i*20
         cardBackList[i].top = screenHeight*0.15
         playerCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0]*0.6, cardBackRec.size[1]*0.6))
         screen.blit(playerCard, cardBackList[i])
     
-    for i in range(7):
+    
+    card_reacted = False
+
+    for i in range(len(game.players[0].cards)):
         if i == 0:
-            cardBackList[i].left = screenWidth*0.01
+            cardBackList[i].left = screenWidth*0.05
+            cardBackList[i].top = screenHeight*0.80
+
         else:
             cardBackList[i].left = cardBackList[i-1].left + (screenWidth*0.05)
 
-        cardBackList[i].top = screenHeight*0.80
-        myCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0], cardBackRec.size[1]))
-        screen.blit(myCard, cardBackList[i])
-    
+        mousePos = pg.mouse.get_pos()
 
-
-
-
+        if not card_reacted and cardBackList[i].collidepoint(mousePos):
+            print(i)
+            cardBackList[i].top = screenHeight*0.75
+            myCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0], cardBackRec.size[1]))
+            screen.blit(myCard, cardBackList[i])
+            card_reacted = True 
+        else:
+            cardBackList[i].top = screenHeight*0.80
+            myCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0], cardBackRec.size[1]))
+            screen.blit(myCard, cardBackList[i])    
+        
 
 
 class Button():
@@ -129,9 +140,7 @@ def drawGameScreen():
     unoButton = Button(screenWidth*0.55, screenHeight*0.45, unoButtonImg)
     unoButton.draw()
 
-
-def startGamePage(timerStart = None):
-
+def startGamePage():
     running = True
     while running:
         dt = clock.tick(60)/1000.0
@@ -145,7 +154,8 @@ def startGamePage(timerStart = None):
         # game start
         player1 = Player("PLAYER 1")
         gamePlayers = [player1]
-        initGame(gamePlayers)
+        initGame(gamePlayers)   
+            
 
         # 타이머 삽입
         timer(True)
