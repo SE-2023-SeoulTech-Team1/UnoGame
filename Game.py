@@ -1,4 +1,3 @@
-from Card import *
 from Player import *
 
 TIMEOUT = 10
@@ -20,6 +19,11 @@ class Game:
         self.current_card = None
         self.direction = 1
 
+    def reverse_card_clicked(self):
+        self.direction = -1
+        self.current_player_index = None
+        return self
+
     def can_play(self, card):
         """
         :param: card
@@ -34,14 +38,12 @@ class Game:
         self.players[self.current_player_index].draw_card(self.deck)
         return -1
 
-    def start(self):
-
-        # 카드 7장 나누기
+    def deal_cards(self):
         for i in range(7):
             for player in self.players:
                 player.draw_card(self.deck)
 
-        # current_card 뽑기
+    def pick_current_card(self):
         while True:
             self.current_card = self.deck.pop_card()
             if self.current_card.color != "black":
@@ -49,6 +51,8 @@ class Game:
             else:
                 self.deck.cards.append(self.current_card)
                 shuffle(self.deck.cards)
+
+    def start(self):
 
         while True:
             # 현재 플레이어
@@ -130,11 +134,11 @@ class Game:
                 self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
 
 
-# if __name__ == "__main__":
-#
-#     player1 = Player("Player 1")
-#     player2 = Player("com1")
-#     player3 = Player("com2")
-#     game = Game([player1, player2, player3])
-#     game.start()
-#
+if __name__ == "__main__":
+
+    player1 = Player("Player 1")
+    player2 = Player("com1")
+    player3 = Player("com2")
+    game = Game([player1, player2, player3])
+    game.start()
+
