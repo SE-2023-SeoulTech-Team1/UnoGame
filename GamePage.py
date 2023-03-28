@@ -40,47 +40,54 @@ totalTime = 11
 startTicks = pg.time.get_ticks()
 
 def cardFrontImg(color, type):
-    return pg.image.load('Cards/' + color + type + '.png').convert_alpha()
+    return pg.image.load('./assets/cards/' + color + type + '.png').convert_alpha()
 
 
-# game start
-def initGame(gamePlayers):
-
-    computer = Player("COMPUTER")
-    gamePlayers.append(computer)
-    game = Game(gamePlayers)
-    # print(game.players[0].cards[0].color)
-    global DECK
-    DECK = game.deck
-    cardBackList = []
-    cardFrontList = []
-    cardBackImg = pg.image.load('Cards/unoCardBack.png').convert_alpha()
-    cardBackRec = cardBackImg.get_rect()
+def draw_card_front(card, top, left):
+    card_front_img = pg.image.load(card.front).convert_alpha()
+    screen.blit(card_front_img, (left, top))
 
 
-    # Deck 
-    for i in range(len(DECK.cards)):
-        cardBackRec.left = screenWidth*0.25-i/10
-        cardBackRec.top = screenHeight*0.25-i/10
-        cardBackList.append(cardBackRec)
-        screen.blit(cardBackImg, cardBackRec)
+def draw_card_back(card, top, left):
+    card_back_img = pg.image.load(card.back).convert_alpha()
+    screen.blit(card_back_img, (left, top))
 
-    # My Deck 초기화 
-    for i in range(len(game.players[0].cards)):
-        cardFrontRect = cardFrontImg(str(game.players[0].cards[i].color), str(game.players[0].cards[i].type)).get_rect()
-        cardFrontList.append(cardFrontRect)
 
-    # Computer Deck
-    for i in range(len(game.players[1].cards)):
-        cardBackList[i].left = screenWidth*0.92-i*20
-        cardBackList[i].top = screenHeight*0.15
-        playerCard = pg.transform.scale(cardBackImg, (cardBackRec.size[0]*0.6, cardBackRec.size[1]*0.6))
-        screen.blit(playerCard, cardBackList[i])
-    
-    # 하나의 카드에 반응하도록 설정 
+def draw_deck(game):
+    for i, card in enumerate(game.deck.cards):
+        card_back_img = pg.image.load(card.back).convert_alpha()
+        top = screenHeight * 0.25 - i / 10
+        left = screenWidth * 0.25 - i / 10
+        screen.blit(card_back_img, (left, top))
+
+
+def draw_player_cards(game):
+    player = game.players[0]
+    for i, card in enumerate(player.cards):
+        card_front_img = pg.image.load(card.front).convert_alpha()
+        top = screenHeight * 0.80
+        left = screenWidth * 0.05 + i * 30
+        screen.blit(card_front_img, (left, top))
+
+
+def draw_computer_cards(game):
+    computer = game.players[1]
+    for i, card in enumerate(computer.cards):
+        card_back_img = pg.image.load(card.back).convert_alpha()
+        card_rec = card_back_img.get_rect()
+        card_back_img = pg.transform.scale(card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
+        top = screenHeight * 0.15
+        left = screenWidth * 0.92 - i * 20
+        screen.blit(card_back_img, (left, top))
+
+
+def hover_card(game):
     card_reacted = False
-    # My Deck
-    for i in range(len(game.players[0].cards)):
+    cardFrontList = []
+
+    for i, card in enumerate(game.players[0].cards):
+        card_front_img = pg.image.load(card.front).convert_alpha().get_rect()
+        cardFrontList.append(card_front_img)
         if i == 0:
             cardFrontList[i].left = screenWidth*0.05
             cardFrontList[i].top = screenHeight*0.80
@@ -93,12 +100,11 @@ def initGame(gamePlayers):
 
         if not card_reacted and cardFrontList[i].collidepoint(mousePos):
             cardFrontList[i].top = screenHeight*0.75
-            screen.blit(cardFrontImg(str(game.players[0].cards[i].color), str(game.players[0].cards[i].type)), cardFrontList[i])
-            card_reacted = True 
+            screen.blit(pg.image.load(card.front).convert_alpha(), cardFrontList[i])
+            card_reacted = True
         else:
             cardFrontList[i].top = screenHeight*0.80
-            screen.blit(cardFrontImg(str(game.players[0].cards[i].color), str(game.players[0].cards[i].type)), cardFrontList[i])    
-        
+            screen.blit(pg.image.load(card.front).convert_alpha(), cardFrontList[i])
 
 
 class Button():
@@ -128,6 +134,7 @@ def timer(setTimer):
         setTimer = False
         return setTimer
 
+
 def drawGameScreen():
     # 배경 색 설정/추후 배경사진 추가
     screen.fill(backgroundColor)
@@ -146,13 +153,19 @@ def drawGameScreen():
     screen.blit(whoArePlayers, playersRec)
 
     # UNO 버튼 삽입
-    unoButtonImg = pg.image.load('unobutton.png').convert_alpha()
+    unoButtonImg = pg.image.load('./assets/unobutton.png').convert_alpha()
     unoButton = Button(screenWidth*0.55, screenHeight*0.45, unoButtonImg)
     unoButton.draw()
 
+
 def startGamePage():
+
+    game = Game([Player("PLAYER0"), Player("COMPUTER")])
+    print(game.players[0].cards)
+
     running = True
     while running:
+
         dt = clock.tick(60)/1000.0
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -160,13 +173,10 @@ def startGamePage():
             uiManager.process_events(event)
 
         drawGameScreen()
-
-        # game start
-        player1 = Player("PLAYER 1")
-        gamePlayers = [player1]
-        initGame(gamePlayers)   
-        ini = False
-            
+        draw_deck(game)
+        draw_player_cards(game)
+        draw_computer_cards(game)
+        hover_card(game)
 
         # 타이머 삽입
         timer(True)
@@ -174,6 +184,3 @@ def startGamePage():
         uiManager.update(dt)
         uiManager.draw_ui(screen)
         pg.display.update()
-
-
-# pg.quit()
