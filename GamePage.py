@@ -67,7 +67,6 @@ def draw_player_cards(game):
         card_front_img = pg.image.load(card.front).convert_alpha()
         top = screenHeight * 0.80
         left = screenWidth * 0.05 + i * 30
-        screen.blit(card_front_img, (left, top))
 
 
 def draw_computer_cards(game):
@@ -81,7 +80,8 @@ def draw_computer_cards(game):
         screen.blit(card_back_img, (left, top))
 
 
-def hover_card(game):
+def hover_card(game, selected_card):
+
     card_reacted = False
     cardFrontList = []
 
@@ -102,10 +102,16 @@ def hover_card(game):
             cardFrontList[i].top = screenHeight*0.75
             screen.blit(pg.image.load(card.front).convert_alpha(), cardFrontList[i])
             card_reacted = True
+
+            if selected_card is not None:
+                game.players[0].cards.pop(i)
+                selected_card = None
+                break
         else:
             cardFrontList[i].top = screenHeight*0.80
             screen.blit(pg.image.load(card.front).convert_alpha(), cardFrontList[i])
-
+        
+    return selected_card
 
 class Button():
     def __init__(self, x, y, image):
@@ -163,6 +169,7 @@ def startGamePage():
     game = Game([Player("PLAYER0"), Player("COMPUTER")])
     print(game.players[0].cards)
 
+    selected_card = None
     running = True
     while running:
 
@@ -170,13 +177,16 @@ def startGamePage():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                selected_card = event.pos
+            
             uiManager.process_events(event)
 
         drawGameScreen()
         draw_deck(game)
         draw_player_cards(game)
         draw_computer_cards(game)
-        hover_card(game)
+        selected_card = hover_card(game, selected_card)
 
         # 타이머 삽입
         timer(True)
