@@ -18,6 +18,8 @@ class Card:
 
         self.color = color
         self.type = type
+        self.front = f"./assets/cards/{self.color}{self.type}.png"
+        self.back = "./assets/cards/unoCardBack.png"
 
     def __str__(self):
         return f'Uno Card Object: {self.color} {self.type}'

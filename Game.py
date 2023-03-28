@@ -136,12 +136,3 @@ class Game:
 
                 # 다음 플레이어로 넘어가기
                 self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
-
-
-# if __name__ == "__main__":
-
-#     player1 = Player("Player 1")
-#     player2 = Player("com1")
-#     player3 = Player("com2")
-#     game = Game([player1, player2, player3])
-#     game.start()
