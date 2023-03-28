@@ -11,13 +11,17 @@ class Game:
 
         cards = [Card(color, type) for type in COLOR_CARD_TYPES for color in COLORS]
         cards += [Card("black", type) for type in BLACK_CARD_TYPES]
+        
+        
         shuffle(cards)
 
-        self.deck = Deck(cards)
+        
         self.players = players
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
+        self.deck = Deck(cards)
+        self.deal_cards()
 
     def reverse_card_clicked(self):
         self.direction = -1
@@ -132,13 +136,3 @@ class Game:
 
                 # 다음 플레이어로 넘어가기
                 self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
-
-
-if __name__ == "__main__":
-
-    player1 = Player("Player 1")
-    player2 = Player("com1")
-    player3 = Player("com2")
-    game = Game([player1, player2, player3])
-    game.start()
-
