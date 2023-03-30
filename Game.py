@@ -224,7 +224,7 @@ class Game:
                 self.current_card = played_card
                 
                 # 특수 카드 처리
-                #skip 카드 처리(다음 플레이어 건너뛰기)
+                
                 if played_card.type == 'skip':
                     self.current_player_index = (self.current_player_index + self.direction ) % len(self.players) 
                 elif played_card.type == 'reverse':
