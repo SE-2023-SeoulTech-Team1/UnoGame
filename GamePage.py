@@ -56,7 +56,10 @@ def draw_deck(game):
     for i, card in enumerate(game.deck.cards):
         top = screenHeight * 0.25 - i / 10
         left = screenWidth * 0.25 - i / 10
-        draw_card_back(card, top, left)
+        screen.blit(card_back_img, (left, top))
+    deck_rec = pg.Rect(left, top, card_back_img.get_width(), card_back_img.get_height())
+    return deck_rec
+
 
 
 # 현재 player card를 hover_card에서 그리고 있어 필요없음
@@ -209,6 +212,11 @@ def drawGameScreen():
     unoButton.draw()
 
 
+def process_deck_clicked(game):
+    popped_card = game.deck.pop_card()
+    game.players[0].cards.append(popped_card)
+
+
 def startGamePage():
 
     game = Game([Player("PLAYER0"), Player("COMPUTER")])
@@ -230,12 +238,16 @@ def startGamePage():
                 running = False
             elif event.type == pg.MOUSEBUTTONDOWN:
                 selected_card = event.pos
-            
+                if deck_rec.collidepoint(event.pos):
+                    process_deck_clicked(game)
+                    print("DECK CLICKED!")
+
             uiManager.process_events(event)
 
         drawGameScreen()
-        draw_deck(game)
-        #draw_player_cards(game)
+        deck_rec = draw_deck(game)
+        draw_player_cards(game)
+
         draw_computer_cards(game)
         flip_card = flip_deck_card(game, flip_card)
         
