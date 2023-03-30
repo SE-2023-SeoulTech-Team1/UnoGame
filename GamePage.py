@@ -59,7 +59,7 @@ def draw_deck(game):
         top = screenHeight * 0.25 - i / 10
         left = screenWidth * 0.25 - i / 10
         screen.blit(card_back_img, (left, top))
-    deck_rec = pg.Rect(top, top, card_back_img.get_width(), card_back_img.get_height())
+    deck_rec = pg.Rect(left, top, card_back_img.get_width(), card_back_img.get_height())
     return deck_rec
 
 
