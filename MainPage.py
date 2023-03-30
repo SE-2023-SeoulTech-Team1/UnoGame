@@ -44,9 +44,8 @@ class Button():
         }
         self.buttonSurface = pygame.Surface((self.width, self.height))
         self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
-
         self.buttonText = font.render(buttonText, True, BLACK)
-        objects.append(self)
+        objects.append(self) # object 리스트에 버튼 인스턴스를 추가
 
     def process(self, ini = None):
         self.ini = ini
@@ -54,20 +53,17 @@ class Button():
         self.buttonSurface.fill(self.fillColors['normal'])
         if self.buttonRect.collidepoint(mousePos):
             self.buttonSurface.fill(self.fillColors['hover'])
-            if pygame.mouse.get_pressed()[0]:
+            if pygame.mouse.get_pressed()[0]: # 왼쪽 마우스 버튼이 눌렸으면
                 self.buttonSurface.fill(self.fillColors['pressed'])
-
                 if not self.alreadyPressed:
                     self.onclickFunction()
                     self.alreadyPressed = True
-        
             else:
                 self.alreadyPressed = False
 
         if ini == True:
             self.buttonSurface.fill(self.fillColors['hover'])
-            
-                
+
         # Surface에 텍스트 위치 시킴 
         self.buttonSurface.blit(self.buttonText, [
             self.buttonRect.width/2 - self.buttonText.get_rect().width/2,
@@ -88,7 +84,6 @@ class Title():
         self.titleText = font.render(text, True, BLUE)
         titleObjects.append(self)
 
-
     def process(self):
         screen.blit(self.titleText, [self.x, self.y])
 
@@ -103,31 +98,31 @@ def startFunction2():
     
 def settingFunction():
     print("settingFunction!!")
+
 def exitFunction():
     print("exitFunction!!")
     pygame.quit()
     sys.exit()
+    
 def changeFunction():
     objects[0], objects[4] = objects[4], objects[0] 
     objects[1], objects[5] = objects[5], objects[1] 
-    objects[2], objects[6] = objects[6], objects[2] 
-
-
+    objects[2], objects[6] = objects[6], objects[2]
 
 # 타이틀 생성 
 Title(310, 50, 'UNO GAME')
-# 버튼 생성 
 
-Button1 = Button(300, 150, 200, 50, 'START', startFunction)
-Button2 = Button(300, 230, 200, 50, 'SETTINGS', settingFunction)
-Button3 = Button(300, 310, 200, 50, 'EXIT', exitFunction)
-Button4 = Button(325, 390, 150, 50, 'BACK', changeFunction)
+# 버튼 생성
+start_btn = Button(300, 150, 200, 50, 'START', startFunction)
+setting_btn = Button(300, 230, 200, 50, 'SETTINGS', settingFunction)
+exit_btn = Button(300, 310, 200, 50, 'EXIT', exitFunction)
+back_btn = Button(325, 390, 150, 50, 'BACK', changeFunction)
 Button5 = Button(300, 150, 200, 50, 'START2', startFunction2)
 Button6 = Button(300, 230, 200, 50, 'SETTINGS2', settingFunction)
 Button7 = Button(300, 310, 200, 50, 'EXIT2', exitFunction)
 
 
-i = 0
+key_idx = 0
 # 메인 루프
 running = True
 while running:
@@ -138,50 +133,47 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             mousePos = pygame.mouse.get_pos()
-            if Button2.buttonRect.collidepoint(mousePos) and nextPage == False:
+            if setting_btn.buttonRect.collidepoint(mousePos) and nextPage == False:
                 changeFunction()
-                if nextPage == True:
-                    nextPage = False
-                elif nextPage == False:
-                    nextPage = True
-            elif Button4.buttonRect.collidepoint(mousePos):
+                nextPage = False if nextPage else True
+            elif back_btn.buttonRect.collidepoint(mousePos):
                 changeFunction()
                 nextPage = False
 
         if event.type == pygame.KEYDOWN:
             
             if event.key == pygame.K_DOWN:
-                if i < 4:
-                    i += 1
+                if key_idx < 4:
+                    key_idx += 1
             elif event.key == pygame.K_UP:
-                if i >= 0:
-                    i -= 1 
+                if key_idx >= 0:
+                    key_idx -= 1
             elif event.key == pygame.K_RETURN:
-                objects[i].onclickFunction()
-                if i == 1 and nextPage == False:
+                objects[key_idx].onclickFunction()
+                if key_idx == 1 and nextPage == False:
                     changeFunction()
                     if nextPage == True:
                         nextPage = False
                     elif nextPage == False:
                         nextPage = True
-                if i == 3:
+                if key_idx == 3:
                     nextPage = False
-                    i = 1
+                    key_idx = 1
                 
 
     titleObjects[0].process()
     for object in objects[0:3]:
         object.process()
-        if i == 0:
-            objects[i].process(True)
-        if i == 1:
-            objects[i].process(True)
-        if i == 2:
-            objects[i].process(True)
+        if key_idx == 0:
+            objects[key_idx].process(True)
+        if key_idx == 1:
+            objects[key_idx].process(True)
+        if key_idx == 2:
+            objects[key_idx].process(True)
         if nextPage == True:
             objects[3].process()
-            if i == 3:
-                objects[i].process(True)
+            if key_idx == 3:
+                objects[key_idx].process(True)
 
 
     pygame.display.flip()

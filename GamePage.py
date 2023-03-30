@@ -54,12 +54,12 @@ def draw_card_back(card, top, left):
 # 덱 카드 그리기
 def draw_deck(game):
     for i, card in enumerate(game.deck.cards):
+        card_back_img = pg.image.load(card.back).convert_alpha()
         top = screenHeight * 0.25 - i / 10
         left = screenWidth * 0.25 - i / 10
         screen.blit(card_back_img, (left, top))
     deck_rec = pg.Rect(left, top, card_back_img.get_width(), card_back_img.get_height())
     return deck_rec
-
 
 
 # 현재 player card를 hover_card에서 그리고 있어 필요없음
@@ -144,7 +144,7 @@ def hover_card(game, selected_card):
         else:
             cardFrontList[i].top = screenHeight*0.80
             screen.blit(pg.image.load(card.front).convert_alpha(), cardFrontList[i])
-        
+
     return selected_card
 
 class Button():
@@ -152,7 +152,7 @@ class Button():
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
-    
+
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -197,7 +197,7 @@ def drawGameScreen():
     screen.fill(backgroundColor)
 
     # 플레이어 스크린 우측에 배치
-    playerBgRec = pg.Rect(screenWidth*0.75, 0, screenWidth*0.25, screenHeight)    
+    playerBgRec = pg.Rect(screenWidth*0.75, 0, screenWidth*0.25, screenHeight)
     pg.draw.rect(screen, playerBgColor, playerBgRec)
 
     whoArePlayers = font.render("PLAYER", True, WHITE)
@@ -246,11 +246,11 @@ def startGamePage():
 
         drawGameScreen()
         deck_rec = draw_deck(game)
-        draw_player_cards(game)
+        # draw_player_cards(game)
 
         draw_computer_cards(game)
         flip_card = flip_deck_card(game, flip_card)
-        
+
         selected_card = hover_card(game, selected_card)
 
         uiManager.update(dt)
