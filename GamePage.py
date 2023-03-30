@@ -185,7 +185,8 @@ def timer(setTimer, totalTime, game):
             print("\n제한시간이 지났습니다. 상대 턴입니다.")
             # 다음 플레이어로 넘어가기 -> game 함수 메서드로 고치면 수정
             game.current_player_index = (game.current_player_index + game.direction) % len(game.players)
-            print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+            # 타이머 종료 후 넘어간 턴 확인
+            #print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
 
 
 def drawGameScreen():
