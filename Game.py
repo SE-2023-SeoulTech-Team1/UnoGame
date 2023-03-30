@@ -299,4 +299,4 @@ class Game:
             else:
                 print("낼 수 없는 카드입니다.")
                 continue
-            self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
+            self.current_player_index = (self.current_player_index + self.direction) % len(self.players)"""
