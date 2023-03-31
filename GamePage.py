@@ -113,37 +113,37 @@ def flip_deck_card(game, flip_card):
         if timerFlag == True:
             timer(timerFlag, 10, game)
 
-
 def hover_card(game, selected_card):
-
     card_reacted = False
     cardFrontList = []
 
     for i, card in enumerate(game.players[0].cards):
-        card_front_img = pg.image.load(card.front).convert_alpha().get_rect()
-        cardFrontList.append(card_front_img)
+        card_front_img = pg.image.load(card.front).convert_alpha()
+        card_rect = card_front_img.get_rect()
         if i == 0:
-            cardFrontList[i].left = screenWidth*0.05
-            cardFrontList[i].top = screenHeight*0.80
-
+            card_rect.left = screenWidth * 0.05
+            card_rect.top = screenHeight * 0.80
         else:
-            cardFrontList[i].left = cardFrontList[i-1].left + (screenWidth*0.05)
-            cardFrontList[i].top = screenHeight*0.80
+            card_rect.left = cardFrontList[i - 1].left + (screenWidth * 0.05)
+            card_rect.top = screenHeight * 0.80
 
+        cardFrontList.append(card_rect)
         mousePos = pg.mouse.get_pos()
 
         if not card_reacted and cardFrontList[i].collidepoint(mousePos):
-            cardFrontList[i].top = screenHeight*0.75
-            screen.blit(pg.image.load(card.front).convert_alpha(), cardFrontList[i])
+            cardFrontList[i].top = screenHeight * 0.75
+            screen.blit(card_front_img, cardFrontList[i])
             card_reacted = True
 
-            if selected_card is not None:
+            # hover된 카드 Rect 클릭했을 때 
+            if selected_card is not None and cardFrontList[i].collidepoint(selected_card):
+                openned_cards.insert(0, game.players[0].cards[i])
                 game.players[0].cards.pop(i)
                 selected_card = None
                 break
         else:
-            cardFrontList[i].top = screenHeight*0.80
-            screen.blit(pg.image.load(card.front).convert_alpha(), cardFrontList[i])
+            cardFrontList[i].top = screenHeight * 0.80
+            screen.blit(card_front_img, cardFrontList[i])
 
     return selected_card
 
@@ -247,7 +247,6 @@ def startGamePage():
         drawGameScreen()
         deck_rec = draw_deck(game)
         # draw_player_cards(game)
-
         draw_computer_cards(game)
         flip_card = flip_deck_card(game, flip_card)
 
