@@ -113,9 +113,25 @@ def flip_deck_card(game, flip_card):
         if timerFlag == True:
             timer(timerFlag, 10, game)
 
+# 덱에 있는 카드와 일치 유무 
+def valid_play(card1, card2):
+
+    if (card1.color or card2.color) == 'black':
+        return True
+
+    return card1.color == card2.color or card1.type == card2.type
+
+def apply_shadow(image, alpha=100, color=(0, 0, 0)):
+    shadow_surface = pg.Surface(image.get_size(), pg.SRCALPHA)
+    shadow_surface.fill((*color, alpha))
+    result_image = image.copy()
+    result_image.blit(shadow_surface, (0, 0))
+    return result_image
+
 def hover_card(game, selected_card):
     card_reacted = False
     cardFrontList = []
+    
 
     for i, card in enumerate(game.players[0].cards):
         card_front_img = pg.image.load(card.front).convert_alpha()
@@ -132,15 +148,23 @@ def hover_card(game, selected_card):
 
         if not card_reacted and cardFrontList[i].collidepoint(mousePos):
             cardFrontList[i].top = screenHeight * 0.75
-            screen.blit(card_front_img, cardFrontList[i])
+            darkened_image = apply_shadow(card_front_img)
+            screen.blit(darkened_image, cardFrontList[i])
             card_reacted = True
 
-            # hover된 카드 Rect 클릭했을 때 
+            if valid_play(game.players[0].cards[i], openned_cards[0]):
+                screen.blit(card_front_img,cardFrontList[i])
+
+            # hover된 카드 Rect 클릭했을 때     
             if selected_card is not None and cardFrontList[i].collidepoint(selected_card):
-                openned_cards.insert(0, game.players[0].cards[i])
-                game.players[0].cards.pop(i)
-                selected_card = None
-                break
+                if valid_play(game.players[0].cards[i], openned_cards[0]):
+                    openned_cards.insert(0, game.players[0].cards[i])
+                    game.players[0].cards.pop(i)
+                    selected_card = None
+                    break
+
+                    
+
         else:
             cardFrontList[i].top = screenHeight * 0.80
             screen.blit(card_front_img, cardFrontList[i])
