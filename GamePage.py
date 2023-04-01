@@ -244,6 +244,8 @@ def process_deck_clicked(game):
 def startGamePage():
 
     game = Game([Player("PLAYER0"), Player("COMPUTER")])
+    # 카드 초기 세팅 
+    game.deal_cards()
 
     # players[0] 카드 출력
     print(f"\n{game.players[0].name}'s cards:")
