@@ -1,3 +1,5 @@
+from Card import *
+from random import shuffle
 from Player import *
 
 TIMEOUT = 10
@@ -18,16 +20,7 @@ class Game:
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
-    
-    
-    def can_play(self, card):
-        """
-        :param: card
-        :return: whether card can be played(True) or not(False)
-        """
-        if card.color == self.current_card.color or card.type == self.current_card.type or card.color == "black":
-            return True
-        return False
+
     
     def auto_draw_card(self):
         print("카드 선택 시간을 초과하였습니다. 자동으로 카드를 뽑아옵니다.")
@@ -39,7 +32,7 @@ class Game:
     def deal_cards(self):
         for i in range(7):
             for player in self.players:
-                player.draw_card(self.deck)
+                player.cards.append(self.deck.pop_card())
 
     # 게임 시작 시 current card를 뽑는 함수
 
