@@ -35,7 +35,6 @@ color_rects = [
     pg.Rect(screenWidth * 0.05 + 180, screenHeight * 0.65, 50, 50)
 ]
 
-
 # 폰트 설정
 font = pg.font.SysFont(None, 30)
 unoFont = pg.font.SysFont(None, 40)
@@ -71,16 +70,6 @@ def draw_deck(game):
         screen.blit(card_back_img, (left, top))
     deck_rec = pg.Rect(left, top, card_back_img.get_width(), card_back_img.get_height())
     return deck_rec
-
-
-# 현재 player card를 hover_card에서 그리고 있어 필요없음
-#def draw_player_cards(game):
-#    player = game.players[0]
-#    for i, card in enumerate(player.cards):
-#        top = screenHeight * 0.80
-#        left = screenWidth * 0.05 + i * 30
-#        draw_card_front(card, top, left)
-
 
 # 컴퓨터 카드 그리기
 def draw_computer_cards(game):
@@ -188,48 +177,50 @@ def hover_card(game, selected_card):
 
             # hover된 카드 Rect 클릭했을 때     
             if selected_card is not None and cardFrontList[i].collidepoint(selected_card):
-                if game.players[0].cards[i].type == 'wildcard':
-                    print("selected!!")
-                    wildcard_selected = True
-
-                    pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
-                    pg.draw.rect(screen, SELECT_COLOR['blue'], color_rects[1])
-                    pg.draw.rect(screen, SELECT_COLOR['yellow'], color_rects[2])
-                    pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[3])
-                    
-                    # i+1번째 부터 카드 추가 해야 됨 
-                    for j in range(i+1, len(game.players[0].cards)):
-                        card_rect.left = cardFrontList[j - 1].left + (screenWidth * 0.05)
-                        card_rect.top = screenHeight * 0.80
-                        cardFrontList.append(card_rect)
-                        cardFrontList[j].top = screenHeight * 0.80
-                        screen.blit(pg.image.load(game.players[0].cards[j].front).convert_alpha(), cardFrontList[j])
-
-                    pg.display.flip()
-
-                    # 플레이어가 색깔 고를 때 까지 기다림 
-                    while not color_selected:
-                                
-                        for event in pg.event.get():
-                            if event.type == pg.QUIT:
-                                pg.quit()
-                                sys.exit()
-
-                            if event.type == pg.MOUSEBUTTONDOWN:
-                                mouse_pos = pg.mouse.get_pos()
-                                for idx, color_rect in enumerate(color_rects):
-                                    if color_rect.collidepoint(mouse_pos):
-                                        color_selected = True
-                                        print()
-                                        break
-                    
-                    del cardFrontList[i+1 : len(game.players[0].cards)]
+                
 
                 if valid_play(game.players[0].cards[i], openned_cards[0]):
-                    openned_cards.insert(0, game.players[0].cards[i])
-                    # current card 업데이트
+
                     game.current_card = openned_cards[0]
-                    game.players[0].cards.pop(i)
+                    openned_cards.insert(0, game.players[0].cards[i])
+
+                    if game.players[0].cards[i].type == 'wildcard':
+                        wildcard_selected = True
+
+                        pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
+                        pg.draw.rect(screen, SELECT_COLOR['blue'], color_rects[1])
+                        pg.draw.rect(screen, SELECT_COLOR['yellow'], color_rects[2])
+                        pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[3])
+                        
+                        # i+1번째 부터 카드 추가 해야 됨 
+                        for j in range(i+1, len(game.players[0].cards)):
+                            card_rect.left = cardFrontList[j - 1].left + (screenWidth * 0.05)
+                            card_rect.top = screenHeight * 0.80
+                            cardFrontList.append(card_rect)
+                            cardFrontList[j].top = screenHeight * 0.80
+                            screen.blit(pg.image.load(game.players[0].cards[j].front).convert_alpha(), cardFrontList[j])
+
+                        pg.display.flip()
+
+                        # 플레이어가 색깔 고를 때 까지 기다림 
+                        while not color_selected:
+                                    
+                            for event in pg.event.get():
+                                if event.type == pg.QUIT:
+                                    pg.quit()
+                                    sys.exit()
+
+                                if event.type == pg.MOUSEBUTTONDOWN:
+                                    mouse_pos = pg.mouse.get_pos()
+                                    for idx, color_rect in enumerate(color_rects):
+                                        if color_rect.collidepoint(mouse_pos):
+                                            color_selected = True
+                                            game.current_card.color = list(SELECT_COLOR.keys())[idx]
+                                            break
+                        
+                        del cardFrontList[i+1 : len(game.players[0].cards)]
+                    # current card 업데이트
+                    game.players[0].cards.pop(i)                  
                     print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                     selected_card = None
                     break
