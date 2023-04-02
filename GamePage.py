@@ -188,9 +188,9 @@ def hover_card(game, selected_card):
                         wildcard_selected = True
 
                         pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
-                        pg.draw.rect(screen, SELECT_COLOR['blue'], color_rects[1])
-                        pg.draw.rect(screen, SELECT_COLOR['yellow'], color_rects[2])
-                        pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[3])
+                        pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[1])
+                        pg.draw.rect(screen, SELECT_COLOR['blue'], color_rects[2])
+                        pg.draw.rect(screen, SELECT_COLOR['yellow'], color_rects[3])
                         
                         # i+1번째 부터 카드 추가 해야 됨 
                         for j in range(i+1, len(game.players[0].cards)):
@@ -215,7 +215,9 @@ def hover_card(game, selected_card):
                                     for idx, color_rect in enumerate(color_rects):
                                         if color_rect.collidepoint(mouse_pos):
                                             color_selected = True
-                                            game.current_card.color = list(SELECT_COLOR.keys())[idx]
+                                            game.wildcard_card_clicked(list(SELECT_COLOR.keys())[idx])
+                                            print("test")
+                                            # game.current_card.color = list(SELECT_COLOR.keys())[idx]
                                             break
                         
                         del cardFrontList[i+1 : len(game.players[0].cards)]
