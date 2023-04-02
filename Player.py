@@ -14,8 +14,8 @@ class Player:
         return self.cards.pop(card_index)
 
 class Computer:
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, name):
+        self.name = name
         self.cards = []
 
     def draw_card(self, deck):
