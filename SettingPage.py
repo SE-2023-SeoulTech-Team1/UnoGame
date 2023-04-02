@@ -119,6 +119,7 @@ class SettingPage():
         nextPage = True
 
 def startSettingPage():
+    
     settingPage = SettingPage()
     while not nextPage:
         for event in pygame.event.get():

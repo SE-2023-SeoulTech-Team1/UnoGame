@@ -1,5 +1,6 @@
 import pygame as pg
 import pygame_gui as pg_gui
+import sys
 from Game import *
 from animation import *
 
@@ -25,6 +26,16 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 YELLOW = (0, 127, 127)
 BLACK = (0, 0, 0)
+
+SELECT_COLOR = {"red" : (175,10,29), "green" : (34,139,34), "blue" : (0,0,205), "yellow" : (255,255,0)}
+
+color_rects = [
+    pg.Rect(screenWidth * 0.05, screenHeight * 0.65, 50, 50),
+    pg.Rect(screenWidth * 0.05 + 60, screenHeight * 0.65, 50, 50),
+    pg.Rect(screenWidth * 0.05 + 120, screenHeight * 0.65, 50, 50),
+    pg.Rect(screenWidth * 0.05 + 180, screenHeight * 0.65, 50, 50)
+]
+
 
 # 폰트 설정
 font = pg.font.SysFont(None, 30)
@@ -139,6 +150,7 @@ def valid_play(card1, card2):
         return True
     return card1.color == card2.color or card1.type == card2.type
 
+# 카드 명암 적용 
 def apply_shadow(image, alpha=100, color=(0, 0, 0)):
     shadow_surface = pg.Surface(image.get_size(), pg.SRCALPHA)
     shadow_surface.fill((*color, alpha))
@@ -150,7 +162,6 @@ def hover_card(game, selected_card):
     card_reacted = False
     cardFrontList = []
     
-
     for i, card in enumerate(game.players[0].cards):
         card_front_img = pg.image.load(card.front).convert_alpha()
         card_rect = card_front_img.get_rect()
@@ -164,6 +175,7 @@ def hover_card(game, selected_card):
         cardFrontList.append(card_rect)
         mousePos = pg.mouse.get_pos()
 
+
         if not card_reacted and cardFrontList[i].collidepoint(mousePos):
             cardFrontList[i].top = screenHeight * 0.75
             darkened_image = apply_shadow(card_front_img)
@@ -173,8 +185,47 @@ def hover_card(game, selected_card):
             if valid_play(game.players[0].cards[i], openned_cards[0]):
                 screen.blit(card_front_img,cardFrontList[i])
 
+            color_selected = False
+
             # hover된 카드 Rect 클릭했을 때     
             if selected_card is not None and cardFrontList[i].collidepoint(selected_card):
+                if game.players[0].cards[i].type == 'wildcard':
+                    print("selected!!")
+                    wildcard_selected = True
+
+                    pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
+                    pg.draw.rect(screen, SELECT_COLOR['blue'], color_rects[1])
+                    pg.draw.rect(screen, SELECT_COLOR['yellow'], color_rects[2])
+                    pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[3])
+                    
+                    # i+1번째 부터 카드 추가 해야 됨 
+                    for j in range(i+1, len(game.players[0].cards)):
+                        card_rect.left = cardFrontList[j - 1].left + (screenWidth * 0.05)
+                        card_rect.top = screenHeight * 0.80
+                        cardFrontList.append(card_rect)
+                        cardFrontList[j].top = screenHeight * 0.80
+                        screen.blit(pg.image.load(game.players[0].cards[j].front).convert_alpha(), cardFrontList[j])
+
+                    pg.display.flip()
+
+                    # 플레이어가 색깔 고를 때 까지 기다림 
+                    while not color_selected:
+                                
+                        for event in pg.event.get():
+                            if event.type == pg.QUIT:
+                                pg.quit()
+                                sys.exit()
+
+                            if event.type == pg.MOUSEBUTTONDOWN:
+                                mouse_pos = pg.mouse.get_pos()
+                                for idx, color_rect in enumerate(color_rects):
+                                    if color_rect.collidepoint(mouse_pos):
+                                        color_selected = True
+                                        print()
+                                        break
+                    
+                    del cardFrontList[i+1 : len(game.players[0].cards)]
+
                 if valid_play(game.players[0].cards[i], openned_cards[0]):
                     openned_cards.insert(0, game.players[0].cards[i])
                     game.players[0].cards.pop(i)
