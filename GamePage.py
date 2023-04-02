@@ -116,9 +116,10 @@ def flip_deck_card(game, flip_card):
 # 덱에 있는 카드와 일치 유무 
 def valid_play(card1, card2):
 
-    if (card1.color or card2.color) == 'black':
+    if (card1.color) == 'black':
         return True
-
+    if (card2.color) == 'black':
+        return True
     return card1.color == card2.color or card1.type == card2.type
 
 def apply_shadow(image, alpha=100, color=(0, 0, 0)):
