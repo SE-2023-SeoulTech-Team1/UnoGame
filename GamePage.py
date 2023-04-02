@@ -1,6 +1,7 @@
 import pygame as pg
 import pygame_gui as pg_gui
 from Game import *
+from animation import *
 
 pg.init()
 
@@ -83,6 +84,22 @@ def draw_computer_cards(game):
         screen.blit(card_back_img, (left, top))
 
 
+
+def move_card(game, card, start, end):
+    top = screenHeight * 0.25
+    left = screenWidth * 0.4
+
+    # 카드 목표 위치 도달까지 위치 변경
+    if card_loc <= left:
+        card_loc += 10
+        draw_card_front(openned_cards[0], top, card_loc)
+    else:
+        draw_card_front(openned_cards[0], top, card_loc)
+        # 덱에서 카드가 뒤집힌 후 첫 턴의 시작은 player0
+        # game.current_player_index = 0
+        if timerFlag == True:
+            timer(timerFlag, 10, game)
+
 # 덱 카드 한 장 뒤집기
 def flip_deck_card(game, flip_card):
     global openned_cards, card_loc
@@ -109,7 +126,7 @@ def flip_deck_card(game, flip_card):
     else:
         draw_card_front(openned_cards[0], top, card_loc)
         # 덱에서 카드가 뒤집힌 후 첫 턴의 시작은 player0
-        game.current_player_index = 0
+        # game.current_player_index = 0
         if timerFlag == True:
             timer(timerFlag, 10, game)
 
@@ -164,8 +181,6 @@ def hover_card(game, selected_card):
                     selected_card = None
                     break
 
-                    
-
         else:
             cardFrontList[i].top = screenHeight * 0.80
             screen.blit(card_front_img, cardFrontList[i])
@@ -181,6 +196,19 @@ class Button():
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
+
+class WarningMessage():
+    def __init__(self, text):
+        self.text = text
+    def draw(self):
+        pg.font.Font('freesansbold.ttf', 32)
+        text = font.render(self.text, True, RED, None)
+        text_rec = text.get_rect()
+        text_rec.top = 100
+        text_rec.left = screenWidth // 3
+        screen.blit(text, text_rec)
+        pg.display.update()
+        time.sleep(1)
 
 # 타이머 설정
 timerFlag = True
@@ -244,7 +272,7 @@ def process_deck_clicked(game):
 
 def startGamePage():
 
-    game = Game([Player("PLAYER0"), Player("COMPUTER")])
+    game = Game([Player("PLAYER0"), Computer(0)])
     # 카드 초기 세팅 
     game.deal_cards()
 
@@ -257,6 +285,11 @@ def startGamePage():
     flip_card = True
     running = True
 
+    drawGameScreen()
+    deck_rec = draw_deck(game)
+    draw_computer_cards(game)
+    flip_card = flip_deck_card(game, flip_card)
+
     while running:
 
         dt = clock.tick(60)/1000.0
@@ -266,16 +299,29 @@ def startGamePage():
             elif event.type == pg.MOUSEBUTTONDOWN:
                 selected_card = event.pos
                 if deck_rec.collidepoint(event.pos):
-                    process_deck_clicked(game)
-                    print("DECK CLICKED!")
+                    if game.current_player_index == 0:
+                        process_deck_clicked(game)
+                        game.current_player_index = 1
+                    else:
+                        WarningMessage("It's not your turn!").draw()
+
 
             uiManager.process_events(event)
 
         drawGameScreen()
         deck_rec = draw_deck(game)
-        # draw_player_cards(game)
-        draw_computer_cards(game)
         flip_card = flip_deck_card(game, flip_card)
+        draw_computer_cards(game)
+
+        if game.current_player_index != 0:
+            if game.players[game.current_player_index].can_play(game.current_card):
+                popped_card = game.players[game.current_player_index].play_card(game)
+                card_front_img = pg.image.load(popped_card.front).convert_alpha().get_rect()
+                openned_cards.insert(0, popped_card)
+                # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
+            else:
+                game.players[game.current_player_index].draw_card(game.deck)
+            game.current_player_index = 0
 
         selected_card = hover_card(game, selected_card)
 
