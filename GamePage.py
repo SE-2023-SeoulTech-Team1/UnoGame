@@ -1,7 +1,6 @@
 import pygame as pg
 import pygame_gui as pg_gui
 from Game import *
-from animation import *
 
 pg.init()
 
@@ -102,7 +101,7 @@ def move_card(game, card, start, end):
 
 # 덱 카드 한 장 뒤집기
 def flip_deck_card(game, flip_card):
-    global openned_cards, card_loc
+    global openned_cards, card_loc, timerFlag
 
     # game의 pick_current_card 사용해서 게임 시작 직후 current card 정보 불러오고 open된 카드 리스트에 저장
     if flip_card is True:
@@ -125,10 +124,10 @@ def flip_deck_card(game, flip_card):
         draw_card_front(openned_cards[0], top, card_loc)
     else:
         draw_card_front(openned_cards[0], top, card_loc)
-        # 덱에서 카드가 뒤집힌 후 첫 턴의 시작은 player0
-        # game.current_player_index = 0
+
         if timerFlag == True:
-            timer(timerFlag, 10, game)
+            timer(timerFlag, TIMEOUT, game)
+        timerFlag = True
 
 # 덱에 있는 카드와 일치 유무 
 def valid_play(card1, card2):
@@ -177,7 +176,10 @@ def hover_card(game, selected_card):
             if selected_card is not None and cardFrontList[i].collidepoint(selected_card):
                 if valid_play(game.players[0].cards[i], openned_cards[0]):
                     openned_cards.insert(0, game.players[0].cards[i])
+                    # current card 업데이트
+                    game.current_card = openned_cards[0]
                     game.players[0].cards.pop(i)
+                    print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                     selected_card = None
                     break
 
@@ -239,10 +241,8 @@ def timer(setTimer, totalTime, game):
             timerFlag = False
             count = True
             print("\n제한시간이 지났습니다. 상대 턴입니다.")
-            # 다음 플레이어로 넘어가기 -> game 함수 메서드로 고치면 수정
-            game.current_player_index = (game.current_player_index + game.direction) % len(game.players)
-            # 타이머 종료 후 넘어간 턴 확인
-            #print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+            # 다음 플레이어로 넘어가기
+            game.next_turn()
 
 
 def drawGameScreen():
@@ -272,7 +272,7 @@ def process_deck_clicked(game):
 
 def startGamePage():
 
-    game = Game([Player("PLAYER0"), Computer(0)])
+    game = Game([Player("PLAYER0"), Computer("computer0")])
     # 카드 초기 세팅 
     game.deal_cards()
 
@@ -301,7 +301,6 @@ def startGamePage():
                 if deck_rec.collidepoint(event.pos):
                     if game.current_player_index == 0:
                         process_deck_clicked(game)
-                        game.current_player_index = 1
                     else:
                         WarningMessage("It's not your turn!").draw()
 
@@ -315,11 +314,18 @@ def startGamePage():
 
         if game.current_player_index != 0:
             if game.players[game.current_player_index].can_play(game.current_card):
+                print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
                 popped_card = game.players[game.current_player_index].play_card(game)
                 card_front_img = pg.image.load(popped_card.front).convert_alpha().get_rect()
                 openned_cards.insert(0, popped_card)
+
+                # current card 업데이트
+                game.current_card = openned_cards[0]
+                print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                 # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
             else:
+                print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+                print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                 game.players[game.current_player_index].draw_card(game.deck)
             game.current_player_index = 0
 
