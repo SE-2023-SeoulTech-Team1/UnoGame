@@ -62,6 +62,7 @@ class Game:
     def reverse_card_clicked(self): 
         self.direction *= -1
         self.current_player_index = None
+        # TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'
         self.next_turn()
         return self
     
@@ -91,7 +92,6 @@ class Game:
         player.draw_card(self.deck)
         player.draw_card(self.deck)
         player.draw_card(self.deck)
-        chosen_color = input(" ") 
         self.current_card.color = chosen_color
         self.next_turn()
         return self
