@@ -61,8 +61,7 @@ class Game:
 
     def reverse_card_clicked(self): 
         self.direction *= -1
-        self.current_player_index = None
-        # TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'
+        #self.current_player_index= None (index 값이 필요하면 정수형값 할당하시면 됩니다)
         self.next_turn()
         return self
     
