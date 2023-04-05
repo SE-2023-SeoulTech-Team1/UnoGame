@@ -34,3 +34,8 @@ class Computer:
         time.sleep(random() * 3)
         card_idx_can_play = self.can_play(game.current_card)
         return self.cards.pop(choice(card_idx_can_play))
+    
+    def black_card_clicked(self):
+        color_list = ['red', 'green', 'yellow', 'blue']
+        return choice(color_list)
+        

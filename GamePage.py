@@ -70,7 +70,7 @@ def draw_deck(game):
         left = screenWidth * 0.25 - i / 10
         screen.blit(card_back_img, (left, top))
     deck_rec = pg.Rect(left, top, card_back_img.get_width(),
-                       card_back_img.get_height())
+                    card_back_img.get_height())
     return deck_rec
 
 # 컴퓨터 카드 그리기
@@ -191,16 +191,15 @@ def handle_black(game, card_rect, i, screen, cardFrontList, color_selected, scre
                 mouse_pos = pg.mouse.get_pos()
                 for idx, color_rect in enumerate(color_rects):
                     if color_rect.collidepoint(mouse_pos):
-                        color_selected = True
                         chosen_color = list(SELECT_COLOR.keys())[idx]
                         if game.players[0].cards[i].type == 'wildcard':
                             game.wildcard_card_clicked(chosen_color)
                         elif game.players[0].cards[i].type == '+4':
                             game.plus4_card_clicked(game.players[0], chosen_color)
+                        color_selected = True
                         break
 
     del cardFrontList[i+1: len(game.players[0].cards)]
-
 
 def hover_card(game, selected_card):
     card_reacted = False
@@ -238,15 +237,18 @@ def hover_card(game, selected_card):
                     openned_cards.insert(0, game.players[0].cards[i])
                     game.current_card = openned_cards[0]
 
-
-                    if game.players[0].cards[i].type == 'wildcard':
+                    # 기능 카드 눌렀을 때 
+                    if game.current_card.type == 'wildcard':
                         handle_black(game, card_rect, i, screen, cardFrontList, color_selected, screenWidth, screenHeight)
-                    elif game.players[0].cards[i].type == '+4':
+                    elif game.current_card.type == '+4':
                         handle_black(game, card_rect, i, screen, cardFrontList, color_selected, screenWidth, screenHeight)
-                    elif game.players[0].cards[i].type == '+2':
+                    elif game.current_card.type == '+2':
                         game.plus2_card_clicked(game.players[0])
-                    elif game.players[0].cards[i].type == 'reverse':
+                    elif game.current_card.type == 'reverse':
                         game.reverse_card_clicked()
+                    elif game.current_card.type == 'skip':
+                        game.skip_card_clicked()
+                        
                     # current card 업데이트
                     game.players[0].cards.pop(i)
                     print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
@@ -345,6 +347,22 @@ def process_deck_clicked(game):
     game.players[0].cards.append(popped_card)
 
 
+# 컴퓨터가 기능 카드 낼 때 
+def computer_function_card(game):
+    if game.current_card.color == 'black':
+        choiced_color = game.players[game.current_player_index].black_card_clicked()
+        if game.current_card.type == 'wildcard':
+            game.wildcard_card_clicked(choiced_color)
+        elif game.current_card.type == '+4':
+            game.plus4_card_clicked(game.players[game.current_player_index], choiced_color)
+    elif game.current_card.type == '+2':
+        game.plus2_card_clicked(game.players[game.current_player_index])
+    elif game.current_card.type == 'reverse':
+        game.reverse_card_clicked()
+    elif game.current_card.type == 'skip':
+        game.skip_card_clicked()
+
+
 def startGamePage():
 
     game = Game([Player("PLAYER0"), Computer("computer0")])
@@ -394,10 +412,14 @@ def startGamePage():
                     game)
                 card_front_img = pg.image.load(
                     popped_card.front).convert_alpha().get_rect()
+                
                 openned_cards.insert(0, popped_card)
 
                 # current card 업데이트
                 game.current_card = openned_cards[0]
+                # function card 일 때 
+                computer_function_card(game)
+                
                 print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                 # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
             else:

@@ -80,7 +80,6 @@ class Game:
     
     def wildcard_card_clicked(self, chosen_color):
         self.current_card.color = chosen_color
-        print(self.current_card.color)
         self.next_turn()
         return self
     
