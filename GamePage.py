@@ -20,14 +20,13 @@ clock = pg.time.Clock()
 DARKGREEN = (8, 44, 15)
 GREY = (25, 25, 25)
 WHITE = (255, 255, 255)
-RED = (255, 0, 0)
+RED = (185, 52, 31)
 BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-YELLOW = (0, 127, 127)
+GREEN = (0, 143, 0)
+YELLOW = (255, 218, 71)
 BLACK = (0, 0, 0)
 
-SELECT_COLOR = {"red": (175, 10, 29), "green": (
-    34, 139, 34), "blue": (0, 0, 205), "yellow": (255, 255, 0)}
+SELECT_COLOR = {"red": RED, "green": GREEN, "blue": BLUE, "yellow": YELLOW}
 
 color_rects = [
     pg.Rect(screenWidth * 0.05, screenHeight * 0.65, 50, 50),
@@ -43,6 +42,14 @@ unoFont = pg.font.SysFont(None, 40)
 # 기본 배경 설정
 backgroundColor = DARKGREEN
 playerBgColor = GREY
+boardx = 0
+boardy = 0
+boardWidth = screenWidth*0.75
+boardHeight = screenHeight
+playerBgx = screenWidth*0.75
+playerBgy = 0
+playerBgWidth = screenWidth*0.25
+playerBgHeight = screenHeight
 
 
 # 카드 이미지 불러오기
@@ -159,49 +166,6 @@ def apply_shadow(image, alpha=100, color=(0, 0, 0)):
 # black카드 일 때
 
 
-def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenHeight):
-
-    wildcard_selected = True
-
-    pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
-    pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[1])
-    pg.draw.rect(screen, SELECT_COLOR['blue'], color_rects[2])
-    pg.draw.rect(screen, SELECT_COLOR['yellow'], color_rects[3])
-
-    # i+1번째 부터 카드 추가 해야 됨
-    for j in range(i+1, len(game.players[0].cards)):
-        card_rect.left = cardFrontList[j - 1].left + (screenWidth * 0.05)
-        card_rect.top = screenHeight * 0.80
-        cardFrontList.append(card_rect)
-        cardFrontList[j].top = screenHeight * 0.80
-        screen.blit(pg.image.load(
-            game.players[0].cards[j].front).convert_alpha(), cardFrontList[j])
-
-    pg.display.flip()
-
-        # 플레이어가 색깔 고를 때 까지 기다림
-    color_selected = False
-    while not color_selected:
-
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
-
-            if event.type == pg.MOUSEBUTTONDOWN:
-                mouse_pos = pg.mouse.get_pos()
-                for idx, color_rect in enumerate(color_rects):
-                    if color_rect.collidepoint(mouse_pos):
-                        chosen_color = list(SELECT_COLOR.keys())[idx]
-                        if game.players[0].cards[i].type == 'wildcard':
-                            game.wildcard_card_clicked(chosen_color)
-                        elif game.players[0].cards[i].type == '+4':
-                            game.plus4_card_clicked(game.players[0], chosen_color)
-                        color_selected = True
-                        break
-
-    del cardFrontList[i+1: len(game.players[0].cards)]
-
 def handle_card_hover(game, screen, card_rect_list, screenHeight, selected_card=None):
     mouse_pos = pg.mouse.get_pos()
 
@@ -265,15 +229,6 @@ def display_player_cards(game, selected_card):
 
     return selected_card
 
-class Button():
-    def __init__(self, x, y, image):
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-
-    def draw(self):
-        screen.blit(self.image, (self.rect.x, self.rect.y))
-
 
 class WarningMessage():
     def __init__(self, text):
@@ -298,24 +253,33 @@ count = True
 
 
 def timer(setTimer, totalTime, game):
-    global timerFlag, startTicks, count
+    global timerFlag, startTicks, count, deck_cards_num, player_cards_num
 
     # timer 최초 호출
     if count is True:
         startTicks = pg.time.get_ticks()
         print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+        deck_cards_num = len(game.deck.cards)
+        player_cards_num = len(game.players[0].cards)
         count = False
 
     # timer 실행
     if setTimer == True:
-        elapsedTime = (pg.time.get_ticks()-startTicks) / 1000
-        if totalTime - elapsedTime > 0:
-            elapsedTime = (pg.time.get_ticks()-startTicks) / 1000
-            timer = font.render(str(int(totalTime - elapsedTime)), True, WHITE)
+        elapsed_time = (pg.time.get_ticks()-startTicks) / 1000
+        if totalTime - elapsed_time > 0 and deck_cards_num == len(game.deck.cards) and player_cards_num == len(game.players[0].cards):
+            elapsed_time = (pg.time.get_ticks()-startTicks) / 1000
+            timer = font.render(str(int(totalTime - elapsed_time)), True, WHITE)
             screen.blit(timer, (20, 20))
-        elif totalTime - elapsedTime > -1:
+            who_is_current_player(game)
+        elif deck_cards_num != len(game.deck.cards) or player_cards_num != len(game.players[0].cards):
+            setTimer = False
+            timerFlag = False
+            count = True
+            game.next_turn()
+        elif totalTime - elapsed_time > -1:
             timeout = font.render("TIME OUT", True, WHITE)
             screen.blit(timeout, (20, 20))
+            who_is_current_player(game)
         else:
             setTimer = False
             timerFlag = False
@@ -324,30 +288,55 @@ def timer(setTimer, totalTime, game):
             # 다음 플레이어로 넘어가기
             game.next_turn()
 
+def current_card_color(game):
+    card_color = game.current_card.color
+    current_card_rect = pg.Rect(playerBgx - 60, playerBgy + 20, 40, 40)
+    if card_color == 'red':
+        pg.draw.rect(screen, RED, current_card_rect)
+    elif card_color == 'blue':
+        pg.draw.rect(screen, BLUE, current_card_rect)
+    elif card_color == 'green':
+        pg.draw.rect(screen, GREEN, current_card_rect)
+    elif card_color == 'yellow':
+        pg.draw.rect(screen, YELLOW, current_card_rect)
+
+def who_is_current_player(game):
+    player = font.render(game.players[game.current_player_index].name, True, WHITE)
+    player_rect = player.get_rect()
+    player_rect.centerx = round(boardx + boardWidth*0.5)
+    player_rect.y = 20
+    screen.blit(player, player_rect)
+
+
+def unobutton(game):
+    unobutton_img = pg.image.load('./assets/unobutton.png').convert_alpha()
+    unobutton_rect = unobutton_img.get_rect()
+    unobutton_rect.centerx = round(boardx + boardWidth*0.5)
+    unobutton_rect.y = screenHeight * 0.45
+    screen.blit(unobutton_img, unobutton_rect)
+    
 
 def drawGameScreen():
     # 배경 색 설정/추후 배경사진 추가
     screen.fill(backgroundColor)
 
     # 플레이어 스크린 우측에 배치
-    playerBgRec = pg.Rect(screenWidth*0.75, 0, screenWidth*0.25, screenHeight)
-    pg.draw.rect(screen, playerBgColor, playerBgRec)
+    player_bg_rect = pg.Rect(playerBgx, playerBgy, playerBgWidth, screenHeight)
+    pg.draw.rect(screen, playerBgColor, player_bg_rect)
 
-    whoArePlayers = font.render("PLAYER", True, WHITE)
-    playersRec = whoArePlayers.get_rect()
-    playersRec.centerx = round(screenWidth*0.875)
-    playersRec.y = 20
-    screen.blit(whoArePlayers, playersRec)
+    who_are_players = font.render("PLAYER", True, WHITE)
+    players_rect = who_are_players.get_rect()
+    players_rect.centerx = round(playerBgx + playerBgWidth*0.5)
+    players_rect.y = 20
+    screen.blit(who_are_players, players_rect)
 
-    # UNO 버튼 삽입
-    unoButtonImg = pg.image.load('./assets/unobutton.png').convert_alpha()
-    unoButton = Button(screenWidth*0.55, screenHeight*0.45, unoButtonImg)
-    unoButton.draw()
 
 
 def process_deck_clicked(game):
     popped_card = game.deck.pop_card()
     game.players[0].cards.append(popped_card)
+    print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
+    
 
 
 # 컴퓨터가 기능 카드 낼 때 
@@ -403,14 +392,21 @@ def startGamePage():
             uiManager.process_events(event)
 
         drawGameScreen()
+        unobutton(game)
+
         deck_rec = draw_deck(game)
+        current_card_color(game)
         flip_card = flip_deck_card(game, flip_card)
         draw_computer_cards(game)
+        display_player_cards(game, selected_card)
 
         if game.current_player_index != 0:
             if game.players[game.current_player_index].can_play(game.current_card):
-                print(
-                    f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+                print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+                # 현재 플레이어 화면 출력
+                who_is_current_player(game)
+                pg.display.update()
+
                 popped_card = game.players[game.current_player_index].play_card(
                     game)
                 card_front_img = pg.image.load(
@@ -426,14 +422,16 @@ def startGamePage():
                 print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                 # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
             else:
-                print(
-                    f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
-                print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
+                print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+                # 현재 플레이어 화면 출력
+                who_is_current_player(game)
+                pg.display.update()
+
+                print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
                 game.players[game.current_player_index].draw_card(game.deck)
             game.current_player_index = 0
 
         selected_card = display_player_cards(game, selected_card)
-
 
         uiManager.update(dt)
         uiManager.draw_ui(screen)
