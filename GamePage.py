@@ -164,6 +164,48 @@ def apply_shadow(image, alpha=100, color=(0, 0, 0)):
     return result_image
 
 # black카드 일 때
+def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenHeight):
+
+    wildcard_selected = True
+
+    pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
+    pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[1])
+    pg.draw.rect(screen, SELECT_COLOR['blue'], color_rects[2])
+    pg.draw.rect(screen, SELECT_COLOR['yellow'], color_rects[3])
+
+    # i+1번째 부터 카드 추가 해야 됨
+    for j in range(i+1, len(game.players[0].cards)):
+        card_rect.left = cardFrontList[j - 1].left + (screenWidth * 0.05)
+        card_rect.top = screenHeight * 0.80
+        cardFrontList.append(card_rect)
+        cardFrontList[j].top = screenHeight * 0.80
+        screen.blit(pg.image.load(
+            game.players[0].cards[j].front).convert_alpha(), cardFrontList[j])
+
+    pg.display.flip()
+
+        # 플레이어가 색깔 고를 때 까지 기다림
+    color_selected = False
+    while not color_selected:
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+
+            if event.type == pg.MOUSEBUTTONDOWN:
+                mouse_pos = pg.mouse.get_pos()
+                for idx, color_rect in enumerate(color_rects):
+                    if color_rect.collidepoint(mouse_pos):
+                        chosen_color = list(SELECT_COLOR.keys())[idx]
+                        if game.players[0].cards[i].type == 'wildcard':
+                            game.wildcard_card_clicked(chosen_color)
+                        elif game.players[0].cards[i].type == '+4':
+                            game.plus4_card_clicked(game.players[0], chosen_color)
+                        color_selected = True
+                        break
+
+    del cardFrontList[i+1: len(game.players[0].cards)]
 
 
 def handle_card_hover(game, screen, card_rect_list, screenHeight, selected_card=None):
