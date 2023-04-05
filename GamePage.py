@@ -159,7 +159,7 @@ def apply_shadow(image, alpha=100, color=(0, 0, 0)):
 # black카드 일 때
 
 
-def handle_black(game, card_rect, i, screen, cardFrontList, color_selected, screenWidth, screenHeight):
+def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenHeight):
 
     wildcard_selected = True
 
@@ -180,6 +180,7 @@ def handle_black(game, card_rect, i, screen, cardFrontList, color_selected, scre
     pg.display.flip()
 
         # 플레이어가 색깔 고를 때 까지 기다림
+    color_selected = False
     while not color_selected:
 
         for event in pg.event.get():
@@ -201,37 +202,23 @@ def handle_black(game, card_rect, i, screen, cardFrontList, color_selected, scre
 
     del cardFrontList[i+1: len(game.players[0].cards)]
 
-def hover_card(game, selected_card):
+def handle_card_hover(game, screen, card_rect_list, screenHeight, selected_card=None):
+    mouse_pos = pg.mouse.get_pos()
+
     card_reacted = False
-    cardFrontList = []
+    for i, card_rect in enumerate(card_rect_list):
+        card_front_img = pg.image.load(game.players[0].cards[i].front).convert_alpha()
 
-    for i, card in enumerate(game.players[0].cards):
-        card_front_img = pg.image.load(card.front).convert_alpha()
-        card_rect = card_front_img.get_rect()
-        if i == 0:
-            card_rect.left = screenWidth * 0.05
-            card_rect.top = screenHeight * 0.80
-        else:
-            card_rect.left = cardFrontList[i - 1].left + (screenWidth * 0.05)
-            card_rect.top = screenHeight * 0.80
-
-        cardFrontList.append(card_rect)
-        mousePos = pg.mouse.get_pos()
-
-        if not card_reacted and cardFrontList[i].collidepoint(mousePos):
-            cardFrontList[i].top = screenHeight * 0.75
+        if not card_reacted and card_rect.collidepoint(mouse_pos):
+            card_rect.top = screenHeight * 0.75
             darkened_image = apply_shadow(card_front_img)
-            screen.blit(darkened_image, cardFrontList[i])
+            screen.blit(darkened_image, card_rect)
             card_reacted = True
 
             if valid_play(game.players[0].cards[i], openned_cards[0]):
-                screen.blit(card_front_img, cardFrontList[i])
+                screen.blit(card_front_img, card_rect)
 
-            color_selected = False
-
-            # hover된 카드 Rect 클릭했을 때
-            if selected_card is not None and cardFrontList[i].collidepoint(selected_card):
-
+            if selected_card is not None and card_rect.collidepoint(selected_card):
                 if valid_play(game.players[0].cards[i], openned_cards[0]):
 
                     openned_cards.insert(0, game.players[0].cards[i])
@@ -239,9 +226,9 @@ def hover_card(game, selected_card):
 
                     # 기능 카드 눌렀을 때 
                     if game.current_card.type == 'wildcard':
-                        handle_black(game, card_rect, i, screen, cardFrontList, color_selected, screenWidth, screenHeight)
+                        handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
                     elif game.current_card.type == '+4':
-                        handle_black(game, card_rect, i, screen, cardFrontList, color_selected, screenWidth, screenHeight)
+                        handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
                     elif game.current_card.type == '+2':
                         game.plus2_card_clicked(game.players[0])
                     elif game.current_card.type == 'reverse':
@@ -254,13 +241,29 @@ def hover_card(game, selected_card):
                     print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                     selected_card = None
                     break
-
         else:
-            cardFrontList[i].top = screenHeight * 0.80
-            screen.blit(card_front_img, cardFrontList[i])
+            card_rect.top = screenHeight * 0.80
+            screen.blit(card_front_img, card_rect)
+
+
+def display_player_cards(game, selected_card):
+    card_rect_list = []
+
+    for i, card in enumerate(game.players[0].cards):
+        card_front_img = pg.image.load(card.front).convert_alpha()
+        card_rect = card_front_img.get_rect()
+        if i == 0:
+            card_rect.left = screenWidth * 0.05
+            card_rect.top = screenHeight * 0.80
+        else:
+            card_rect.left = card_rect_list[i - 1].left + (screenWidth * 0.05)
+            card_rect.top = screenHeight * 0.80
+
+        card_rect_list.append(card_rect)
+
+    handle_card_hover(game, screen, card_rect_list, screenHeight, selected_card)
 
     return selected_card
-
 
 class Button():
     def __init__(self, x, y, image):
@@ -429,7 +432,8 @@ def startGamePage():
                 game.players[game.current_player_index].draw_card(game.deck)
             game.current_player_index = 0
 
-        selected_card = hover_card(game, selected_card)
+        selected_card = display_player_cards(game, selected_card)
+
 
         uiManager.update(dt)
         uiManager.draw_ui(screen)
