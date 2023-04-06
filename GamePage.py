@@ -51,7 +51,6 @@ playerBgy = 0
 playerBgWidth = screenWidth*0.25
 playerBgHeight = screenHeight
 
-
 # 카드 이미지 불러오기
 def cardFrontImg(color, type):
     return pg.image.load('./assets/cards/' + color + type + '.png').convert_alpha()
@@ -81,7 +80,6 @@ def draw_deck(game):
     return deck_rec
 
 # 컴퓨터 카드 그리기
-
 
 def draw_computer_cards(game):
     computer = game.players[1]
@@ -208,11 +206,14 @@ def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenH
     del cardFrontList[i+1: len(game.players[0].cards)]
 
 
-def handle_card_hover(game, screen, card_rect_list, screenHeight, selected_card=None):
+def handle_card_hover(game, screen, card_rect_list, screenHeight):
     mouse_pos = pg.mouse.get_pos()
 
     card_reacted = False
     for i, card_rect in enumerate(card_rect_list):
+
+        if i >= len(game.players[0].cards):
+            continue  # 유효하지 않은 인덱스를 건너뛰기
         card_front_img = pg.image.load(game.players[0].cards[i].front).convert_alpha()
 
         if not card_reacted and card_rect.collidepoint(mouse_pos):
@@ -224,35 +225,34 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight, selected_card=
             if valid_play(game.players[0].cards[i], openned_cards[0]):
                 screen.blit(card_front_img, card_rect)
 
-            if selected_card is not None and card_rect.collidepoint(selected_card):
-                if valid_play(game.players[0].cards[i], openned_cards[0]):
+                # 카드 클릭 로직 
+                for event in pg.event.get():
+                    if event.type == pg.MOUSEBUTTONDOWN:                               
+                        openned_cards.insert(0, game.players[0].cards[i])
+                        game.current_card = openned_cards[0]
 
-                    openned_cards.insert(0, game.players[0].cards[i])
-                    game.current_card = openned_cards[0]
+                        # 기능 카드 눌렀을 때 
+                        if game.current_card.type == 'wildcard':
+                            handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
+                        elif game.current_card.type == '+4':
+                            handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
+                        elif game.current_card.type == '+2':
+                            game.plus2_card_clicked(game.players[0])
+                        elif game.current_card.type == 'reverse':
+                            game.reverse_card_clicked()
+                        elif game.current_card.type == 'skip':
+                            game.skip_card_clicked()
 
-                    # 기능 카드 눌렀을 때 
-                    if game.current_card.type == 'wildcard':
-                        handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
-                    elif game.current_card.type == '+4':
-                        handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
-                    elif game.current_card.type == '+2':
-                        game.plus2_card_clicked(game.players[0])
-                    elif game.current_card.type == 'reverse':
-                        game.reverse_card_clicked()
-                    elif game.current_card.type == 'skip':
-                        game.skip_card_clicked()
+                        game.players[0].cards.pop(i)
+                        print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                         
-                    # current card 업데이트
-                    game.players[0].cards.pop(i)
-                    print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
-                    selected_card = None
-                    break
+
         else:
             card_rect.top = screenHeight * 0.80
             screen.blit(card_front_img, card_rect)
 
 
-def display_player_cards(game, selected_card):
+def display_player_cards(game):
     card_rect_list = []
 
     for i, card in enumerate(game.players[0].cards):
@@ -267,9 +267,8 @@ def display_player_cards(game, selected_card):
 
         card_rect_list.append(card_rect)
 
-    handle_card_hover(game, screen, card_rect_list, screenHeight, selected_card)
+    handle_card_hover(game, screen, card_rect_list, screenHeight)
 
-    return selected_card
 
 
 class WarningMessage():
@@ -399,6 +398,7 @@ def computer_function_card(game):
 
 def startGamePage():
 
+
     game = Game([Player("PLAYER0"), Computer("computer0")])
     # 카드 초기 세팅
     game.deal_cards()
@@ -408,7 +408,6 @@ def startGamePage():
     for i in range(len(game.players[0].cards)):
         print(game.players[0].cards[i])
 
-    selected_card = None
     flip_card = True
     running = True
 
@@ -418,18 +417,18 @@ def startGamePage():
     flip_card = flip_deck_card(game, flip_card)
 
     while running:
-
+        
         dt = clock.tick(60)/1000.0
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.MOUSEBUTTONDOWN:
-                selected_card = event.pos
                 if deck_rec.collidepoint(event.pos):
                     if game.current_player_index == 0:
                         process_deck_clicked(game)
                     else:
                         WarningMessage("It's not your turn!").draw()
+
 
             uiManager.process_events(event)
 
@@ -440,7 +439,8 @@ def startGamePage():
         current_card_color(game)
         flip_card = flip_deck_card(game, flip_card)
         draw_computer_cards(game)
-        display_player_cards(game, selected_card)
+        display_player_cards(game)
+
 
         if game.current_player_index != 0:
             if game.players[game.current_player_index].can_play(game.current_card):
@@ -472,8 +472,6 @@ def startGamePage():
                 print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
                 game.players[game.current_player_index].draw_card(game.deck)
             game.current_player_index = 0
-
-        selected_card = display_player_cards(game, selected_card)
 
         uiManager.update(dt)
         uiManager.draw_ui(screen)
