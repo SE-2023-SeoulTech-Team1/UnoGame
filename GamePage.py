@@ -2,6 +2,7 @@ import pygame as pg
 import pygame_gui as pg_gui
 import sys
 from Game import *
+from FunctionAnimation import *
 
 pg.init()
 
@@ -50,6 +51,10 @@ playerBgx = screenWidth*0.75
 playerBgy = 0
 playerBgWidth = screenWidth*0.25
 playerBgHeight = screenHeight
+directionBgx = screenWidth*0.2
+directionBgy = 0
+directionBgWidth = 100
+directionBgHeight = 100
 
 # 카드 이미지 불러오기
 def cardFrontImg(color, type):
@@ -205,6 +210,14 @@ def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenH
 
     del cardFrontList[i+1: len(game.players[0].cards)]
 
+def redraw_card(game, i, screen, card_rect, card_rect_list):
+    for j in range(i+1, len(game.players[0].cards)):
+        card_rect.left = card_rect_list[j - 1].left + (screenWidth * 0.05)
+        card_rect.top = screenHeight * 0.80
+        card_rect_list.append(card_rect)
+        card_rect_list[j].top = screenHeight * 0.80
+        screen.blit(pg.image.load(
+            game.players[0].cards[j].front).convert_alpha(), card_rect_list[j])
 
 def handle_card_hover(game, screen, card_rect_list, screenHeight):
     mouse_pos = pg.mouse.get_pos()
@@ -239,9 +252,31 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
                         elif game.current_card.type == '+2':
                             game.plus2_card_clicked(game.players[0])
                         elif game.current_card.type == 'reverse':
+                            # 클릭했을 때 오른쪽 카드 이미지들 누락 방지를 위한 코드 
+                            redraw_card(game, i, screen, card_rect, card_rect_list)
+
+                            if game.direction == 1:
+                                reverse_icon = pg.image.load("./assets/counterclockwise.png")
+                                reverse_icon = pg.transform.scale(reverse_icon, (150, 150))
+                            elif game.direction == -1:
+                                reverse_icon = pg.image.load("./assets/clockwise.png")
+                                reverse_icon = pg.transform.scale(reverse_icon, (150, 150))
+
+                            display_reverse_animation(screen, reverse_icon)
+
                             game.reverse_card_clicked()
+
+                            # 다시 오른쪽카드들 그려지므로 삭제 
+                            del card_rect_list[i+1: len(game.players[0].cards)]
+
                         elif game.current_card.type == 'skip':
+                            redraw_card(game, i, screen, card_rect, card_rect_list)
+
                             game.skip_card_clicked()
+                            # 로직은 나중에 functionCard 기능 고쳐지면 그 때 수정 --> 지금은 일시적으로 
+                            display_skip_animation(screen, game.players[game.current_player_index + 1].name)
+
+                            del card_rect_list[i+1: len(game.players[0].cards)]
 
                         game.players[0].cards.pop(i)
                         print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
@@ -357,7 +392,7 @@ def unobutton(game):
     screen.blit(unobutton_img, unobutton_rect)
     
 
-def drawGameScreen():
+def drawGameScreen(game):
     # 배경 색 설정/추후 배경사진 추가
     screen.fill(backgroundColor)
 
@@ -370,6 +405,18 @@ def drawGameScreen():
     players_rect.centerx = round(playerBgx + playerBgWidth*0.5)
     players_rect.y = 20
     screen.blit(who_are_players, players_rect)
+
+    # 현재 방향 아이콘 표시 
+    if game.direction == 1:
+        direction_icon = pg.image.load("./assets/clockwise.png")
+        direction_icon = pg.transform.scale(direction_icon, (30, 30))
+
+    else:
+        direction_icon = pg.image.load("./assets/counterclockwise.png")
+        direction_icon = pg.transform.scale(direction_icon, (30, 30))
+    screen.blit(direction_icon, (screen.get_width() * 0.06, screen.get_height() * 0.025))
+
+    
 
 
 
@@ -391,9 +438,21 @@ def computer_function_card(game):
     elif game.current_card.type == '+2':
         game.plus2_card_clicked(game.players[game.current_player_index])
     elif game.current_card.type == 'reverse':
+        if game.direction == 1:
+            reverse_icon = pg.image.load("./assets/counterclockwise.png")
+            reverse_icon = pg.transform.scale(reverse_icon, (200, 200))
+        else:
+            reverse_icon = pg.image.load("./assets/clockwise.png")
+            reverse_icon = pg.transform.scale(reverse_icon, (200, 200))
+        display_reverse_animation(screen, reverse_icon)
         game.reverse_card_clicked()
+
+
     elif game.current_card.type == 'skip':
         game.skip_card_clicked()
+        # 게임 function card 버그 고쳐지면 수정 --> 지금은 애니메이션만 일시적으로 해놓음 
+        display_skip_animation(screen, game.players[game.current_player_index - 1].name)
+
 
 
 def startGamePage():
@@ -411,7 +470,7 @@ def startGamePage():
     flip_card = True
     running = True
 
-    drawGameScreen()
+    drawGameScreen(game)
     deck_rec = draw_deck(game)
     draw_computer_cards(game)
     flip_card = flip_deck_card(game, flip_card)
@@ -432,7 +491,7 @@ def startGamePage():
 
             uiManager.process_events(event)
 
-        drawGameScreen()
+        drawGameScreen(game)
         unobutton(game)
 
         deck_rec = draw_deck(game)
