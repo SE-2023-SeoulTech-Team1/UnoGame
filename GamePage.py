@@ -430,12 +430,16 @@ def startGamePage():
         player_cards = display_player_cards(game)
 
         player_with_one_card = [player for player in game.players if len(player.cards) == 1]
+        player_with_no_card = [player for player in game.players if len(player.cards) == 0]
         if player_with_one_card:
             if randint(0, 1):
                 game.uno_button_clicked(1)
                 Message("UNO", 100, BLUE).draw()
                 print("UNO button clicked - computer")
 
+        elif player_with_no_card:
+            Message(f"PLAYER{player_with_no_card} WIN")
+            exit(0)
 
         if game.current_player_index != 0:
             if game.players[game.current_player_index].can_play(game.current_card):
