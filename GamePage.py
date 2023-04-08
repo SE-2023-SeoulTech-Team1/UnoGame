@@ -1,3 +1,5 @@
+from random import randint
+
 import pygame as pg
 import pygame_gui as pg_gui
 import sys
@@ -84,8 +86,8 @@ def draw_deck(game):
                     card_back_img.get_height())
     return deck_rec
 
-# 컴퓨터 카드 그리기
 
+# 컴퓨터 카드 그리기
 def draw_computer_cards(game):
     computer = game.players[1]
     for i, card in enumerate(computer.cards):
@@ -113,9 +115,8 @@ def move_card(game, card, start, end):
         if timerFlag == True:
             timer(timerFlag, 10, game)
 
+
 # 덱 카드 한 장 뒤집기
-
-
 def flip_deck_card(game, flip_card):
     global openned_cards, card_loc, timerFlag
 
@@ -145,9 +146,8 @@ def flip_deck_card(game, flip_card):
             timer(timerFlag, TIMEOUT, game)
         timerFlag = True
 
+
 # 덱에 있는 카드와 일치 유무
-
-
 def valid_play(card1, card2):
 
     if (card1.color) == 'black':
@@ -156,15 +156,15 @@ def valid_play(card1, card2):
         return True
     return card1.color == card2.color or card1.type == card2.type
 
+
 # 카드 명암 적용
-
-
 def apply_shadow(image, alpha=100, color=(0, 0, 0)):
     shadow_surface = pg.Surface(image.get_size(), pg.SRCALPHA)
     shadow_surface.fill((*color, alpha))
     result_image = image.copy()
     result_image.blit(shadow_surface, (0, 0))
     return result_image
+
 
 # black카드 일 때
 def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenHeight):
@@ -187,7 +187,7 @@ def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenH
 
     pg.display.flip()
 
-        # 플레이어가 색깔 고를 때 까지 기다림
+    # 플레이어가 색깔 고를 때 까지 기다림
     color_selected = False
     while not color_selected:
 
@@ -210,6 +210,7 @@ def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenH
 
     del cardFrontList[i+1: len(game.players[0].cards)]
 
+
 def redraw_card(game, i, screen, card_rect, card_rect_list):
     for j in range(i+1, len(game.players[0].cards)):
         card_rect.left = card_rect_list[j - 1].left + (screenWidth * 0.05)
@@ -218,6 +219,7 @@ def redraw_card(game, i, screen, card_rect, card_rect_list):
         card_rect_list[j].top = screenHeight * 0.80
         screen.blit(pg.image.load(
             game.players[0].cards[j].front).convert_alpha(), card_rect_list[j])
+
 
 def handle_card_hover(game, screen, card_rect_list, screenHeight):
     mouse_pos = pg.mouse.get_pos()
@@ -304,15 +306,15 @@ def display_player_cards(game):
 
     handle_card_hover(game, screen, card_rect_list, screenHeight)
 
-
-
-class WarningMessage():
-    def __init__(self, text):
+class Message():
+    def __init__(self, text, size, color):
         self.text = text
+        self.size = size
+        self.color = color
 
     def draw(self):
-        pg.font.Font('freesansbold.ttf', 32)
-        text = font.render(self.text, True, RED, None)
+        pg.font.Font('freesansbold.ttf', self.size)
+        text = font.render(self.text, True, self.color, None)
         text_rec = text.get_rect()
         text_rec.top = 100
         text_rec.left = screenWidth // 3
@@ -390,6 +392,7 @@ def unobutton(game):
     unobutton_rect.centerx = round(boardx + boardWidth*0.5)
     unobutton_rect.y = screenHeight * 0.45
     screen.blit(unobutton_img, unobutton_rect)
+    return unobutton_rect
     
 
 def drawGameScreen(game):
@@ -474,6 +477,7 @@ def startGamePage():
     deck_rec = draw_deck(game)
     draw_computer_cards(game)
     flip_card = flip_deck_card(game, flip_card)
+    unobutton_rect = unobutton(game)
 
     while running:
         
@@ -486,19 +490,31 @@ def startGamePage():
                     if game.current_player_index == 0:
                         process_deck_clicked(game)
                     else:
-                        WarningMessage("It's not your turn!").draw()
+                        Message("It's not your turn!", 32, RED).draw()
+                if unobutton_rect.collidepoint(event.pos):
+                    print("UNO button clicked - user")
+                    if game.uno_button_clicked(0):
+                        Message("UNO", 100, BLUE).draw()
+                    else:
+                        Message("WRONG UNO", 100, RED).draw()
 
 
             uiManager.process_events(event)
 
         drawGameScreen(game)
         unobutton(game)
-
         deck_rec = draw_deck(game)
         current_card_color(game)
         flip_card = flip_deck_card(game, flip_card)
         draw_computer_cards(game)
         display_player_cards(game)
+
+        player_with_one_card = [player for player in game.players if len(player.cards) == 1]
+        if player_with_one_card:
+            if randint(0, 1):
+                game.uno_button_clicked(1)
+                Message("UNO", 100, BLUE).draw()
+                print("UNO button clicked - computer")
 
 
         if game.current_player_index != 0:

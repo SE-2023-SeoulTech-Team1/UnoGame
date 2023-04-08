@@ -20,6 +20,7 @@ class Game:
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
+        self.uno = None
 
     
     def auto_draw_card(self):
@@ -159,6 +160,20 @@ class Game:
         self.current_card.color = chosen_color
         self.next_turn()
         return self
+
+    def uno_button_clicked(self, player_idx):
+
+        player_with_one_card = [player for player in self.players if len(player.cards) == 1]
+        if not player_with_one_card:
+            self.players[player_idx].draw_card(self.deck)
+            return False
+
+        if len(self.players[player_idx].cards) == 1:
+            self.uno = player_idx
+        else:
+            for player in player_with_one_card:
+                player.draw_card(self.deck)
+        return True
     
     #게임 종료 조건
     def game_win(self, player):
