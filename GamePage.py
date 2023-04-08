@@ -1,35 +1,16 @@
-from random import randint
-
 import pygame as pg
 import pygame_gui as pg_gui
 import sys
 from Game import *
 from FunctionAnimation import *
+from random import randint
+from animation import *
 
 pg.init()
-
-# 게임 창 크기 및 이름 설정
-screenWidth = 800
-screenHeight = 600
-windowSize = (screenWidth, screenHeight)
-screen = pg.display.set_mode(windowSize)
-pg.display.set_caption("UNO GAME")
 
 # ui 매니저
 uiManager = pg_gui.UIManager(windowSize)
 clock = pg.time.Clock()
-
-# 색상 정의
-DARKGREEN = (8, 44, 15)
-GREY = (25, 25, 25)
-WHITE = (255, 255, 255)
-RED = (185, 52, 31)
-BLUE = (0, 0, 255)
-GREEN = (0, 143, 0)
-YELLOW = (255, 218, 71)
-BLACK = (0, 0, 0)
-
-SELECT_COLOR = {"red": RED, "green": GREEN, "blue": BLUE, "yellow": YELLOW}
 
 color_rects = [
     pg.Rect(screenWidth * 0.05, screenHeight * 0.65, 50, 50),
@@ -37,42 +18,6 @@ color_rects = [
     pg.Rect(screenWidth * 0.05 + 120, screenHeight * 0.65, 50, 50),
     pg.Rect(screenWidth * 0.05 + 180, screenHeight * 0.65, 50, 50)
 ]
-
-# 폰트 설정
-font = pg.font.SysFont(None, 30)
-unoFont = pg.font.SysFont(None, 40)
-
-# 기본 배경 설정
-backgroundColor = DARKGREEN
-playerBgColor = GREY
-boardx = 0
-boardy = 0
-boardWidth = screenWidth*0.75
-boardHeight = screenHeight
-playerBgx = screenWidth*0.75
-playerBgy = 0
-playerBgWidth = screenWidth*0.25
-playerBgHeight = screenHeight
-directionBgx = screenWidth*0.2
-directionBgy = 0
-directionBgWidth = 100
-directionBgHeight = 100
-
-# 카드 이미지 불러오기
-def cardFrontImg(color, type):
-    return pg.image.load('./assets/cards/' + color + type + '.png').convert_alpha()
-
-
-# 카드 앞면 출력
-def draw_card_front(card, top, left):
-    card_front_img = pg.image.load(card.front).convert_alpha()
-    screen.blit(card_front_img, (left, top))
-
-
-# 카드 뒷면 출력
-def draw_card_back(card, top, left):
-    card_back_img = pg.image.load(card.back).convert_alpha()
-    screen.blit(card_back_img, (left, top))
 
 
 # 덱 카드 그리기
@@ -107,9 +52,9 @@ def move_card(game, card, start, end):
     # 카드 목표 위치 도달까지 위치 변경
     if card_loc <= left:
         card_loc += 10
-        draw_card_front(openned_cards[0], top, card_loc)
+        draw_card_front(screen, openned_cards[0], top, card_loc)
     else:
-        draw_card_front(openned_cards[0], top, card_loc)
+        draw_card_front(screen, openned_cards[0], top, card_loc)
         # 덱에서 카드가 뒤집힌 후 첫 턴의 시작은 player0
         # game.current_player_index = 0
         if timerFlag == True:
@@ -138,9 +83,9 @@ def flip_deck_card(game, flip_card):
     # 카드 목표 위치 도달까지 위치 변경
     if card_loc <= left:
         card_loc += 10
-        draw_card_front(openned_cards[0], top, card_loc)
+        draw_card_front(screen, openned_cards[0], top, card_loc)
     else:
-        draw_card_front(openned_cards[0], top, card_loc)
+        draw_card_front(screen, openned_cards[0], top, card_loc)
 
         if timerFlag == True:
             timer(timerFlag, TIMEOUT, game)
@@ -305,6 +250,7 @@ def display_player_cards(game):
         card_rect_list.append(card_rect)
 
     handle_card_hover(game, screen, card_rect_list, screenHeight)
+    return card_rect_list
 
 class Message():
     def __init__(self, text, size, color):
@@ -393,38 +339,12 @@ def unobutton(game):
     unobutton_rect.y = screenHeight * 0.45
     screen.blit(unobutton_img, unobutton_rect)
     return unobutton_rect
-    
-
-def drawGameScreen(game):
-    # 배경 색 설정/추후 배경사진 추가
-    screen.fill(backgroundColor)
-
-    # 플레이어 스크린 우측에 배치
-    player_bg_rect = pg.Rect(playerBgx, playerBgy, playerBgWidth, screenHeight)
-    pg.draw.rect(screen, playerBgColor, player_bg_rect)
-
-    who_are_players = font.render("PLAYER", True, WHITE)
-    players_rect = who_are_players.get_rect()
-    players_rect.centerx = round(playerBgx + playerBgWidth*0.5)
-    players_rect.y = 20
-    screen.blit(who_are_players, players_rect)
-
-    # 현재 방향 아이콘 표시 
-    if game.direction == 1:
-        direction_icon = pg.image.load("./assets/clockwise.png")
-        direction_icon = pg.transform.scale(direction_icon, (30, 30))
-
-    else:
-        direction_icon = pg.image.load("./assets/counterclockwise.png")
-        direction_icon = pg.transform.scale(direction_icon, (30, 30))
-    screen.blit(direction_icon, (screen.get_width() * 0.06, screen.get_height() * 0.025))
-
-    
 
 
-
-def process_deck_clicked(game):
+def process_deck_clicked(game, deck_rect, end_pos):
     popped_card = game.deck.pop_card()
+    end_pos.x = end_pos.x + (screenWidth * 0.05)
+    move_card_animation(screen, game, popped_card, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
     game.players[0].cards.append(popped_card)
     print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
     
@@ -460,7 +380,6 @@ def computer_function_card(game):
 
 def startGamePage():
 
-
     game = Game([Player("PLAYER0"), Computer("computer0")])
     # 카드 초기 세팅
     game.deal_cards()
@@ -473,11 +392,12 @@ def startGamePage():
     flip_card = True
     running = True
 
-    drawGameScreen(game)
-    deck_rec = draw_deck(game)
+    drawGameScreen(screen, game)
+    deck_rect = draw_deck(game)
     draw_computer_cards(game)
     flip_card = flip_deck_card(game, flip_card)
     unobutton_rect = unobutton(game)
+    card_rect_list = display_player_cards(game)
 
     while running:
         
@@ -486,9 +406,9 @@ def startGamePage():
             if event.type == pg.QUIT:
                 running = False
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if deck_rec.collidepoint(event.pos):
+                if deck_rect.collidepoint(event.pos):
                     if game.current_player_index == 0:
-                        process_deck_clicked(game)
+                        process_deck_clicked(game, deck_rect, card_rect_list[-1])
                     else:
                         Message("It's not your turn!", 32, RED).draw()
                 if unobutton_rect.collidepoint(event.pos):
@@ -501,13 +421,13 @@ def startGamePage():
 
             uiManager.process_events(event)
 
-        drawGameScreen(game)
+        drawGameScreen(screen, game)
         unobutton(game)
         deck_rec = draw_deck(game)
         current_card_color(game)
         flip_card = flip_deck_card(game, flip_card)
         draw_computer_cards(game)
-        display_player_cards(game)
+        player_cards = display_player_cards(game)
 
         player_with_one_card = [player for player in game.players if len(player.cards) == 1]
         if player_with_one_card:
