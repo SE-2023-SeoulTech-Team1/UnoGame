@@ -82,22 +82,22 @@ def drawGameScreen(screen, game):
 
 
 
-def move_card_animation(screen, game, card, start_pos, end_pos, duration=500):
-    start_time = pygame.time.get_ticks()
-    elapsed_time = 0
-    distance = end_pos[0] - start_pos[0], end_pos[1] - start_pos[1]
+# def move_card_animation(screen, game, card, start_pos, end_pos, duration=500):
+#     start_time = pygame.time.get_ticks()
+#     elapsed_time = 0
+#     distance = end_pos[0] - start_pos[0], end_pos[1] - start_pos[1]
 
-    card_img = pygame.image.load(card.front).convert_alpha()
-    card_rect = card_img.get_rect()
+#     card_img = pygame.image.load(card.front).convert_alpha()
+#     card_rect = card_img.get_rect()
 
-    while elapsed_time < duration:
-        elapsed_time = pygame.time.get_ticks() - start_time
-        progress = min(elapsed_time / duration, 1)
-        new_pos = start_pos[0] + distance[0] * progress, start_pos[1] + distance[1] * progress
-        card_rect.x, card_rect.y = new_pos
-        screen.blit(card_img, (card_rect.left, card_rect.top))
-        pygame.display.flip()
-        drawGameScreen(screen, game)
+#     while elapsed_time < duration:
+#         elapsed_time = pygame.time.get_ticks() - start_time
+#         progress = min(elapsed_time / duration, 1)
+#         new_pos = start_pos[0] + distance[0] * progress, start_pos[1] + distance[1] * progress
+#         card_rect.x, card_rect.y = new_pos
+#         screen.blit(card_img, (card_rect.left, card_rect.top))
+#         pygame.display.flip()
+#         drawGameScreen(screen, game)
 
-    # card_rect.x, card_rect.y = end_pos
+#     # card_rect.x, card_rect.y = end_pos
 

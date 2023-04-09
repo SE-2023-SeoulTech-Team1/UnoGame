@@ -341,10 +341,53 @@ def unobutton(game):
     return unobutton_rect
 
 
+def move_card_animation(game, card, start_pos, end_pos, duration=500):
+    start_time = pg.time.get_ticks()
+    elapsed_time = 0
+    distance = end_pos[0] - start_pos[0], end_pos[1] - start_pos[1]
+
+    card_img = pg.image.load(card.front).convert_alpha()
+    card_rect = card_img.get_rect()
+
+    while elapsed_time < duration:
+        elapsed_time = pg.time.get_ticks() - start_time
+        progress = min(elapsed_time / duration, 10)
+        new_pos = start_pos[0] + distance[0] * progress, start_pos[1] + distance[1] * progress
+        card_rect.x, card_rect.y = new_pos
+        screen.blit(card_img, (card_rect.left, card_rect.top))
+        pg.display.flip()
+        drawGameScreen(screen, game)
+        unobutton(game)
+        draw_deck(game)
+        draw_card_front(screen, openned_cards[0], screenHeight * 0.25, card_loc)
+        current_card_color(game)
+        who_is_current_player(game)
+        draw_computer_cards(game)
+        display_player_cards(game)
+
+
+# duration 동안 계속 screen.blit
+# def move_card_animation(game, card, start_pos, end_pos, duration=500):
+#     start_time = pg.time.get_ticks()
+#     elapsed_time = 0
+#     distance = end_pos[0] - start_pos[0], end_pos[1] - start_pos[1]
+
+#     card_img = pg.image.load(card.front).convert_alpha()
+#     card_rect = card_img.get_rect()
+
+#     while elapsed_time < duration:
+#         elapsed_time = pg.time.get_ticks() - start_time
+#         progress = min(elapsed_time / duration, 10)
+#         new_pos = start_pos[0] + distance[0] * progress, start_pos[1] + distance[1] * progress
+#         card_rect.x, card_rect.y = new_pos
+#         screen.blit(card_img, (card_rect.left, card_rect.top))
+#         pg.display.flip()
+
+
 def process_deck_clicked(game, deck_rect, end_pos):
     popped_card = game.deck.pop_card()
     end_pos.x = end_pos.x + (screenWidth * 0.05)
-    move_card_animation(screen, game, popped_card, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
+    move_card_animation(game, popped_card, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
     game.players[0].cards.append(popped_card)
     print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
     
