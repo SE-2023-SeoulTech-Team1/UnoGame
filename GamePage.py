@@ -427,7 +427,7 @@ def startGamePage():
         current_card_color(game)
         flip_card = flip_deck_card(game, flip_card)
         draw_computer_cards(game)
-        player_cards = display_player_cards(game)
+        card_rect_list = display_player_cards(game)
 
         player_with_one_card = [player for player in game.players if len(player.cards) == 1]
         player_with_no_card = [player for player in game.players if len(player.cards) == 0]
