@@ -100,9 +100,7 @@ def apply_shadow(image, alpha=100, color=(0, 0, 0)):
 
 
 # black카드 일 때
-def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenHeight):
-
-    wildcard_selected = True
+def handle_black(game, card_rect, i, chosen_card, screen, cardFrontList, screenWidth, screenHeight):
 
     pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
     pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[1])
@@ -134,9 +132,9 @@ def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenH
                 for idx, color_rect in enumerate(color_rects):
                     if color_rect.collidepoint(mouse_pos):
                         chosen_color = list(SELECT_COLOR.keys())[idx]
-                        if game.players[0].cards[i].type == 'wildcard':
+                        if chosen_card.type == 'wildcard':
                             game.wildcard_card_clicked(chosen_color)
-                        elif game.players[0].cards[i].type == '+4':
+                        elif chosen_card.type == '+4':
                             end_pos = draw_computer_cards(game)[-1]
                             for i in range(4):
                                 added_card = game.deck.cards[-(i+1)]
@@ -186,21 +184,23 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
                 # 카드 클릭 로직 
                 for event in pg.event.get():
                     if event.type == pg.MOUSEBUTTONDOWN:
+                        openned_cards.insert(0, game.players[0].cards[i])
+                        game.current_card = openned_cards[0]
+
                         chosen_card = game.players[0].cards[i]
+                        game.players[0].cards.pop(i)
                         chosen_card_img = pg.image.load(chosen_card.front).convert_alpha()
                         chosen_card_rect = card_rect_list[i]
                         start_pos = card_rect_list[i]
                         move_card_animation(game, chosen_card_img, chosen_card_rect, 
                                             (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
-                               
-                        openned_cards.insert(0, game.players[0].cards[i])
-                        game.current_card = openned_cards[0]
+                            
 
                         # 기능 카드 눌렀을 때 
                         if game.current_card.type == 'wildcard':
-                            handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
+                            handle_black(game, card_rect, i, chosen_card, screen, card_rect_list, screenWidth, screenHeight)
                         elif game.current_card.type == '+4':
-                            handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
+                            handle_black(game, card_rect, i, chosen_card, screen, card_rect_list, screenWidth, screenHeight)
                         elif game.current_card.type == '+2':
                             end_pos = draw_computer_cards(game)[-1]
                             for i in range(2):
@@ -239,8 +239,9 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
                             display_skip_animation(screen, game.players[game.current_player_index + 1].name)
 
                             del card_rect_list[i+1: len(game.players[0].cards)]
+                            game.players[0].cards.pop(i)
 
-                        game.players[0].cards.pop(i)
+                        # game.players[0].cards.pop(i)
                         print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                         
 
