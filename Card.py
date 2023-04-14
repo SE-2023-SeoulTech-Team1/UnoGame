@@ -8,7 +8,7 @@ ALL_TYPES = NUMBERS + SPECIAL_CARD_TYPES + BLACK_CARD_TYPES
 
 
 class Card:
-    def __init__(self, color, type):
+    def __init__(self, color, type, color_weak_mode=False):
         if color not in ALL_COLORS:
             print("Invalid Card Color.")
             exit(-1)
@@ -18,8 +18,12 @@ class Card:
 
         self.color = color
         self.type = type
-        self.front = f"./assets/cards/{self.color}{self.type}.png"
-        self.back = "./assets/cards/unoCardBack.png"
+        if color_weak_mode:
+            self.front = f"./assets/colorWeakCards/{self.color}{self.type}.png"
+            self.back = "./assets/colorWeakCards/unoCardBack.png"
+        else:
+            self.front = f"./assets/cards/{self.color}{self.type}.png"
+            self.back = "./assets/cards/unoCardBack.png"
 
     def __str__(self):
         return f'Uno Card Object: {self.color} {self.type}'

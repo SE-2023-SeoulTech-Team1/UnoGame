@@ -423,7 +423,7 @@ def computer_function_card(game):
 
 def startGamePage():
 
-    game = Game([Player("PLAYER0"), Computer("computer0")])
+    game = Game([Player("PLAYER0"), Computer("computer0")], True)
     # 카드 초기 세팅
     game.deal_cards()
 
