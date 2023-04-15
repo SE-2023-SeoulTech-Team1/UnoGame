@@ -5,14 +5,14 @@ from Player import *
 TIMEOUT = 10
 
 class Game:
-    def __init__(self, players):
+    def __init__(self, players, color_weak_mode=False):
 
         if not players:
             print("Number of Players should be at least one.")
             exit(-1)
 
-        cards = [Card(color, type) for type in COLOR_CARD_TYPES for color in COLORS]
-        cards += [Card("black", type) for type in BLACK_CARD_TYPES]
+        cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
+        cards += [Card("black", type, color_weak_mode) for type in BLACK_CARD_TYPES]
         shuffle(cards)
 
         self.deck = Deck(cards)
@@ -21,6 +21,7 @@ class Game:
         self.current_card = None
         self.direction = 1
         self.uno = None
+        self.color_seak_mode = color_weak_mode
 
     
     def auto_draw_card(self):
@@ -72,8 +73,9 @@ class Game:
         return self
     
     def plus2_card_clicked(self, player):
-        self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
-        player = self.players[self.current_player_index]
+        # self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
+        tmp = (self.current_player_index + self.direction) % len(self.players)
+        player = self.players[tmp]
         player.draw_card(self.deck)
         player.draw_card(self.deck)
         self.next_turn()
@@ -85,8 +87,8 @@ class Game:
         return self
     
     def plus4_card_clicked(self, player, chosen_color):
-        self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
-        player = self.players[self.current_player_index]
+        tmp = (self.current_player_index + self.direction) % len(self.players)
+        player = self.players[tmp]
         player.draw_card(self.deck)
         player.draw_card(self.deck)
         player.draw_card(self.deck)

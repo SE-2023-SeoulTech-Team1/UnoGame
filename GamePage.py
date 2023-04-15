@@ -56,7 +56,6 @@ def move_card(game, card, start, end):
     else:
         draw_card_front(screen, openned_cards[0], top, card_loc)
         # 덱에서 카드가 뒤집힌 후 첫 턴의 시작은 player0
-        # game.current_player_index = 0
         if timerFlag == True:
             timer(timerFlag, 10, game)
 
@@ -89,7 +88,7 @@ def flip_deck_card(game, flip_card):
 
         if timerFlag == True:
             timer(timerFlag, TIMEOUT, game)
-        timerFlag = True
+        timerFlag = True 
 
 
 # 덱에 있는 카드와 일치 유무
@@ -224,9 +223,16 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
                             display_skip_animation(screen, game.players[game.current_player_index + 1].name)
 
                             del card_rect_list[i+1: len(game.players[0].cards)]
+                            print("내가 skip카드 눌렀을 때 : " + str(game.current_player_index))
+                        
+                        else:
+                            # 그냥 number카드 일 때 
+                            game.next_turn()
 
                         game.players[0].cards.pop(i)
                         print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
+                        print("내가 skip카드 눌렀을 때22 : " + str(game.current_player_index))
+
                         
 
         else:
@@ -283,6 +289,7 @@ def timer(setTimer, totalTime, game):
     if count is True:
         startTicks = pg.time.get_ticks()
         print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+        print("~~~~~~~~~~~~")
         deck_cards_num = len(game.deck.cards)
         player_cards_num = len(game.players[0].cards)
         count = False
@@ -299,7 +306,8 @@ def timer(setTimer, totalTime, game):
             setTimer = False
             timerFlag = False
             count = True
-            game.next_turn()
+            # 여기서 next_turn 안하고 카드들 선택한다음 그곳에서 next_turn하는 방식으로 바꿈 
+            # game.next_turn()
         elif totalTime - elapsed_time > -1:
             timeout = font.render("TIME OUT", True, WHITE)
             screen.blit(timeout, (20, 20))
@@ -365,36 +373,18 @@ def move_card_animation(game, card, start_pos, end_pos, duration=500):
         draw_computer_cards(game)
         display_player_cards(game)
 
-
-# duration 동안 계속 screen.blit
-# def move_card_animation(game, card, start_pos, end_pos, duration=500):
-#     start_time = pg.time.get_ticks()
-#     elapsed_time = 0
-#     distance = end_pos[0] - start_pos[0], end_pos[1] - start_pos[1]
-
-#     card_img = pg.image.load(card.front).convert_alpha()
-#     card_rect = card_img.get_rect()
-
-#     while elapsed_time < duration:
-#         elapsed_time = pg.time.get_ticks() - start_time
-#         progress = min(elapsed_time / duration, 10)
-#         new_pos = start_pos[0] + distance[0] * progress, start_pos[1] + distance[1] * progress
-#         card_rect.x, card_rect.y = new_pos
-#         screen.blit(card_img, (card_rect.left, card_rect.top))
-#         pg.display.flip()
-
-
 def process_deck_clicked(game, deck_rect, end_pos):
     popped_card = game.deck.pop_card()
     end_pos.x = end_pos.x + (screenWidth * 0.05)
     move_card_animation(game, popped_card, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
     game.players[0].cards.append(popped_card)
     print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
+    game.next_turn()
     
 
 
 # 컴퓨터가 기능 카드 낼 때 
-def computer_function_card(game):
+def computer_function_or_number_card(game):
     if game.current_card.color == 'black':
         choiced_color = game.players[game.current_player_index].black_card_clicked()
         if game.current_card.type == 'wildcard':
@@ -413,13 +403,13 @@ def computer_function_card(game):
         display_reverse_animation(screen, reverse_icon)
         game.reverse_card_clicked()
 
-
     elif game.current_card.type == 'skip':
         game.skip_card_clicked()
         # 게임 function card 버그 고쳐지면 수정 --> 지금은 애니메이션만 일시적으로 해놓음 
         display_skip_animation(screen, game.players[game.current_player_index - 1].name)
-
-
+    else:
+        # 그냥 number카드 일 때
+        game.next_turn()
 
 def startGamePage():
 
@@ -443,7 +433,6 @@ def startGamePage():
     card_rect_list = display_player_cards(game)
 
     while running:
-        
         dt = clock.tick(60)/1000.0
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -484,36 +473,38 @@ def startGamePage():
             Message(f"PLAYER{player_with_no_card} WIN")
             exit(0)
 
-        if game.current_player_index != 0:
-            if game.players[game.current_player_index].can_play(game.current_card):
-                print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
-                # 현재 플레이어 화면 출력
-                who_is_current_player(game)
-                pg.display.update()
+        # 컴퓨터가 skip일 때 계속 내도록 
+        while game.current_player_index != 0:
+            if game.current_player_index != 0:
+                if game.players[game.current_player_index].can_play(game.current_card):
+                    print(f"\n현재2 {game.players[game.current_player_index].name}의 턴입니다. ")
+                    # 현재 플레이어 화면 출력
+                    who_is_current_player(game)
+                    pg.display.update()
 
-                popped_card = game.players[game.current_player_index].play_card(
-                    game)
-                card_front_img = pg.image.load(
-                    popped_card.front).convert_alpha().get_rect()
-                
-                openned_cards.insert(0, popped_card)
+                    popped_card = game.players[game.current_player_index].play_card(
+                        game)
+                    card_front_img = pg.image.load(
+                        popped_card.front).convert_alpha().get_rect()
+                    
+                    openned_cards.insert(0, popped_card)
 
-                # current card 업데이트
-                game.current_card = openned_cards[0]
-                # function card 일 때 
-                computer_function_card(game)
-                
-                print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
-                # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
-            else:
-                print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
-                # 현재 플레이어 화면 출력
-                who_is_current_player(game)
-                pg.display.update()
-
-                print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
-                game.players[game.current_player_index].draw_card(game.deck)
-            game.current_player_index = 0
+                    # current card 업데이트
+                    game.current_card = openned_cards[0]
+                    # function card 일 때 
+                    computer_function_or_number_card(game)
+                    
+                    
+                    print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
+                else:
+                    print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+                    # print("컴퓨터가 덱에서 한장 먹음")
+                    # 현재 플레이어 화면 출력
+                    who_is_current_player(game)
+                    pg.display.update()
+                    print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
+                    game.players[game.current_player_index].draw_card(game.deck)
+                    game.next_turn()
 
         uiManager.update(dt)
         uiManager.draw_ui(screen)

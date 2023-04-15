@@ -26,7 +26,6 @@ unoFont = pygame.font.SysFont(None, 40)
 
 # 기본 배경 설정
 backgroundColor = DARKGREEN
-playerBgColor = GREY
 boardx = 0
 boardy = 0
 boardWidth = screenWidth*0.75
@@ -34,9 +33,7 @@ boardHeight = screenHeight
 playerBgx = screenWidth*0.75
 playerBgy = 0
 playerBgWidth = screenWidth*0.25
-playerBgHeight = screenHeight
 directionBgx = screenWidth*0.2
-directionBgy = 0
 directionBgWidth = 100
 directionBgHeight = 100
 
@@ -59,10 +56,6 @@ def draw_card_back(screen, card, top, left):
 def drawGameScreen(screen, game):
     # 배경 색 설정/추후 배경사진 추가
     screen.fill(backgroundColor)
-
-    # 플레이어 스크린 우측에 배치
-    player_bg_rect = pygame.Rect(playerBgx, playerBgy, playerBgWidth, screenHeight)
-    pygame.draw.rect(screen, playerBgColor, player_bg_rect)
 
     who_are_players = font.render("PLAYER", True, WHITE)
     players_rect = who_are_players.get_rect()
