@@ -1,13 +1,5 @@
 import pygame
-import sys
-from GamePage import startGamePage
-
-# 게임 윈도우 초기화
-pygame.init()
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Uno Game")
+from Button import Button
 
 fps = 60
 fpsClock = pygame.time.Clock()
@@ -22,56 +14,6 @@ BLUE = (0, 0, 255)
 # 폰트 설정
 font = pygame.font.SysFont(None, 48)
 
-titleObjects = []
-objects = []
-
-
-# Button 클래스 
-class Button():
-    def __init__(self, x,  y, width, height, buttonText = 'Button', onclickFunction = None):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.onclickFunction = onclickFunction
-        self.alreadyPressed = False
-
-        self.fillColors = {
-            'normal': '#A5140C',
-            'hover': '#820600',
-            'pressed': '#570400',
-            'drop_normal': '#'
-        }
-        self.buttonSurface = pygame.Surface((self.width, self.height))
-        self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.buttonText = font.render(buttonText, True, BLACK)
-        objects.append(self) # object 리스트에 버튼 인스턴스를 추가
-
-    def process(self, ini = None):
-        self.ini = ini
-        mousePos = pygame.mouse.get_pos()
-        self.buttonSurface.fill(self.fillColors['normal'])
-        if self.buttonRect.collidepoint(mousePos):
-            self.buttonSurface.fill(self.fillColors['hover'])
-            if pygame.mouse.get_pressed()[0]: # 왼쪽 마우스 버튼이 눌렸으면
-                self.buttonSurface.fill(self.fillColors['pressed'])
-                if not self.alreadyPressed:
-                    self.onclickFunction()
-                    self.alreadyPressed = True
-            else:
-                self.alreadyPressed = False
-
-        if ini == True:
-            self.buttonSurface.fill(self.fillColors['hover'])
-
-        # Surface에 텍스트 위치 시킴 
-        self.buttonSurface.blit(self.buttonText, [
-            self.buttonRect.width/2 - self.buttonText.get_rect().width/2,
-            self.buttonRect.height/2 - self.buttonText.get_rect().height/2
-        ])
-        # screen에 Surface 위치 시킴 
-        screen.blit(self.buttonSurface, self.buttonRect)
-
 # Title 클래스 
 class Title():
     def __init__(self, x, y, text = 'title'):
@@ -82,99 +24,148 @@ class Title():
             'normal': '#A5140C',
         }
         self.titleText = font.render(text, True, BLUE)
-        titleObjects.append(self)
 
-    def process(self):
+    def process(self, screen):
         screen.blit(self.titleText, [self.x, self.y])
 
-nextPage = False
 
-def startFunction():
-    print("startFunction!!") 
-    startGamePage()
+class MainPage():
+    def __init__(self, screen):
 
-def startFunction2():
-    print("startFunction2!!")   
-    
-def settingFunction():
-    print("settingFunction!!")
+        self.screen = screen
+        self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
-def exitFunction():
-    print("exitFunction!!")
-    pygame.quit()
-    sys.exit()
-    
-def changeFunction():
-    objects[0], objects[4] = objects[4], objects[0] 
-    objects[1], objects[5] = objects[5], objects[1] 
-    objects[2], objects[6] = objects[6], objects[2]
+        # 초기 페이지 상태
+        self.next_page = False
+        self.key_idx = 0
+        self.screenPage = False
 
-# 타이틀 생성 
-Title(310, 50, 'UNO GAME')
+        # self.start_btn = Button((self.screen_width - 200) / 2, 150, 200, 50, 'START', self.startFunction)
+        # self.setting_btn = Button((self.screen_width - 200) / 2, 230, 200, 50, 'SETTINGS', self.settingFunction)
+        # self.exit_btn = Button((self.screen_width - 200) / 2, 310, 200, 50, 'EXIT', self.exitFunction)
+        # self.start_btn = Button((self.screen_width - 200) / 2, 150, 200, 50, 'START')
+        self.start_btn = Button(1/2, 1/6, 200, 50, 'START')
+        self.setting_btn = Button(1/2, 3/6, 200, 50, 'SETTINGS')
+        self.exit_btn = Button(1/2, 5/6, 200, 50, 'EXIT')
+        self.titleObjects = [Title(310, 50, 'UNO GAME')]
 
-# 버튼 생성
-start_btn = Button(300, 150, 200, 50, 'START', startFunction)
-setting_btn = Button(300, 230, 200, 50, 'SETTINGS', settingFunction)
-exit_btn = Button(300, 310, 200, 50, 'EXIT', exitFunction)
-back_btn = Button(325, 390, 150, 50, 'BACK', changeFunction)
-Button5 = Button(300, 150, 200, 50, 'START2', startFunction2)
-Button6 = Button(300, 230, 200, 50, 'SETTINGS2', settingFunction)
-Button7 = Button(300, 310, 200, 50, 'EXIT2', exitFunction)
+        self.buttons = []
+        self.buttons.append(self.start_btn)
+        self.buttons.append(self.setting_btn)
+        self.buttons.append(self.exit_btn)
+
+    # def update_screen_size(self):
 
 
-key_idx = 0
-# 메인 루프
-running = True
-while running:
-    screen.fill(WHITE)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    def running(self):
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mousePos = pygame.mouse.get_pos()
-            if setting_btn.buttonRect.collidepoint(mousePos) and nextPage == False:
-                changeFunction()
-                nextPage = False if nextPage else True
-            elif back_btn.buttonRect.collidepoint(mousePos):
-                changeFunction()
-                nextPage = False
+        self.screen.fill(WHITE)
 
-        if event.type == pygame.KEYDOWN:
-            
-            if event.key == pygame.K_DOWN:
-                if key_idx < 4:
-                    key_idx += 1
-            elif event.key == pygame.K_UP:
-                if key_idx >= 0:
-                    key_idx -= 1
-            elif event.key == pygame.K_RETURN:
-                objects[key_idx].onclickFunction()
-                if key_idx == 1 and nextPage == False:
-                    changeFunction()
-                    if nextPage == True:
-                        nextPage = False
-                    elif nextPage == False:
-                        nextPage = True
-                if key_idx == 3:
-                    nextPage = False
-                    key_idx = 1
-                
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "exit"
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.start_btn.rect.collidepoint(event.pos):
+                    return "game"
+                if self.setting_btn.rect.collidepoint(event.pos):
+                    return "setting"
+                if self.exit_btn.rect.collidepoint(event.pos):
+                    return "exit"
 
-    titleObjects[0].process()
-    for object in objects[0:3]:
-        object.process()
-        if key_idx == 0:
-            objects[key_idx].process(True)
-        if key_idx == 1:
-            objects[key_idx].process(True)
-        if key_idx == 2:
-            objects[key_idx].process(True)
-        if nextPage == True:
-            objects[3].process()
-            if key_idx == 3:
-                objects[key_idx].process(True)
+        for button in self.buttons:
+            button.process(self.screen)
+
+        # 화면 업데이트
+        pygame.display.flip()
+        fpsClock.tick(fps)
+        return "main"
+
+                # if self.setting_btn.buttonRect.collidepoint(mousePos) and self.next_page == False:
+                #     self.changeFunction()
+                #     self.next_page = True
+                #     self.key_idx = 3
+                # elif self.back_btn1.buttonRect.collidepoint(mousePos):
+                #     self.changeFunction()
+                #     self.next_page = False
+                #     self.key_idx = 0
+                # elif self.size_btn.buttonRect.collidepoint(mousePos) and self.screenPage == False:
+                #     self.size_setting()
+                #     self.screenPage = True
+                #     self.key_idx = 9
+                # elif self.back_btn2.buttonRect.collidepoint(mousePos):
+                #     self.size_setting()
+                #     self.screenPage = False
+                #     self.key_idx = 3
 
 
-    pygame.display.flip()
-    fpsClock.tick(fps)
+        #     if event.type == pygame.KEYDOWN:
+        #         if self.next_page == False and self.screenPage == False:
+        #             if event.key == pygame.K_DOWN:
+        #                 if self.key_idx < 2:
+        #                     self.key_idx += 1
+        #             elif event.key == pygame.K_UP:
+        #                 if self.key_idx > 0:
+        #                     self.key_idx -= 1
+        #             elif event.key == pygame.K_RETURN:
+        #                 if self.key_idx == 0:
+        #                     self.startFunction()
+        #                 elif self.key_idx == 1:
+        #                     self.settingFunction()
+        #                 elif self.key_idx == 2:
+        #                     self.exitFunction()
+        #         elif self.next_page == True and self.screenPage == False:
+        #             if event.key == pygame.K_DOWN:
+        #                 if self.key_idx < 8:
+        #                     self.key_idx += 1
+        #             elif event.key == pygame.K_UP:
+        #                 if self.key_idx > 3:
+        #                     self.key_idx -= 1
+        #             elif event.key == pygame.K_RETURN:
+        #                 if self.key_idx == 3:
+        #                     self.size_setting()
+        #                 elif self.key_idx == 4:
+        #                     self.colorblind_setting()
+        #                 elif self.key_idx == 5:
+        #                     self.key_setting()
+        #                 elif self.key_idx == 6:
+        #                     self.volume_setting()
+        #                 elif self.key_idx == 7:
+        #                     self.reset_setting()
+        #                 elif self.key_idx == 8:
+        #                     self.next_page = False
+        #                     self.key_idx = 1
+        #         elif self.next_page == True and self.screenPage == True:
+        #             if event.key == pygame.K_DOWN:
+        #                 if self.key_idx < 12:
+        #                     self.key_idx += 1
+        #             elif event.key == pygame.K_UP:
+        #                 if self.key_idx > 9:
+        #                     self.key_idx -= 1
+        #             elif event.key == pygame.K_RETURN:
+        #                 if self.key_idx == 9:
+        #                     self.set_screen_size(800, 600)
+        #                 elif self.key_idx == 10:
+        #                     self.set_screen_size(1024, 768)
+        #                 elif self.key_idx == 11:
+        #                     self.set_screen_size(1280, 720)
+        #                 elif self.key_idx == 12:
+        #                     self.screenPage = False
+        #                     self.key_idx = 3
+        # # 객체들 처리
+        # if self.next_page == False and self.screenPage == False:
+        #     self.titleObjects[0].process(self.screen)
+        #     for button in self.buttons[0:3]:
+        #         button.process(self.screen)
+        #         if self.key_idx == self.buttons.index(button):
+        #             button.process(self.screen, hover=True)
+        # elif self.next_page == True and self.screenPage == False:
+        #     for button in self.buttons[3:9]:
+        #         button.process(self.screen, hover=True)
+        #         if self.key_idx == self.buttons.index(button):
+        #             button.process(self.screen)
+        # elif self.next_page == True and self.screenPage == True:
+        #     for button in self.buttons[9:]:
+        #         button.process(self.screen, hover=True)
+        #         if self.key_idx == self.buttons.index(button):
+        #             button.process(self.screen)

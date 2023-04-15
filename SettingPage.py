@@ -1,12 +1,7 @@
-import pygame
 import sys
+import pygame
+from Button import Button
 
-# 게임 윈도우 초기화
-pygame.init()
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Uno Game")
 
 fps = 60
 fpsClock = pygame.time.Clock()
@@ -19,117 +14,99 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 # 폰트 설정
-font = pygame.font.SysFont(None, 48)
-
-titleObjects = []
-objects = []
-
-# Button 클래스 
-class Button():
-    def __init__(self, x,  y, width, height, buttonText = 'Button', onclickFunction = None):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.onclickFunction = onclickFunction
-        self.alreadyPressed = False
-
-        self.fillColors = {
-            'normal': '#A5140C',
-            'hover': '#820600',
-            'pressed': '#570400',
-            'drop_normal': '#'
-        }
-        self.buttonSurface = pygame.Surface((self.width, self.height))
-        self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.buttonText = font.render(buttonText, True, BLACK)
-        objects.append(self) # object 리스트에 버튼 인스턴스를 추가
-
-    def process(self, ini = None):
-        self.ini = ini
-        mousePos = pygame.mouse.get_pos()
-        self.buttonSurface.fill(self.fillColors['normal'])
-        if self.buttonRect.collidepoint(mousePos):
-            self.buttonSurface.fill(self.fillColors['hover'])
-            if pygame.mouse.get_pressed()[0]: # 왼쪽 마우스 버튼이 눌렸으면
-                self.buttonSurface.fill(self.fillColors['pressed'])
-                if not self.alreadyPressed:
-                    self.onclickFunction()
-                    self.alreadyPressed = True
-            else:
-                self.alreadyPressed = False
-
-        if ini == True:
-            self.buttonSurface.fill(self.fillColors['hover'])
-
-        # Surface에 텍스트 위치 시킴 
-        self.buttonSurface.blit(self.buttonText, [
-            self.buttonRect.width/2 - self.buttonText.get_rect().width/2,
-            self.buttonRect.height/2 - self.buttonText.get_rect().height/2
-        ])
-        # screen에 Surface 위치 시킴 
-        screen.blit(self.buttonSurface, self.buttonRect)
-
-# Title 클래스 
-class Title():
-    def __init__(self, x, y, text = 'title'):
-        self.x = x
-        self.y = y
-    
-        self.fillColors = {
-            'normal': '#A5140C',
-        }
-        self.titleText = font.render(text, True, BLUE)
-        titleObjects.append(self)
-
-    def process(self):
-        screen.blit(self.titleText, [self.x, self.y])
+font = pygame.font.SysFont(None, 30)
 
 
 class SettingPage():
-    def __init__(self):
-        self.create_buttons()
-        self.create_title()
-    
-    def create_title(self):
-        Title(330, 50, 'Settings')
+    def __init__(self, screen):
 
-    def create_buttons(self):
-        size_btn = Button(300, 150, 200, 50, 'Screen Size', self.size_setting)
-        key_btn = Button(300, 230, 200, 50, 'Key Setting', self.key_setting)
-        color_btn = Button(300, 310, 200, 50, 'Color Blind Mode', self.colorblind_setting)
-        volume_btn = Button(300, 390, 200, 50, 'Volume', self.volume_setting)
-        back_btn = Button(325, 470, 150, 50, 'BACK', self.back_setting)
+        self.screen = screen
+        self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
+
+        self.size1_btn = Button(0.5, 0.1, 200, 50, '800 x 600')
+        self.size2_btn = Button(0.5, 0.2, 200, 50, '1000 x 750')
+        self.size3_btn = Button(0.5, 0.3, 200, 50, '1200 x 900')
+
+        self.color_weak_btn = Button(0.5, 0.4, 200, 50, 'colorblind')
+        self.key_btn = Button(0.5, 0.5, 200, 50, 'key')
+        self.volume_btn = Button(0.5, 0.6, 200, 50, 'volume')
+        self.reset_btn = Button(0.5, 0.7, 200, 50, 'reset')
+        self.back_btn = Button(0.5, 0.8, 200, 50, 'BACK')
+
+
+        self.buttons = [self.color_weak_btn, self.key_btn, self.volume_btn, self.reset_btn,
+                        self.back_btn, self.size1_btn, self.size2_btn, self.size3_btn]
+
+        self.color_weak = False
+        self.volume = None
+
+    def go_to_back(self):
+        print("go to back")
 
 
     def size_setting(self):
+        print("size_setting!!")
+        pass
+
+
+    # 화면 비율을 변경하는 함수
+    def set_screen_size(self, screen_width, screen_height):
+        pygame.display.set_mode((screen_width, screen_height))
         pass
 
     def key_setting(self):
+        print("key_setting!!")
         pass
 
     def colorblind_setting(self):
+        print("colorblind_setting!!")
         pass
 
     def volume_setting(self):
+        print("volume_setting!!")
         pass
 
-    def back_setting(self):
-        global nextPage
-        nextPage = True
+    def reset_setting(self):
+        print("reset_setting!!")
+        pass
 
-def startSettingPage():
-    
-    settingPage = SettingPage()
-    while not nextPage:
+    def running(self):
+        self.screen.fill(WHITE)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        screen.fill(WHITE)
-        for obj in titleObjects:
-            obj.process()
-        for obj in objects:
-            obj.process()
-        pygame.display.update()
+                exit(0)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                print(event.pos)
+
+                if self.size1_btn.rect.collidepoint(event.pos):
+                    pygame.display.set_mode((800, 600))
+
+                elif self.size2_btn.rect.collidepoint(event.pos):
+                    pygame.display.set_mode((1000, 750))
+
+                elif self.size3_btn.rect.collidepoint(event.pos):
+                    pygame.display.set_mode((1200, 900))
+
+                elif self.color_weak_btn.rect.collidepoint(event.pos):
+                    self.color_weak_btn.clicked()
+
+                elif self.key_btn.rect.collidepoint(event.pos):
+                    self.key_btn.clicked()
+
+                elif self.volume_btn.rect.collidepoint(event.pos):
+                    self.volume_btn.clicked()
+
+                elif self.reset_btn.rect.collidepoint(event.pos):
+                    self.reset_btn.clicked()
+
+                elif self.back_btn.rect.collidepoint(event.pos):
+                    return "main"
+
+        for button in self.buttons:
+            button.process(self.screen)
+
+        pygame.display.flip()
         fpsClock.tick(fps)
+        return "setting"

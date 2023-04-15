@@ -583,3 +583,5 @@ def startGamePage():
         uiManager.update(dt)
         uiManager.draw_ui(screen)
         pg.display.update()
+
+        return "game"
