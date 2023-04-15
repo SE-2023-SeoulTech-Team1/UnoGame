@@ -14,7 +14,6 @@ BLUE = (0, 0, 255)
 # 폰트 설정
 font = pygame.font.SysFont(None, 48)
 
-
 # Title 클래스 
 class Title():
     def __init__(self, x, y, text = 'title'):
