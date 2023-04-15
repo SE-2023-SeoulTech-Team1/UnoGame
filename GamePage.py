@@ -19,6 +19,10 @@ color_rects = [
     pg.Rect(screenWidth * 0.05 + 180, screenHeight * 0.65, 50, 50)
 ]
 
+# 배경 음악 삽입
+background_sound = pg.mixer.Sound('./assets/background.mp3')
+card_move_sound = pg.mixer.Sound('./assets/cardmove.mp3')
+card_select_sound = pg.mixer.Sound('./assets/cardclick.mp3')
 
 # 덱 카드 그리기
 def draw_deck(game):
@@ -58,6 +62,7 @@ def flip_deck_card(game, flip_card):
         openned_cards = []
         game.pick_current_card()
         openned_cards.append(game.current_card)
+        card_move_sound.play()
         print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
 
         # 카드의 현재 위치 저장
@@ -128,6 +133,7 @@ def handle_black(game, card_rect, i, chosen_card, screen, cardFrontList, screenW
                 sys.exit()
 
             if event.type == pg.MOUSEBUTTONDOWN:
+                card_select_sound.play()
                 mouse_pos = pg.mouse.get_pos()
                 for idx, color_rect in enumerate(color_rects):
                     if color_rect.collidepoint(mouse_pos):
@@ -142,6 +148,7 @@ def handle_black(game, card_rect, i, chosen_card, screen, cardFrontList, screenW
                                 added_card_rect = added_card_img.get_rect()
                                 start_pos = draw_deck(game)
                                 end_pos.x = end_pos.x - 20
+                                card_move_sound.play()
                                 move_card_animation(game, added_card_img, added_card_rect, 
                                                     (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                 screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -192,6 +199,7 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
                         chosen_card_img = pg.image.load(chosen_card.front).convert_alpha()
                         chosen_card_rect = card_rect_list[i]
                         start_pos = card_rect_list[i]
+                        card_move_sound.play()
                         move_card_animation(game, chosen_card_img, chosen_card_rect, 
                                             (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
                         game.current_card = openned_cards[-1]
@@ -210,6 +218,7 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
                                 added_card_rect = added_card_img.get_rect()
                                 start_pos = draw_deck(game)
                                 end_pos.x = end_pos.x - 20
+                                card_move_sound.play()
                                 move_card_animation(game, added_card_img, added_card_rect, 
                                                     (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                 screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -394,6 +403,7 @@ def process_deck_clicked(game, deck_rect, end_pos):
     card_img = pg.image.load(popped_card.front).convert_alpha()
     card_rect = card_img.get_rect()
     
+    card_move_sound.play()
     move_card_animation(game, card_img, card_rect, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
     game.players[0].cards.append(popped_card)
     print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
@@ -415,6 +425,7 @@ def computer_function_card(game):
                 added_card_rect = added_card_img.get_rect()
                 start_pos = draw_deck(game)
                 end_pos.x = end_pos.x + (screenWidth * 0.05)
+                card_move_sound.play()
                 move_card_animation(game, added_card_img, added_card_rect, 
                                     (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                 screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -427,6 +438,7 @@ def computer_function_card(game):
             added_card_rect = added_card_img.get_rect()
             start_pos = draw_deck(game)
             end_pos.x = end_pos.x + (screenWidth * 0.05)
+            card_move_sound.play()
             move_card_animation(game, added_card_img, added_card_rect, 
                                 (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
             screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -451,6 +463,7 @@ def computer_function_card(game):
 
 
 def startGamePage():
+    background_sound.play(-1)
 
     game = Game([Player("PLAYER0"), Computer("computer0")], True)
     # 카드 초기 세팅
@@ -536,6 +549,7 @@ def startGamePage():
                     
                     
                     start_pos = popped_card_rect
+                    card_move_sound.play()
                     move_card_animation(game, popped_card_back_img, popped_card_rect, 
                                         (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
                     # current card 업데이트
@@ -561,6 +575,7 @@ def startGamePage():
                     new_computer_card_rect = new_computer_card_img.get_rect()
                     end_pos = computer_card_rect_list[-1]
                     end_pos.x = end_pos.x - 20
+                    card_move_sound.play()
                     move_card_animation(game, new_computer_card_img, new_computer_card_rect, 
                                         (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
                     game.next_turn()
