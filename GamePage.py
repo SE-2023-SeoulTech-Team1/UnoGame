@@ -34,30 +34,18 @@ def draw_deck(game):
 
 # 컴퓨터 카드 그리기
 def draw_computer_cards(game):
+    computer_card_rect_list = []
     computer = game.players[1]
     for i, card in enumerate(computer.cards):
         card_back_img = pg.image.load(card.back).convert_alpha()
         card_rec = card_back_img.get_rect()
         card_back_img = pg.transform.scale(
             card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
-        top = screenHeight * 0.15
-        left = screenWidth * 0.92 - i * 20
-        screen.blit(card_back_img, (left, top))
-
-
-def move_card(game, card, start, end):
-    top = screenHeight * 0.25
-    left = screenWidth * 0.4
-
-    # 카드 목표 위치 도달까지 위치 변경
-    if card_loc <= left:
-        card_loc += 10
-        draw_card_front(screen, openned_cards[0], top, card_loc)
-    else:
-        draw_card_front(screen, openned_cards[0], top, card_loc)
-        # 덱에서 카드가 뒤집힌 후 첫 턴의 시작은 player0
-        if timerFlag == True:
-            timer(timerFlag, 10, game)
+        card_rec.top = screenHeight * 0.15
+        card_rec.left = screenWidth * 0.92 - i * 20
+        computer_card_rect_list.append(card_rec)
+        screen.blit(card_back_img, card_rec)
+    return computer_card_rect_list
 
 
 # 덱 카드 한 장 뒤집기
@@ -82,9 +70,9 @@ def flip_deck_card(game, flip_card):
     # 카드 목표 위치 도달까지 위치 변경
     if card_loc <= left:
         card_loc += 10
-        draw_card_front(screen, openned_cards[0], top, card_loc)
+        draw_card_front(screen, openned_cards[-1], top, card_loc)
     else:
-        draw_card_front(screen, openned_cards[0], top, card_loc)
+        draw_card_front(screen, openned_cards[-1], top, card_loc)
 
         if timerFlag == True:
             timer(timerFlag, TIMEOUT, game)
@@ -111,9 +99,7 @@ def apply_shadow(image, alpha=100, color=(0, 0, 0)):
 
 
 # black카드 일 때
-def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenHeight):
-
-    wildcard_selected = True
+def handle_black(game, card_rect, i, chosen_card, screen, cardFrontList, screenWidth, screenHeight):
 
     pg.draw.rect(screen, SELECT_COLOR['red'], color_rects[0])
     pg.draw.rect(screen, SELECT_COLOR['green'], color_rects[1])
@@ -145,9 +131,19 @@ def handle_black(game, card_rect, i, screen, cardFrontList, screenWidth, screenH
                 for idx, color_rect in enumerate(color_rects):
                     if color_rect.collidepoint(mouse_pos):
                         chosen_color = list(SELECT_COLOR.keys())[idx]
-                        if game.players[0].cards[i].type == 'wildcard':
+                        if chosen_card.type == 'wildcard':
                             game.wildcard_card_clicked(chosen_color)
-                        elif game.players[0].cards[i].type == '+4':
+                        elif chosen_card.type == '+4':
+                            end_pos = draw_computer_cards(game)[-1]
+                            for i in range(4):
+                                added_card = game.deck.cards[-(i+1)]
+                                added_card_img = pg.image.load(added_card.back).convert_alpha()
+                                added_card_rect = added_card_img.get_rect()
+                                start_pos = draw_deck(game)
+                                end_pos.x = end_pos.x - 20
+                                move_card_animation(game, added_card_img, added_card_rect, 
+                                                    (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                                screen.blit(added_card_img, (end_pos.x, end_pos.y))
                             game.plus4_card_clicked(game.players[0], chosen_color)
                         color_selected = True
                         break
@@ -167,6 +163,7 @@ def redraw_card(game, i, screen, card_rect, card_rect_list):
 
 def handle_card_hover(game, screen, card_rect_list, screenHeight):
     mouse_pos = pg.mouse.get_pos()
+    global openned_cards
 
     card_reacted = False
     for i, card_rect in enumerate(card_rect_list):
@@ -181,21 +178,40 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
             screen.blit(darkened_image, card_rect)
             card_reacted = True
 
-            if valid_play(game.players[0].cards[i], openned_cards[0]):
+            if valid_play(game.players[0].cards[i], openned_cards[-1]):
                 screen.blit(card_front_img, card_rect)
 
                 # 카드 클릭 로직 
                 for event in pg.event.get():
-                    if event.type == pg.MOUSEBUTTONDOWN:                               
-                        openned_cards.insert(0, game.players[0].cards[i])
-                        game.current_card = openned_cards[0]
+                    if event.type == pg.MOUSEBUTTONDOWN:
+                        chosen_card = game.players[0].cards[i]
+                        openned_cards.append(chosen_card)
+
+                        game.players[0].cards.pop(i)
+                        chosen_card_img = pg.image.load(chosen_card.front).convert_alpha()
+                        chosen_card_rect = card_rect_list[i]
+                        start_pos = card_rect_list[i]
+                        move_card_animation(game, chosen_card_img, chosen_card_rect, 
+                                            (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
+                        game.current_card = openned_cards[-1]
+                            
 
                         # 기능 카드 눌렀을 때 
                         if game.current_card.type == 'wildcard':
-                            handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
+                            handle_black(game, card_rect, i, chosen_card, screen, card_rect_list, screenWidth, screenHeight)
                         elif game.current_card.type == '+4':
-                            handle_black(game, card_rect, i, screen, card_rect_list, screenWidth, screenHeight)
+                            handle_black(game, card_rect, i, chosen_card, screen, card_rect_list, screenWidth, screenHeight)
                         elif game.current_card.type == '+2':
+                            end_pos = draw_computer_cards(game)[-1]
+                            for i in range(2):
+                                added_card = game.deck.cards[-(i+1)]
+                                added_card_img = pg.image.load(added_card.back).convert_alpha()
+                                added_card_rect = added_card_img.get_rect()
+                                start_pos = draw_deck(game)
+                                end_pos.x = end_pos.x - 20
+                                move_card_animation(game, added_card_img, added_card_rect, 
+                                                    (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                                screen.blit(added_card_img, (end_pos.x, end_pos.y))
                             game.plus2_card_clicked(game.players[0])
                         elif game.current_card.type == 'reverse':
                             # 클릭했을 때 오른쪽 카드 이미지들 누락 방지를 위한 코드 
@@ -229,7 +245,7 @@ def handle_card_hover(game, screen, card_rect_list, screenHeight):
                             # 그냥 number카드 일 때 
                             game.next_turn()
 
-                        game.players[0].cards.pop(i)
+                        # game.players[0].cards.pop(i)
                         print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
                         print("내가 skip카드 눌렀을 때22 : " + str(game.current_player_index))
 
@@ -349,13 +365,11 @@ def unobutton(game):
     return unobutton_rect
 
 
-def move_card_animation(game, card, start_pos, end_pos, duration=500):
+def move_card_animation(game, card_img, card_rect, start_pos, end_pos, duration=500):
+    global openned_cards
     start_time = pg.time.get_ticks()
     elapsed_time = 0
     distance = end_pos[0] - start_pos[0], end_pos[1] - start_pos[1]
-
-    card_img = pg.image.load(card.front).convert_alpha()
-    card_rect = card_img.get_rect()
 
     while elapsed_time < duration:
         elapsed_time = pg.time.get_ticks() - start_time
@@ -367,16 +381,24 @@ def move_card_animation(game, card, start_pos, end_pos, duration=500):
         drawGameScreen(screen, game)
         unobutton(game)
         draw_deck(game)
-        draw_card_front(screen, openned_cards[0], screenHeight * 0.25, card_loc)
+        if openned_cards[-1] == game.current_card:
+            draw_card_front(screen, openned_cards[-1], screenHeight * 0.25, card_loc)
+        else:
+            draw_card_front(screen, openned_cards[-2], screenHeight * 0.25, card_loc)
         current_card_color(game)
         who_is_current_player(game)
         draw_computer_cards(game)
         display_player_cards(game)
 
+
+
 def process_deck_clicked(game, deck_rect, end_pos):
     popped_card = game.deck.pop_card()
     end_pos.x = end_pos.x + (screenWidth * 0.05)
-    move_card_animation(game, popped_card, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
+    card_img = pg.image.load(popped_card.front).convert_alpha()
+    card_rect = card_img.get_rect()
+    
+    move_card_animation(game, card_img, card_rect, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
     game.players[0].cards.append(popped_card)
     print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
     game.next_turn()
@@ -384,14 +406,34 @@ def process_deck_clicked(game, deck_rect, end_pos):
 
 
 # 컴퓨터가 기능 카드 낼 때 
-def computer_function_or_number_card(game):
+def computer_function_card(game):
     if game.current_card.color == 'black':
         choiced_color = game.players[game.current_player_index].black_card_clicked()
         if game.current_card.type == 'wildcard':
             game.wildcard_card_clicked(choiced_color)
         elif game.current_card.type == '+4':
+            end_pos = display_player_cards(game)[-1]
+            for i in range(4):
+                added_card = game.deck.cards[-(i+1)]
+                added_card_img = pg.image.load(added_card.front).convert_alpha()
+                added_card_rect = added_card_img.get_rect()
+                start_pos = draw_deck(game)
+                end_pos.x = end_pos.x + (screenWidth * 0.05)
+                move_card_animation(game, added_card_img, added_card_rect, 
+                                    (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                screen.blit(added_card_img, (end_pos.x, end_pos.y))
             game.plus4_card_clicked(game.players[game.current_player_index], choiced_color)
     elif game.current_card.type == '+2':
+        end_pos = display_player_cards(game)[-1]
+        for i in range(2):
+            added_card = game.deck.cards[-(i+1)]
+            added_card_img = pg.image.load(added_card.front).convert_alpha()
+            added_card_rect = added_card_img.get_rect()
+            start_pos = draw_deck(game)
+            end_pos.x = end_pos.x + (screenWidth * 0.05)
+            move_card_animation(game, added_card_img, added_card_rect, 
+                                (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+            screen.blit(added_card_img, (end_pos.x, end_pos.y))
         game.plus2_card_clicked(game.players[game.current_player_index])
     elif game.current_card.type == 'reverse':
         if game.direction == 1:
@@ -413,7 +455,7 @@ def computer_function_or_number_card(game):
 
 def startGamePage():
 
-    game = Game([Player("PLAYER0"), Computer("computer0")])
+    game = Game([Player("PLAYER0"), Computer("computer0")], True)
     # 카드 초기 세팅
     game.deal_cards()
 
@@ -422,6 +464,7 @@ def startGamePage():
     for i in range(len(game.players[0].cards)):
         print(game.players[0].cards[i])
 
+    global openned_cards
     flip_card = True
     running = True
 
@@ -455,11 +498,12 @@ def startGamePage():
 
         drawGameScreen(screen, game)
         unobutton(game)
-        deck_rec = draw_deck(game)
+        deck_rect = draw_deck(game)
         current_card_color(game)
         flip_card = flip_deck_card(game, flip_card)
         draw_computer_cards(game)
         card_rect_list = display_player_cards(game)
+        computer_card_rect_list = draw_computer_cards(game)
 
         player_with_one_card = [player for player in game.players if len(player.cards) == 1]
         player_with_no_card = [player for player in game.players if len(player.cards) == 0]
@@ -482,29 +526,44 @@ def startGamePage():
                     who_is_current_player(game)
                     pg.display.update()
 
-                    popped_card = game.players[game.current_player_index].play_card(
-                        game)
-                    card_front_img = pg.image.load(
-                        popped_card.front).convert_alpha().get_rect()
-                    
-                    openned_cards.insert(0, popped_card)
+                card_idx_can_play = game.players[game.current_player_index].can_play(game.current_card)
+                popped_card = game.players[game.current_player_index].play_card(game)
+                card_idx_after_can_play = game.players[game.current_player_index].can_play(game.current_card)
 
-                    # current card 업데이트
-                    game.current_card = openned_cards[0]
-                    # function card 일 때 
-                    computer_function_or_number_card(game)
-                    
-                    
-                    print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
-                else:
-                    print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
-                    # print("컴퓨터가 덱에서 한장 먹음")
-                    # 현재 플레이어 화면 출력
-                    who_is_current_player(game)
-                    pg.display.update()
-                    print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
-                    game.players[game.current_player_index].draw_card(game.deck)
-                    game.next_turn()
+                card_idx = [x for x in card_idx_can_play if x not in card_idx_after_can_play]
+                idx = card_idx[0]
+                popped_card_back_img = pg.image.load(popped_card.back).convert_alpha()
+                popped_card_rect = computer_card_rect_list[idx]
+
+                openned_cards.append(popped_card)
+
+                # function card 일 때 
+                computer_function_card(game)
+
+                start_pos = popped_card_rect
+                move_card_animation(game, popped_card_back_img, popped_card_rect, 
+                                    (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
+                # current card 업데이트
+                game.current_card = openned_cards[-1]
+                
+                print(f"\n현재 뒤집어진 카드는 {game.current_card} 입니다.")
+                # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
+            else:
+                print(f"\n현재 {game.players[game.current_player_index].name}의 턴입니다.")
+                # 현재 플레이어 화면 출력
+                who_is_current_player(game)
+                pg.display.update()
+
+                print(f"\n{game.players[game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
+                game.players[game.current_player_index].draw_card(game.deck)
+                new_computer_card = game.players[game.current_player_index].cards[-1]
+                new_computer_card_img = pg.image.load(new_computer_card.back).convert_alpha()
+                new_computer_card_rect = new_computer_card_img.get_rect()
+                end_pos = computer_card_rect_list[-1]
+                end_pos.x = end_pos.x - 20
+                move_card_animation(game, new_computer_card_img, new_computer_card_rect, 
+                                    (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
+            game.current_player_index = 0
 
         uiManager.update(dt)
         uiManager.draw_ui(screen)
