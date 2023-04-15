@@ -1,69 +1,59 @@
 import pygame
 import sys
+from Colors import *
 
-pygame.init()
-font = pygame.font.SysFont('arial', 48)
-
-# 색상 정의
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 
 class Button():
-    def __init__(self, x,  y, width, height, text = 'Button'):
+    def __init__(self, x,  y, width, height, text = 'Button', background_color=RED, hover_color=RED_HOVER, text_color=BLACK, text_size = 24):
         screen_width, screen_height = pygame.display.get_surface().get_size()
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.top = screen_width * x
-        self.left = screen_height * y
-        # self.onclickFunction = onclickFunction
-        # self.alreadyPressed = False
-        # self.parameters = parameters
-
-        self.fillColors = {
-            'normal': '#A5140C',
-            'hover': '#820600',
-            'pressed': '#570400',
-            'drop_normal': '#'
+        self.top = (screen_width * self.x) - (self.width / 2)
+        self.left = (screen_height * self.y) - (self.height / 2)
+        self.key_hovered = False
+        self.colors = {
+            'normal': background_color,
+            'hover': hover_color,
         }
+        self.background_color = background_color
+        self.text_color = text_color
+        self.text_size = text_size
         self.surface = pygame.Surface((self.width, self.height))
         self.rect = pygame.Rect(self.top, self.left, self.width, self.height)
-        self.text = font.render(text, True, BLACK)
+        font = pygame.font.SysFont('arialroundedmtbold', self.text_size)
+        self.text = text
 
 
     def process(self, screen, hover=False):
 
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.top = screen_width * self.x
-        self.left = screen_height * self.y
+        self.top = (screen_width * self.x) - (self.width / 2)
+        self.left = (screen_height * self.y) - (self.height / 2)
         self.rect = pygame.Rect(self.top, self.left, self.width, self.height)
 
-        self.hover = hover
-        mousePos = pygame.mouse.get_pos()
-        self.surface.fill(self.fillColors['normal'])
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            self.surface.fill(self.colors['hover'])
+        elif self.key_hovered:
+            self.surface.fill(self.colors['hover'])
+        else:
+            self.surface.fill(self.colors['normal'])
 
-        if self.rect.collidepoint(mousePos):
-            self.surface.fill(self.fillColors['hover'])
-
-        #     if pygame.mouse.get_pressed()[0]: # 왼쪽 마우스 버튼이 눌렸으면
-        #         self.surface.fill(self.fillColors['pressed'])
-            #     if not self.alreadyPressed:
-            #         self.onclickFunction(*self.parameters)
-            #         self.alreadyPressed = True
-            # else:
-            #     self.alreadyPressed = False
-
-        self.surface.blit(self.text, [
-            self.rect.width/2 - self.text.get_rect().width/2,
-            self.rect.height/2 - self.text.get_rect().height/2
+        text_render = font.render(self.text, True, self.text_color)
+        self.surface.blit(text_render, [
+            self.rect.width/2 - text_render.get_rect().width/2,
+            self.rect.height/2 - text_render.get_rect().height/2
         ])
 
-        # screen에 Surface 위치 시킴
         screen.blit(self.surface, self.rect)
 
-        if hover == True:
-            self.surfaceR.fill(self.fillColors['hover'])
+
+class Text(Button):
+    def __init__(self, x, y, width, height, text = 'Button', background_color=WHITE, hover_color=LIGHT_GRAY, text_color=BLACK, text_size = 24):
+        super().__init__(x, y, width, height, text = text, background_color=background_color, hover_color=hover_color, text_color=text_color, text_size = text_size)
+        self.colors = {
+            'normal': '#FFFFFF',
+            'hover': '#EEEEEE',
+        }
