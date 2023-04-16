@@ -35,6 +35,8 @@ class Deck:
             print("At least one more cards should be in deck.")
             exit(-1)
         self.cards = cards
+    def len_card(self):
+        return len(self.cards)
 
     def pop_card(self):
         return self.cards.pop()

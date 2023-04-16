@@ -24,6 +24,14 @@ class Game:
         self.color_weak_mode = color_weak_mode
 
     
+    def reset_deck(self, color_weak_mode=False):
+        cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
+        cards += [Card("black", type, color_weak_mode) for type in BLACK_CARD_TYPES]
+        shuffle(cards)
+        
+        self.deck = Deck(cards)
+        
+
     def auto_draw_card(self):
         print("카드 선택 시간을 초과하였습니다. 자동으로 카드를 뽑아옵니다.")
         self.players[self.current_player_index].draw_card(self.deck)

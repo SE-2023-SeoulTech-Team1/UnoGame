@@ -466,7 +466,6 @@ class GamePage():
 
         while running:
             
-
             dt = self.clock.tick(60)/1000.0
 
             for event in pygame.event.get():
@@ -510,13 +509,20 @@ class GamePage():
                     Message(screen, "UNO", 100, BLUE).draw()
                     print("UNO button clicked - computer")
 
-            elif player_with_no_card:
+            if player_with_no_card:
                 Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED)
-                break
-                exit(0)
+                
+                # break
+                # exit(0)
+
+            #우노 게임카드 다 썼을 때
+            if self.game.deck.len_card() < 5:
+                self.game.reset_deck()
+                self.game.deck.cards.pop(self.game.current_card)
 
             while self.game.current_player_index != 0:
                 if self.game.current_player_index != 0:
+
                     if self.game.players[self.game.current_player_index].can_play(self.game.current_card):
                         print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
                         # 현재 플레이어 화면 출력
@@ -526,6 +532,8 @@ class GamePage():
                         card_idx_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
                         popped_card = self.game.players[self.game.current_player_index].play_card(self.game)
                         card_idx_after_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
+                        if len(self.game.players[self.game.current_player_index].cards) == 0:
+                            print("Computer Win!!")
 
                         card_idx = [x for x in card_idx_can_play if x not in card_idx_after_can_play]
                         idx = card_idx[0]
@@ -541,6 +549,7 @@ class GamePage():
                         # current card 업데이트
                         self.game.current_card = openned_cards[-1]
 
+
                         # function card 일 때
                         self.computer_function_card()
                         print("다음 인덱스 : " + str(self.game.current_player_index))
@@ -548,6 +557,7 @@ class GamePage():
 
                         print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
                         # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
+                        
                     else:
                         print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
                         # 현재 플레이어 화면 출력
