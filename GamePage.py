@@ -65,7 +65,8 @@ class GamePage():
             elif deck_cards_num != len(self.game.deck.cards) or player_cards_num != len(self.game.players[0].cards):
                 setTimer = False
                 timerFlag = False
-                count = True
+                self.count = True
+        
                 # 여기서 next_turn 안하고 카드들 선택한다음 그곳에서 next_turn하는 방식으로 바꿈
                 # game.next_turn()
             elif totalTime - elapsed_time > -1:
@@ -75,7 +76,7 @@ class GamePage():
             else:
                 setTimer = False
                 timerFlag = False
-                count = True
+                self.count = True
                 print("\n제한시간이 지났습니다. 상대 턴입니다.")
                 # 다음 플레이어로 넘어가기
                 self.game.next_turn()
@@ -196,10 +197,10 @@ class GamePage():
                                     added_card = self.game.deck.cards[-(i+1)]
                                     added_card_img = pygame.image.load(added_card.back).convert_alpha()
                                     added_card_rect = added_card_img.get_rect()
-                                    start_pos = draw_deck(self.game)
+                                    start_pos = self.draw_deck(self.game)
                                     end_pos.x = end_pos.x - 20
-                                    card_move_sound.play()
-                                    move_card_animation(self.game, added_card_img, added_card_rect,
+                                    self.card_move_sound.play()
+                                    self.move_card_animation(self.game, added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                     screen.blit(added_card_img, (end_pos.x, end_pos.y))
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
@@ -455,14 +456,16 @@ class GamePage():
         flip_card = True
         running = True
 
+        draw_game_screen(self)
+        deck_rect = self.draw_deck()
+        self.draw_computer_cards()
+        flip_card = self.flip_deck_card(flip_card)
+        # unobutton_rect = self.uno_button.rect
+        self.uno_button.draw()
+        card_rect_list = self.display_player_cards()
+
         while running:
-            draw_game_screen(self)
-            deck_rect = self.draw_deck()
-            self.draw_computer_cards()
-            flip_card = self.flip_deck_card(flip_card)
-            # unobutton_rect = self.uno_button.rect
-            self.uno_button.draw()
-            card_rect_list = self.display_player_cards()
+            
 
             dt = self.clock.tick(60)/1000.0
 
