@@ -19,7 +19,7 @@ class Computer:
         self.cards = []
 
     def draw_card(self, deck):
-        # time.sleep(random() * 3)
+        time.sleep(random() * 3)
         card = deck.pop_card()
         self.cards.append(card)
 
@@ -31,7 +31,7 @@ class Computer:
         return card_idx_can_play
 
     def play_card(self, game):
-        # time.sleep(random() * 3)
+        time.sleep(random() * 3)
         card_idx_can_play = self.can_play(game.current_card)
         return self.cards.pop(choice(card_idx_can_play))
     
@@ -41,4 +41,5 @@ class Computer:
 
     def click_uno_button(self, game):
         # TODO 지연시간 두기
+        time.sleep(random() * 3)
         game.uno_button_clicked(1)
