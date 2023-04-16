@@ -21,7 +21,7 @@ class Game:
         self.current_card = None
         self.direction = 1
         self.uno = None
-        self.color_seak_mode = color_weak_mode
+        self.color_weak_mode = color_weak_mode
 
     
     def auto_draw_card(self):

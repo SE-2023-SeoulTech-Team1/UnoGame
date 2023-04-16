@@ -4,16 +4,27 @@ import sys
 from Game import *
 from FunctionAnimation import *
 from random import randint
-from animation import *
+from draw import *
 from Message import Message
+from UnoButton import UnoButton
 
 
 class GamePage():
     def __init__(self, screen, setting, game):
         self.setting = setting
         self.game = game
+        self.screen = screen
 
-        # 배경 음악 삽입
+        self.timer_obj = None
+        self.direction = None
+        self.current_color = None
+        self.current_player = None
+        self.player_cards = None
+        self.computer_cards = None
+        self.deck = None
+        self.open_cards = None
+        self.uno_button = UnoButton(self)
+
         self.background_sound = pygame.mixer.Sound('./assets/background.mp3')
         self.card_move_sound = pygame.mixer.Sound('./assets/cardmove.mp3')
         self.card_select_sound = pygame.mixer.Sound('./assets/cardclick.mp3')
@@ -21,9 +32,6 @@ class GamePage():
         self.uiManager = pygame_gui.UIManager(windowSize)
         self.clock = pygame.time.Clock()
 
-        # 타이머 설정
-        self.timerFlag = True
-        self.count = True
 
         self.color_rects = [
             pygame.Rect(screenWidth * 0.05, screenHeight * 0.65, 50, 50),
@@ -31,6 +39,9 @@ class GamePage():
             pygame.Rect(screenWidth * 0.05 + 120, screenHeight * 0.65, 50, 50),
             pygame.Rect(screenWidth * 0.05 + 180, screenHeight * 0.65, 50, 50)
         ]
+
+        self.timerFlag = True
+        self.count = True
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -172,15 +183,15 @@ class GamePage():
                     sys.exit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    card_select_sound.play()
+                    self.card_select_sound.play()
                     mouse_pos = pygame.mouse.get_pos()
-                    for idx, color_rect in enumerate(color_rects):
+                    for idx, color_rect in enumerate(self.color_rects):
                         if color_rect.collidepoint(mouse_pos):
                             chosen_color = list(SELECT_COLOR.keys())[idx]
                             if chosen_card.type == 'wildcard':
                                 self.game.wildcard_card_clicked(chosen_color)
                             elif chosen_card.type == '+4':
-                                end_pos = draw_computer_cards(self.game)[-1]
+                                end_pos = self.draw_computer_cards()[-1]
                                 for i in range(4):
                                     added_card = self.game.deck.cards[-(i+1)]
                                     added_card_img = pygame.image.load(added_card.back).convert_alpha()
@@ -355,8 +366,8 @@ class GamePage():
             card_rect.x, card_rect.y = new_pos
             screen.blit(card_img, (card_rect.left, card_rect.top))
             pygame.display.flip()
-            drawGameScreen(screen, self.game)
-            self.unobutton()
+            draw_game_screen(self)
+            self.uno_button.draw()
             self.draw_deck()
             if openned_cards[-1] == self.game.current_card:
                 draw_card_front(screen, openned_cards[-1], screenHeight * 0.25, card_loc)
@@ -387,14 +398,14 @@ class GamePage():
             if self.game.current_card.type == 'wildcard':
                 self.game.wildcard_card_clicked(choiced_color)
             elif self.game.current_card.type == '+4':
-                end_pos = self.display_player_cards(self.game)[-1]
+                end_pos = self.display_player_cards()[-1]
                 for i in range(4):
                     added_card = self.game.deck.cards[-(i+1)]
                     added_card_img = pygame.image.load(added_card.front).convert_alpha()
                     added_card_rect = added_card_img.get_rect()
                     start_pos = self.draw_deck()
                     end_pos.x = end_pos.x + (screenWidth * 0.05)
-                    card_move_sound.play()
+                    self.card_move_sound.play()
                     self.move_card_animation(added_card_img, added_card_rect,
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                     screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -444,27 +455,34 @@ class GamePage():
         flip_card = True
         running = True
 
-        while True:
-            drawGameScreen(screen, self.game)
+        while running:
+            draw_game_screen(self)
             deck_rect = self.draw_deck()
             self.draw_computer_cards()
             flip_card = self.flip_deck_card(flip_card)
-            unobutton_rect = self.unobutton()
+            # unobutton_rect = self.uno_button.rect
+            self.uno_button.draw()
             card_rect_list = self.display_player_cards()
 
             dt = self.clock.tick(60)/1000.0
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+                elif event.type == pygame.K_ESCAPE:
+                    print("esc")
+                    running = False
+
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if deck_rect.collidepoint(event.pos):
                         if self.game.current_player_index == 0:
                             self.process_deck_clicked(deck_rect, card_rect_list[-1])
                         else:
                             Message(screen, "It's not your turn!", 32, RED).draw()
-                    if unobutton_rect.collidepoint(event.pos):
+                    if self.uno_button.rect.collidepoint(event.pos):
                         print("UNO button clicked - user")
-                        if self.game.uno_button_clicked(0):
+                        if self.uno_button.clicked(0):
                             Message(screen, "UNO", 100, BLUE).draw()
                         else:
                             Message(screen, "WRONG UNO", 100, RED).draw()
@@ -472,8 +490,8 @@ class GamePage():
 
                 self.uiManager.process_events(event)
 
-            drawGameScreen(screen, self.game)
-            self.unobutton()
+            draw_game_screen(self)
+            self.uno_button.draw()
             deck_rect = self.draw_deck()
             self.current_card_color()
             flip_card = self.flip_deck_card(flip_card)
@@ -490,7 +508,7 @@ class GamePage():
                     print("UNO button clicked - computer")
 
             elif player_with_no_card:
-                Message(screen, f"PLAYER{player_with_no_card} WIN")
+                Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED)
                 break
                 exit(0)
 

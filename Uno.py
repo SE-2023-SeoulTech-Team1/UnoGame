@@ -5,6 +5,7 @@ from GamePage import GamePage
 from Setting import Setting
 from Game import Game
 from Player import Player, Computer
+from Map import MapPage
 
 if __name__ == "__main__":
     pygame.init()
@@ -18,6 +19,7 @@ if __name__ == "__main__":
     main_page = MainPage(screen)
     setting_page = SettingPage(screen, setting)
     game_page = GamePage(screen, setting, game)
+    map_page = MapPage(screen, setting)
 
     page = main_page.running()
     while True:
@@ -27,5 +29,7 @@ if __name__ == "__main__":
             page = setting_page.running()
         if page == "game":
             page = game_page.running()
+        if page == "map":
+            page = map_page.running()
         if page == "exit":
             exit(0)

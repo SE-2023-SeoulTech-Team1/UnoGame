@@ -25,12 +25,13 @@ class MainPage():
         self.title = Text(1/2, 1/6, 200, 50, "UNO GAME", hover_color=WHITE, text_color=BLUE)
 
         self.key_idx = 0
-        self.start_btn = Button(1/2, 2/6, 200, 50, 'START', text_size=32)
+        self.start_btn = Button(0.5, 0.3, 200, 50, 'START', text_size=32)
         self.start_btn.key_hovered = True
-        self.setting_btn = Button(1/2, 3/6, 200, 50, 'SETTINGS', text_size=32)
-        self.exit_btn = Button(1/2, 4/6, 200, 50, 'EXIT', text_size=32)
+        self.map_btn = Button(0.5, 0.4, 200, 50, 'GO TO MAP', text_size=32)
+        self.setting_btn = Button(0.5, 0.5, 200, 50, 'SETTINGS', text_size=32)
+        self.exit_btn = Button(0.5, 0.6, 200, 50, 'EXIT', text_size=32)
 
-        self.buttons = [self.start_btn, self.setting_btn, self.exit_btn]
+        self.buttons = [self.start_btn, self.map_btn, self.setting_btn, self.exit_btn]
 
 
     def running(self):
@@ -44,6 +45,8 @@ class MainPage():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.start_btn.rect.collidepoint(event.pos):
                     return "game"
+                if self.map_btn.rect.collidepoint(event.pos):
+                    return "map"
                 if self.setting_btn.rect.collidepoint(event.pos):
                     return "setting"
                 if self.exit_btn.rect.collidepoint(event.pos):

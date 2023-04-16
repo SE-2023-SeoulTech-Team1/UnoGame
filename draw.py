@@ -37,25 +37,23 @@ directionBgx = screenWidth*0.2
 directionBgWidth = 100
 directionBgHeight = 100
 
-# 카드 이미지 불러오기
 def cardFrontImg(color, type):
     return pygame.image.load('./assets/cards/' + color + type + '.png').convert_alpha()
 
 
-# 카드 앞면 출력
 def draw_card_front(screen, card, top, left):
     card_front_img = pygame.image.load(card.front).convert_alpha()
     screen.blit(card_front_img, (left, top))
 
 
-# 카드 뒷면 출력
 def draw_card_back(screen, card, top, left):
     card_back_img = pygame.image.load(card.back).convert_alpha()
     screen.blit(card_back_img, (left, top))
 
-def drawGameScreen(screen, game):
+
+def draw_game_screen(game_page):
     # 배경 색 설정/추후 배경사진 추가
-    screen.fill(backgroundColor)
+    game_page.screen.fill(backgroundColor)
 
     who_are_players = font.render("PLAYER", True, WHITE)
     players_rect = who_are_players.get_rect()
@@ -64,15 +62,14 @@ def drawGameScreen(screen, game):
     screen.blit(who_are_players, players_rect)
 
     # 현재 방향 아이콘 표시
-    if game.direction == 1:
+    if game_page.game.direction == 1:
         direction_icon = pygame.image.load("./assets/clockwise.png")
         direction_icon = pygame.transform.scale(direction_icon, (30, 30))
 
     else:
         direction_icon = pygame.image.load("./assets/counterclockwise.png")
         direction_icon = pygame.transform.scale(direction_icon, (30, 30))
-    screen.blit(direction_icon, (screen.get_width() * 0.06, screen.get_height() * 0.025))
-
+    screen.blit(direction_icon, (game_page.screen.get_width() * 0.06, game_page.screen.get_height() * 0.025))
 
 
 # def move_card_animation(screen, game, card, start_pos, end_pos, duration=500):
