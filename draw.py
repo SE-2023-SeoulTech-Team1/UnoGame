@@ -1,4 +1,5 @@
 import pygame
+from resource_path import *
 
 pygame.init()
 
@@ -22,7 +23,7 @@ unoFont = pygame.font.SysFont(None, 40)
 backgroundColor = DARKGREEN
 
 def cardFrontImg(color, type):
-    return pygame.image.load('./assets/cards/' + color + type + '.png').convert_alpha()
+    return pygame.image.load(resource_path('./assets/cards/' + color + type + '.png')).convert_alpha()
 
 
 def draw_card_front(screens, card, top, left):
@@ -49,11 +50,11 @@ def draw_game_screen(game_page):
 
     # 현재 방향 아이콘 표시
     if game_page.game.direction == 1:
-        direction_icon = pygame.image.load("./assets/clockwise.png")
+        direction_icon = pygame.image.load(resource_path("./assets/clockwise.png"))
         direction_icon = pygame.transform.scale(direction_icon, (30, 30))
 
     else:
-        direction_icon = pygame.image.load("./assets/counterclockwise.png")
+        direction_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
         direction_icon = pygame.transform.scale(direction_icon, (30, 30))
     game_page.screen.blit(direction_icon, (game_page.screen.get_width() * 0.06, game_page.screen.get_height() * 0.025))
 

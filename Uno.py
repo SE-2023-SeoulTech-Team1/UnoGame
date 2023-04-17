@@ -18,11 +18,6 @@ if __name__ == "__main__":
 
     main_page = MainPage(screen)
     setting_page = SettingPage(screen, setting)
-    game_page = GamePage(screen, setting)
-    game_page_level0 = GamePage(screen, setting)
-    game_page_level1 = GamePage(screen, setting)
-    game_page_level2 = GamePage(screen, setting)
-    game_page_level3 = GamePage(screen, setting)
     map_page = MapPage(screen, setting)
     pause_page = PausedPage(screen, setting)
 
@@ -34,6 +29,7 @@ if __name__ == "__main__":
         elif page == "setting":
             page = setting_page.running()
         elif page == "game":
+            game_page = GamePage(screen, setting)
             page = game_page.running()
 
         elif page == "game_level0":
