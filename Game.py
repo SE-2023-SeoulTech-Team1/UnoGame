@@ -107,13 +107,12 @@ class Game:
     
     #bombcard 추가(자신을 제외한 모든 플레이어가 카드를 3개씩 받음)
     
-    def bombcard_card_clicked(self, player, chosen_color):
+    def bombcard_card_clicked(self, chosen_color):
         player = self.players[self.current_player_index]
         for p in self.players:
             if p != player:
                 for _ in range(3):
                     p.draw_card(self.deck)
-        chosen_color = input(" ")
         self.current_card.color = chosen_color
         self.next_turn()
         return self
@@ -166,7 +165,6 @@ class Game:
         target_player.cards = player_cards
 
         #print(f"{player.name}님의 모든 카드와 {target_player.name}님의 모든 카드가 교환되었습니다.")
-        chosen_color = input(" ")
         self.current_card.color = chosen_color
         self.next_turn()
         return self

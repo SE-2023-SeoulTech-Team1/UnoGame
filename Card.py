@@ -3,9 +3,8 @@ ALL_COLORS = COLORS + ['black']
 NUMBERS = list(range(1, 10))
 SPECIAL_CARD_TYPES = ['skip', 'reverse', '+2']
 COLOR_CARD_TYPES = NUMBERS + SPECIAL_CARD_TYPES
-BLACK_CARD_TYPES = ['wildcard', '+4']
+BLACK_CARD_TYPES = ['wildcard', '+4', 'bomb', 'all']
 ALL_TYPES = NUMBERS + SPECIAL_CARD_TYPES + BLACK_CARD_TYPES
-
 
 class Card:
     def __init__(self, color, type, color_weak_mode=False):

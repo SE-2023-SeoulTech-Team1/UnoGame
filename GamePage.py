@@ -490,6 +490,7 @@ class GamePage():
             self.game.next_turn()
 
     def running(self):
+        
         self.background_sound.play(-1)
 
         # 카드 초기 세팅
@@ -509,7 +510,7 @@ class GamePage():
         deck_rect = self.draw_deck()
         self.draw_computer_cards()
         flip_card = self.flip_deck_card(flip_card)
-        # unobutton_rect = self.uno_button.rect
+        
         self.uno_button.draw()
         card_rect_list = self.display_player_cards()
 
