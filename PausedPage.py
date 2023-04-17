@@ -28,7 +28,7 @@ class PausedPage():
                     return "game"
                 elif self.setting_btn.rect.collidepoint(event.pos):
                     return "setting"
-                elif self.exit_btn.rect.collidepoint(event.pos):
+                elif self.back_btn.rect.collidepoint(event.pos):
                     return "main"
 
             elif event.type == pygame.KEYDOWN:
