@@ -68,8 +68,10 @@ class MainPage():
                     if self.key_idx == 0:
                         return "game"
                     elif self.key_idx == 1:
-                        return "setting"
+                        return "map"
                     elif self.key_idx == 2:
+                        return "setting"
+                    elif self.key_idx == 3:
                         return "exit"
 
         self.title.process(self.screen)
