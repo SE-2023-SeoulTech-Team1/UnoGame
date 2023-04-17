@@ -353,7 +353,7 @@ class GamePage():
     def unobutton(self):
         unobutton_img = pygame.image.load('./assets/unobutton.png').convert_alpha()
         unobutton_rect = unobutton_img.get_rect()
-        unobutton_rect.centerx = round(boardx + boardWidth*0.5)
+        unobutton_rect.centerx = round(self.screen_width*0.75*0.5)
         unobutton_rect.y = self.screen_height * 0.45
         self.screen.blit(unobutton_img, unobutton_rect)
         return unobutton_rect
