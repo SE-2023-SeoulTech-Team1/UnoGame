@@ -3,7 +3,7 @@ import pygame_gui as pygame_gui
 import sys
 from Game import *
 from FunctionAnimation import *
-from random import randint
+from random import randint, random
 from draw import *
 from Message import Message
 from UnoButton import UnoButton
@@ -15,7 +15,6 @@ class GamePage():
         self.setting = setting
         self.game = Game([Player("PLAYER 0"), Computer("COMPUTER 0")])
         self.screen = screen
-
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
 
@@ -36,10 +35,6 @@ class GamePage():
         self.card_move_sound = pygame.mixer.Sound('./assets/cardmove.mp3')
         self.card_select_sound = pygame.mixer.Sound('./assets/cardclick.mp3')
 
-        self.uiManager = pygame_gui.UIManager(setting.screen_size)
-        self.clock = pygame.time.Clock()
-
-
         self.color_rects = [
             pygame.Rect(self.screen_width * 0.05, self.screen_height * 0.65, 50, 50),
             pygame.Rect(self.screen_width * 0.05 + 60, self.screen_height * 0.65, 50, 50),
@@ -49,6 +44,8 @@ class GamePage():
 
         self.timerFlag = True
         self.count = True
+        self.uiManager = pygame_gui.UIManager(setting.screen_size)
+        self.clock = pygame.time.Clock()
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -481,10 +478,11 @@ class GamePage():
                     running = False
                     return "main"
 
-                elif event.type == pygame.K_ESCAPE:
-                    print("esc")
-                    paused = True
-                    return "pause"
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        print("esc")
+                        paused = True
+                        return "pause"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if deck_rect.collidepoint(event.pos):
@@ -498,7 +496,6 @@ class GamePage():
                             Message(self.screen, "UNO", 100, BLUE).draw()
                         else:
                             Message(self.screen, "WRONG UNO", 100, RED).draw()
-
 
                 self.uiManager.process_events(event)
             if paused is True:
@@ -517,9 +514,10 @@ class GamePage():
                 player_with_no_card = [player for player in self.game.players if len(player.cards) == 0]
                 if player_with_one_card:
                     if randint(0, 1) and not self.uno_button_pressed:
+                        time.sleep(random() * 3)
                         self.game.uno_button_clicked(1)
                         self.uno_button_pressed = True
-                        Message(screen, "UNO", 100, BLUE).draw()
+                        Message(self.screen, "UNO", 100, BLUE).draw()
                         print("UNO button clicked - computer")
 
                 if not player_with_one_card and self.uno_button_pressed:
