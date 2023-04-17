@@ -22,7 +22,7 @@ if __name__ == "__main__":
     pause_page = PausedPage(screen, setting)
 
     page = main_page.running()
-    
+
     while True:
         if page == "main":
             page = main_page.running()

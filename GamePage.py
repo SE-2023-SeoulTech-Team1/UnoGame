@@ -163,10 +163,15 @@ class GamePage():
     # black카드 일 때
     def handle_black(self, card_rect, i, chosen_card, screen, cardFrontList, screen_width, screen_height):
 
-        pygame.draw.rect(self.screen, SELECT_COLOR['red'], self.color_rects[0])
-        pygame.draw.rect(self.screen, SELECT_COLOR['green'], self.color_rects[1])
-        pygame.draw.rect(self.screen, SELECT_COLOR['blue'], self.color_rects[2])
-        pygame.draw.rect(self.screen, SELECT_COLOR['yellow'], self.color_rects[3])
+        if self.game.color_weak_mode == True:
+            idx = 0
+        else:
+            idx = 1
+
+        pygame.draw.rect(self.screen, RED if idx == 1 else W_RED, self.color_rects[0])
+        pygame.draw.rect(self.screen, GREEN if idx == 1 else W_GREEN, self.color_rects[1])
+        pygame.draw.rect(self.screen, BLUE if idx == 1 else W_BLUE, self.color_rects[2])
+        pygame.draw.rect(self.screen, YELLOW if idx == 1 else W_YELLOW, self.color_rects[3])
 
         # i+1번째 부터 카드 추가 해야 됨
         for j in range(i+1, len(self.game.players[0].cards)):
@@ -361,14 +366,18 @@ class GamePage():
     def current_card_color(self):
         card_color = self.game.current_card.color
         current_card_rect = pygame.Rect(self.screen_width*0.75 - 60, 20, 40, 40)
+        if self.game.color_weak_mode == True:
+            idx = 0
+        else:
+            idx = 1
         if card_color == 'red':
-            pygame.draw.rect(self.screen, RED, current_card_rect)
+            pygame.draw.rect(self.screen, RED if idx == 1 else W_RED, current_card_rect)
         elif card_color == 'blue':
-            pygame.draw.rect(self.screen, BLUE, current_card_rect)
+            pygame.draw.rect(self.screen, BLUE if idx == 1 else W_BLUE, current_card_rect)
         elif card_color == 'green':
-            pygame.draw.rect(self.screen, GREEN, current_card_rect)
+            pygame.draw.rect(self.screen, GREEN if idx == 1 else W_GREEN, current_card_rect)
         elif card_color == 'yellow':
-            pygame.draw.rect(self.screen, YELLOW, current_card_rect)
+            pygame.draw.rect(self.screen, YELLOW if idx == 1 else W_YELLOW, current_card_rect)
 
     def who_is_current_player(self):
         player = font.render(self.game.players[self.game.current_player_index].name, True, WHITE)
@@ -505,12 +514,14 @@ class GamePage():
         flip_card = True
         running = True
         paused = False
+        
+        
 
         draw_game_screen(self)
         deck_rect = self.draw_deck()
         self.draw_computer_cards()
         flip_card = self.flip_deck_card(flip_card)
-        
+
         self.uno_button.draw()
         card_rect_list = self.display_player_cards()
 
@@ -618,17 +629,17 @@ class GamePage():
 
 
                             print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
-                            # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
 
                         else:
                             print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
+
                             # 현재 플레이어 화면 출력
                             self.who_is_current_player()
                             draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
                             pygame.display.update()
 
                             print(f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
-                            self. game.players[self.game.current_player_index].draw_card(self.game.deck)
+                            self.game.players[self.game.current_player_index].draw_card(self.game.deck)
                             new_computer_card = self.game.players[self.game.current_player_index].cards[-1]
                             new_computer_card_img = pygame.image.load(new_computer_card.back).convert_alpha()
                             new_computer_card_rect = new_computer_card_img.get_rect()
