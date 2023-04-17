@@ -4,9 +4,10 @@ from Colors import *
 from Button import Button
 
 class PausedPage():
-    def __init__(self, screen):
+    def __init__(self, screen, setting):
         self.screen = screen
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
+        self.setting = setting
         self.key_idx = 0
 
         self.pause_btn = Button(0.5, 0.3, 200, 50, "RESUME",text_size=40)
