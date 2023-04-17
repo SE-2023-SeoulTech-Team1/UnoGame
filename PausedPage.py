@@ -3,7 +3,7 @@ import sys
 from Colors import *
 from Button import Button
 
-class Pause():
+class PausePage():
     def __init__(self, screen):
         self.screen = screen
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
