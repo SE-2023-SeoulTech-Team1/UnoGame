@@ -209,6 +209,29 @@ class GamePage():
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                     screen.blit(added_card_img, (end_pos.x, end_pos.y))
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
+                            elif chosen_card.type == 'bomb':
+
+                                self.game.bombcard_card_clicked(chosen_color)
+
+                                # bomb 그림
+                                bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
+                                bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
+                                display_bomb_animation(self.screen, bomb_icon)
+                                
+                            elif chosen_card.type == 'all':
+
+                                current_name = self.game.players[self.game.current_player_index].name
+                                target_name = self.game.players[self.game.current_player_index + 1].name
+                                all_change_icon = pygame.image.load(resource_path("./assets/all_change.png"))
+                                all_change_icon = pygame.transform.scale(all_change_icon, (200, 200))
+                                display_all_change_animation(self.screen, all_change_icon, current_name, target_name)
+
+                                self.game.change_all_clicked(1, chosen_color)
+
+                                
+
+
+
                             color_selected = True
                             break
 
@@ -258,12 +281,15 @@ class GamePage():
                                                 (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
                             self.game.current_card = openned_cards[-1]
 
-
                             # 기능 카드 눌렀을 때
-                            if self.game.current_card.type == 'wildcard':
+                            if self.game.current_card.type == 'all':
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)   
+                            elif self.game.current_card.type == 'wildcard':
                                 self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == '+4':
-                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height) 
+                            elif self.game.current_card.type == 'bomb':
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height) 
                             elif self.game.current_card.type == '+2':
                                 end_pos = self.draw_computer_cards()[-1]
                                 for i in range(2):
@@ -416,6 +442,23 @@ class GamePage():
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                     self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
                 self.game.plus4_card_clicked(self.game.players[self.game.current_player_index], choiced_color)
+            elif self.game.current_card.type == 'bomb':
+                bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
+                bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
+                display_bomb_animation(self.screen, bomb_icon)
+                
+                self.game.bombcard_card_clicked(choiced_color)
+
+            elif self.game.current_card.type == 'all':
+                # 일단 user와 바꿈
+                current_name = self.game.players[self.game.current_player_index].name
+                target_name = self.game.players[self.game.current_player_index - 1].name
+                all_change_icon = pygame.image.load(resource_path("./assets/all_change.png"))
+                all_change_icon = pygame.transform.scale(all_change_icon, (200, 200))
+                display_all_change_animation(self.screen, all_change_icon, current_name, target_name)
+
+                self.game.change_all_clicked(0, choiced_color)
+
         elif self.game.current_card.type == '+2':
             end_pos = self.display_player_cards()[-1]
             for i in range(2):
@@ -479,7 +522,7 @@ class GamePage():
                     running = False
                     pygame.mixer.music.stop()
                     del self
-                    return "main"
+                    return "exit"
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
