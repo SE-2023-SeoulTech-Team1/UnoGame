@@ -8,6 +8,7 @@ from Player import Player, Computer
 from MapPage import MapPage
 from PausedPage import PausedPage
 
+
 if __name__ == "__main__":
     pygame.init()
 
@@ -26,14 +27,15 @@ if __name__ == "__main__":
     pause_page = PausedPage(screen, setting)
 
     page = main_page.running()
+    
     while True:
         if page == "main":
             page = main_page.running()
         elif page == "setting":
             page = setting_page.running()
-
         elif page == "game":
             page = game_page.running()
+
         elif page == "game_level0":
             game_page_level0 = GamePage(screen, setting)
             page = game_page_level0.running()
