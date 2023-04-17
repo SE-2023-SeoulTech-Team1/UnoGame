@@ -41,7 +41,7 @@ class Button():
         else:
             self.surface.fill(self.colors['normal'])
 
-        text_render = font.render(self.text, True, self.text_color)
+        text_render = FONT.render(self.text, True, self.text_color)
         self.surface.blit(text_render, [
             self.rect.width/2 - text_render.get_rect().width/2,
             self.rect.height/2 - text_render.get_rect().height/2
@@ -50,7 +50,7 @@ class Button():
         screen.blit(self.surface, self.rect)
 
 
-class Text(Button):
+class TextButton(Button):
     def __init__(self, x, y, width, height, text = 'Button', background_color=WHITE, hover_color=LIGHT_GRAY, text_color=BLACK, text_size = 24):
         super().__init__(x, y, width, height, text = text, background_color=background_color, hover_color=hover_color, text_color=text_color, text_size = text_size)
         self.colors = {

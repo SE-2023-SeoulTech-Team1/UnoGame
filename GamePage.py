@@ -11,9 +11,9 @@ from PausedPage import *
 
 
 class GamePage():
-    def __init__(self, screen, setting, game):
+    def __init__(self, screen, setting):
         self.setting = setting
-        self.game = game
+        self.game = Game([Player("PLAYER0"), Computer("COMPUTER0")])
         self.screen = screen
 
         self.timer_obj = None
@@ -478,10 +478,12 @@ class GamePage():
                     del self.background_sound
                     return "main"
 
-                elif event.type == pygame.K_ESCAPE:
-                    print("esc")
-                    paused = True
-                    return "pause"
+                elif event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_ESCAPE:
+                        print("esc")
+                        paused = True
+                        return "pause"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if deck_rect.collidepoint(event.pos):

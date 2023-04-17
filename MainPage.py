@@ -1,5 +1,5 @@
 import pygame
-from Button import Button, Text
+from Button import Button, TextButton
 
 fps = 60
 fpsClock = pygame.time.Clock()
@@ -22,7 +22,7 @@ class MainPage():
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
-        self.title = Text(1/2, 1/6, 200, 50, "UNO GAME", hover_color=WHITE, text_color=BLUE)
+        self.title = TextButton(1/2, 1/6, 200, 50, "UNO GAME", hover_color=WHITE, text_color=BLUE)
 
         self.key_idx = 0
         self.start_btn = Button(0.5, 0.3, 200, 50, 'START', text_size=32)

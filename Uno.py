@@ -5,7 +5,7 @@ from GamePage import GamePage
 from Setting import Setting
 from Game import Game
 from Player import Player, Computer
-from Map import MapPage
+from MapPage import MapPage
 from PausedPage import PausedPage
 
 if __name__ == "__main__":
@@ -15,25 +15,39 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode(setting.screen_size)
     pygame.display.set_caption("Uno Game")
 
-
     main_page = MainPage(screen)
     setting_page = SettingPage(screen, setting)
     game_page = GamePage(screen, setting)
+    game_page_level0 = GamePage(screen, setting)
+    game_page_level1 = GamePage(screen, setting)
+    game_page_level2 = GamePage(screen, setting)
+    game_page_level3 = GamePage(screen, setting)
     map_page = MapPage(screen, setting)
-    pause_page = PausedPage(screen)
+    pause_page = PausedPage(screen, setting)
 
     page = main_page.running()
     while True:
         if page == "main":
             page = main_page.running()
-        if page == "setting":
+        elif page == "setting":
             page = setting_page.running()
-        if page == "game":
+
+        elif page == "game":
             page = game_page.running()
-        if page == "map":
+        elif page == "game_level0":
+            page = game_page_level0.running()
+        elif page == "game_level1":
+            page = game_page_level1.running()
+        elif page == "game_level2":
+            page = game_page_level2.running()
+        elif page == "game_level3":
+            page = game_page_level3.running()
+
+        elif page == "map":
             page = map_page.running()
-        if page == "exit":
-            exit(0)
-        if page == "pause":
+        elif page == "pause":
             page = pause_page.running()
+        elif page == "exit":
+            exit(0)
+
         
