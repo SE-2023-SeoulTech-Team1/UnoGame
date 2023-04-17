@@ -13,7 +13,7 @@ from PausedPage import *
 class GamePage():
     def __init__(self, screen, setting):
         self.setting = setting
-        self.game = Game([Player("PLAYER 0"), Computer("COMPUTER 0")])
+        self.game = Game([Player("PLAYER 0"), Computer("COMPUTER 0")], self.setting.color_weak)
         self.screen = screen
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()

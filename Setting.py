@@ -3,14 +3,14 @@ import pygame
 class Setting():
     def __init__(self):
         self.screen_size = (800, 600)
-        self.color_weak = True
+        self.color_weak = False
         self.key = "mouse"
         self.volume = "a"
 
     def reset(self):
         self.screen_size = (800, 600)
         pygame.display.set_mode(self.screen_size)
-        self.color_weak = True
+        self.color_weak = False
         self.key = "mouse"
         self.volume = "a"
 
