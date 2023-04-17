@@ -594,10 +594,17 @@ class GamePage():
                             Message(self.screen, "It's not your turn!", 32, RED).draw()
                     if self.uno_button.rect.collidepoint(event.pos):
                         print("UNO button clicked - user")
-                        if self.uno_button.clicked(0):
+                        if len(self.game.players[0].cards) == 1:
+                            self.uno_button_pressed = True
                             Message(self.screen, "UNO", 100, BLUE).draw()
                         else:
-                            Message(self.screen, "WRONG UNO", 100, RED).draw()
+                            Message(self.screen, "WRONG UNO", 100, BLUE).draw()
+
+                        # print("UNO button clicked - user")
+                        # if self.uno_button.clicked(0):
+                        #     Message(self.screen, "UNO", 100, BLUE).draw()
+                        # else:
+                        #     Message(self.screen, "WRONG UNO", 100, RED).draw()
 
                 self.uiManager.process_events(event)
             if paused is True:
@@ -616,10 +623,12 @@ class GamePage():
                 player_with_no_card = [player for player in self.game.players if len(player.cards) == 0]
                 if player_with_one_card:
                     if randint(0, 1) and not self.uno_button_pressed:
-                        time.sleep(random() * 3)
+                        # time.sleep(random() * 3)
+                        pygame.display.flip()
+                        pygame.time.delay(int(random()*3000))
                         self.game.uno_button_clicked(1)
                         self.uno_button_pressed = True
-                        Message(self.screen, "UNO", 100, BLUE).draw()
+                        Message(self.screen, "UNO", 100, RED).draw()
                         print("UNO button clicked - computer")
 
                 if not player_with_one_card and self.uno_button_pressed:
