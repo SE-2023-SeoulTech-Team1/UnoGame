@@ -471,6 +471,7 @@ class GamePage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    return "exit"
 
                 elif event.type == pygame.K_ESCAPE:
                     print("esc")
