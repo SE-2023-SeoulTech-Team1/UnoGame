@@ -16,7 +16,7 @@ class PausedPage():
         self.back_btn = Button(0.5, 0.5, 200, 50, "BACK",text_size=40)
         self.buttons = [self.pause_btn, self.setting_btn, self.back_btn]
 
-    def running(self, init):
+    def running(self):
 
         self.screen.fill(WHITE)
         for event in pygame.event.get():

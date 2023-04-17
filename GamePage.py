@@ -93,9 +93,10 @@ class GamePage():
             top = self.screen_height * 0.25 - i / 10
             left = self.screen_width * 0.25 - i / 10
             self.screen.blit(card_back_img, (left, top))
-        deck_rec = pygame.Rect(left, top, card_back_img.get_width(),
-                        card_back_img.get_height())
-        return deck_rec
+        if len(self.game.deck.cards) != 0:
+            deck_rec = pygame.Rect(left, top, card_back_img.get_width(),
+                            card_back_img.get_height())
+            return deck_rec
 
     # 컴퓨터 카드 그리기
     def draw_computer_cards(self):
@@ -625,15 +626,15 @@ class GamePage():
                     self.uno_button_pressed = False
 
                 if player_with_no_card:
-                    Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED)
+                    Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED).draw()
 
                     # break
                     # exit(0)
 
                 #우노 게임카드 다 썼을 때
-                if self.game.deck.len_card() < 5:
-                    self.game.reset_deck()
-                    self.game.deck.cards.pop(self.game.current_card)
+                if self.game.deck.len_card() == 0:
+                    Message(self.screen, "FINISH A TIE", 100, WHITE).draw()
+                    return "pause"
 
                 while self.game.current_player_index != 0:
                     if self.game.current_player_index != 0:
@@ -668,7 +669,6 @@ class GamePage():
 
                             # function card 일 때
                             self.computer_function_card()
-                            print("다음 인덱스 : " + str(self.game.current_player_index))
 
 
                             print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
