@@ -626,7 +626,8 @@ class GamePage():
                     self.uno_button_pressed = False
 
                 if player_with_no_card:
-                    Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED).draw()
+                    Message(self.screen, f"{player_with_no_card[0].name} WIN", 100, RED).draw()
+                    return "pause"
 
                     # break
                     # exit(0)
