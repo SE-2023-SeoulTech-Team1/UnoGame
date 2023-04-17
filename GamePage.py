@@ -11,9 +11,9 @@ from PausedPage import *
 
 
 class GamePage():
-    def __init__(self, screen, setting, game):
+    def __init__(self, screen, setting):
         self.setting = setting
-        self.game = game
+        self.game = Game([Player("PLAYER 0"), Computer("COMPUTER 0")])
         self.screen = screen
 
         self.screen_width = screen.get_width()
@@ -518,13 +518,12 @@ class GamePage():
                 if player_with_one_card:
                     if randint(0, 1) and not self.uno_button_pressed:
                         self.game.uno_button_clicked(1)
-<<<<<<< HEAD
-                        Message(self.screen, "UNO", 100, BLUE).draw()
-=======
                         self.uno_button_pressed = True
                         Message(screen, "UNO", 100, BLUE).draw()
->>>>>>> d10d6bde8ca5249c9976277af80bd3dad81d5a89
                         print("UNO button clicked - computer")
+
+                if not player_with_one_card and self.uno_button_pressed:
+                    self.uno_button_pressed = False
 
                 if player_with_no_card:
                     Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED)
