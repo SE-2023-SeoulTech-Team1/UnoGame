@@ -25,6 +25,7 @@ class GamePage():
         self.deck = None
         self.open_cards = None
         self.uno_button = UnoButton(self)
+        self.uno_button_pressed = False
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
 
@@ -474,7 +475,6 @@ class GamePage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    del self.background_sound
                     return "main"
 
                 elif event.type == pygame.KEYDOWN:
@@ -514,8 +514,9 @@ class GamePage():
                 player_with_one_card = [player for player in self.game.players if len(player.cards) == 1]
                 player_with_no_card = [player for player in self.game.players if len(player.cards) == 0]
                 if player_with_one_card:
-                    if randint(0, 1):
+                    if randint(0, 1) and not self.uno_button_pressed:
                         self.game.uno_button_clicked(1)
+                        self.uno_button_pressed = True
                         Message(screen, "UNO", 100, BLUE).draw()
                         print("UNO button clicked - computer")
 
