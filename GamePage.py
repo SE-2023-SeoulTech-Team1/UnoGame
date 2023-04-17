@@ -476,6 +476,8 @@ class GamePage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    self.background_sound.pause()
+                    del self
                     return "main"
 
                 if event.type == pygame.KEYDOWN:
