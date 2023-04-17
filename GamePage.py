@@ -7,6 +7,7 @@ from random import randint
 from draw import *
 from Message import Message
 from UnoButton import UnoButton
+from PausedPage import *
 
 
 class GamePage():
@@ -24,6 +25,8 @@ class GamePage():
         self.deck = None
         self.open_cards = None
         self.uno_button = UnoButton(self)
+        self.paused = False
+        self.pause_page = PausedPage(self.screen, self.setting)
 
         self.background_sound = pygame.mixer.Sound('./assets/background.mp3')
         self.card_move_sound = pygame.mixer.Sound('./assets/cardmove.mp3')
@@ -455,6 +458,7 @@ class GamePage():
         global openned_cards
         flip_card = True
         running = True
+        paused = False
 
         draw_game_screen(self)
         deck_rect = self.draw_deck()
@@ -476,7 +480,8 @@ class GamePage():
 
                 elif event.type == pygame.K_ESCAPE:
                     print("esc")
-                    running = False
+                    paused = True
+                    return "pause"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if deck_rect.collidepoint(event.pos):
@@ -493,93 +498,95 @@ class GamePage():
 
 
                 self.uiManager.process_events(event)
+            if paused:
+                return "pause"
+            else:
+                draw_game_screen(self)
+                self.uno_button.draw()
+                deck_rect = self.draw_deck()
+                self.current_card_color()
+                flip_card = self.flip_deck_card(flip_card)
+                self.draw_computer_cards()
+                card_rect_list = self.display_player_cards()
+                computer_card_rect_list = self.draw_computer_cards()
 
-            draw_game_screen(self)
-            self.uno_button.draw()
-            deck_rect = self.draw_deck()
-            self.current_card_color()
-            flip_card = self.flip_deck_card(flip_card)
-            self.draw_computer_cards()
-            card_rect_list = self.display_player_cards()
-            computer_card_rect_list = self.draw_computer_cards()
+                player_with_one_card = [player for player in self.game.players if len(player.cards) == 1]
+                player_with_no_card = [player for player in self.game.players if len(player.cards) == 0]
+                if player_with_one_card:
+                    if randint(0, 1):
+                        self.game.uno_button_clicked(1)
+                        Message(screen, "UNO", 100, BLUE).draw()
+                        print("UNO button clicked - computer")
 
-            player_with_one_card = [player for player in self.game.players if len(player.cards) == 1]
-            player_with_no_card = [player for player in self.game.players if len(player.cards) == 0]
-            if player_with_one_card:
-                if randint(0, 1):
-                    self.game.uno_button_clicked(1)
-                    Message(screen, "UNO", 100, BLUE).draw()
-                    print("UNO button clicked - computer")
+                if player_with_no_card:
+                    Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED)
 
-            if player_with_no_card:
-                Message(self.screen, f"PLAYER{player_with_no_card} WIN", 100, RED)
-                
-                # break
-                # exit(0)
+                    # break
+                    # exit(0)
 
-            #우노 게임카드 다 썼을 때
-            if self.game.deck.len_card() < 5:
-                self.game.reset_deck()
-                self.game.deck.cards.pop(self.game.current_card)
+                #우노 게임카드 다 썼을 때
+                if self.game.deck.len_card() < 5:
+                    self.game.reset_deck()
+                    self.game.deck.cards.pop(self.game.current_card)
 
-            while self.game.current_player_index != 0:
-                if self.game.current_player_index != 0:
+                while self.game.current_player_index != 0:
+                    if self.game.current_player_index != 0:
 
-                    if self.game.players[self.game.current_player_index].can_play(self.game.current_card):
-                        print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
-                        # 현재 플레이어 화면 출력
-                        self.who_is_current_player()
-                        pygame.display.update()
+                        if self.game.players[self.game.current_player_index].can_play(self.game.current_card):
+                            print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
+                            # 현재 플레이어 화면 출력
+                            self.who_is_current_player()
+                            pygame.display.update()
 
-                        card_idx_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
-                        popped_card = self.game.players[self.game.current_player_index].play_card(self.game)
-                        card_idx_after_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
-                        if len(self.game.players[self.game.current_player_index].cards) == 0:
-                            print("Computer Win!!")
+                            card_idx_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
+                            popped_card = self.game.players[self.game.current_player_index].play_card(self.game)
+                            card_idx_after_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
+                            if len(self.game.players[self.game.current_player_index].cards) == 0:
+                                print("Computer Win!!")
 
-                        card_idx = [x for x in card_idx_can_play if x not in card_idx_after_can_play]
-                        idx = card_idx[0]
-                        popped_card_back_img = pygame.image.load(popped_card.back).convert_alpha()
-                        popped_card_rect = computer_card_rect_list[idx]
+                            card_idx = [x for x in card_idx_can_play if x not in card_idx_after_can_play]
+                            idx = card_idx[0]
+                            popped_card_back_img = pygame.image.load(popped_card.back).convert_alpha()
+                            popped_card_rect = computer_card_rect_list[idx]
 
-                        openned_cards.append(popped_card)
+                            openned_cards.append(popped_card)
 
-                        start_pos = popped_card_rect
-                        self.card_move_sound.play()
-                        self.move_card_animation(popped_card_back_img, popped_card_rect,
-                                            (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
-                        # current card 업데이트
-                        self.game.current_card = openned_cards[-1]
-
-
-                        # function card 일 때
-                        self.computer_function_card()
-                        print("다음 인덱스 : " + str(self.game.current_player_index))
+                            start_pos = popped_card_rect
+                            self.card_move_sound.play()
+                            self.move_card_animation(popped_card_back_img, popped_card_rect,
+                                                (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
+                            # current card 업데이트
+                            self.game.current_card = openned_cards[-1]
 
 
-                        print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
-                        # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
-                        
-                    else:
-                        print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
-                        # 현재 플레이어 화면 출력
-                        self.who_is_current_player()
-                        pygame.display.update()
+                            # function card 일 때
+                            self.computer_function_card()
+                            print("다음 인덱스 : " + str(self.game.current_player_index))
 
-                        print(f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
-                        self. game.players[self.game.current_player_index].draw_card(self.game.deck)
-                        new_computer_card = self.game.players[self.game.current_player_index].cards[-1]
-                        new_computer_card_img = pygame.image.load(new_computer_card.back).convert_alpha()
-                        new_computer_card_rect = new_computer_card_img.get_rect()
-                        end_pos = computer_card_rect_list[-1]
-                        end_pos.x = end_pos.x - 20
-                        self.card_move_sound.play()
-                        self.move_card_animation(new_computer_card_img, new_computer_card_rect,
-                                            (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
-                        self.game.next_turn()
 
-            self.uiManager.update(dt)
-            self.uiManager.draw_ui(screen)
-            pygame.display.update()
+                            print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
+                            # animate_rect(screen, card_front_img, (100, 100), (500, 300), 2000)
+
+                        else:
+                            print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
+                            # 현재 플레이어 화면 출력
+                            self.who_is_current_player()
+                            pygame.display.update()
+
+                            print(f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
+                            self. game.players[self.game.current_player_index].draw_card(self.game.deck)
+                            new_computer_card = self.game.players[self.game.current_player_index].cards[-1]
+                            new_computer_card_img = pygame.image.load(new_computer_card.back).convert_alpha()
+                            new_computer_card_rect = new_computer_card_img.get_rect()
+                            end_pos = computer_card_rect_list[-1]
+                            end_pos.x = end_pos.x - 20
+                            self.card_move_sound.play()
+                            self.move_card_animation(new_computer_card_img, new_computer_card_rect,
+                                                (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
+                            self.game.next_turn()
+
+                self.uiManager.update(dt)
+                self.uiManager.draw_ui(screen)
+                pygame.display.update()
 
         return "game"
