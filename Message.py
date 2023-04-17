@@ -11,7 +11,7 @@ class Message():
 
     def draw(self):
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        text = font.render(self.text, True, self.color, None)
+        text = FONT.render(self.text, True, self.color, None)
         text_rec = text.get_rect()
         text_rec.top = 100
         text_rec.left = screen_width // 3

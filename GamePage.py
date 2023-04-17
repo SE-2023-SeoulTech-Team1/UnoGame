@@ -35,7 +35,6 @@ class GamePage():
         self.uiManager = pygame_gui.UIManager(windowSize)
         self.clock = pygame.time.Clock()
 
-
         self.color_rects = [
             pygame.Rect(screenWidth * 0.05, screenHeight * 0.65, 50, 50),
             pygame.Rect(screenWidth * 0.05 + 60, screenHeight * 0.65, 50, 50),
