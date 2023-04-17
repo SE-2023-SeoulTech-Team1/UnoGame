@@ -17,12 +17,12 @@ if __name__ == "__main__":
 
     main_page = MainPage(screen)
     setting_page = SettingPage(screen, setting)
-    game_page = GamePage(screen, setting)
-    game_page_level0 = GamePage(screen, setting)
-    game_page_level1 = GamePage(screen, setting)
-    game_page_level2 = GamePage(screen, setting)
-    game_page_level3 = GamePage(screen, setting)
-    map_page = MapPage(screen, setting)
+    # game_page = GamePage(screen, setting)
+    # game_page_level0 = GamePage(screen, setting)
+    # game_page_level1 = GamePage(screen, setting)
+    # game_page_level2 = GamePage(screen, setting)
+    # game_page_level3 = GamePage(screen, setting)
+    # map_page = MapPage(screen, setting)
     pause_page = PausedPage(screen, setting)
 
     page = main_page.running()
@@ -35,12 +35,16 @@ if __name__ == "__main__":
         elif page == "game":
             page = game_page.running()
         elif page == "game_level0":
+            game_page_level0 = GamePage(screen, setting)
             page = game_page_level0.running()
         elif page == "game_level1":
+            game_page_level1 = GamePage(screen, setting)
             page = game_page_level1.running()
         elif page == "game_level2":
+            game_page_level2 = GamePage(screen, setting)
             page = game_page_level2.running()
         elif page == "game_level3":
+            game_page_level3 = GamePage(screen, setting)
             page = game_page_level3.running()
 
         elif page == "map":

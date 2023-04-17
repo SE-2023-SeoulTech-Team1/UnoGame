@@ -11,10 +11,13 @@ from PausedPage import *
 
 
 class GamePage():
-    def __init__(self, screen, setting):
+    def __init__(self, screen, setting, game):
         self.setting = setting
-        self.game = Game([Player("PLAYER0"), Computer("COMPUTER0")])
+        self.game = game
         self.screen = screen
+
+        self.screen_width = screen.get_width()
+        self.screen_height = screen.get_height()
 
         self.timer_obj = None
         self.direction = None
@@ -25,6 +28,7 @@ class GamePage():
         self.deck = None
         self.open_cards = None
         self.uno_button = UnoButton(self)
+        self.uno_button_pressed = False
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
 
@@ -32,14 +36,15 @@ class GamePage():
         self.card_move_sound = pygame.mixer.Sound('./assets/cardmove.mp3')
         self.card_select_sound = pygame.mixer.Sound('./assets/cardclick.mp3')
 
-        self.uiManager = pygame_gui.UIManager(windowSize)
+        self.uiManager = pygame_gui.UIManager(setting.screen_size)
         self.clock = pygame.time.Clock()
 
+
         self.color_rects = [
-            pygame.Rect(screenWidth * 0.05, screenHeight * 0.65, 50, 50),
-            pygame.Rect(screenWidth * 0.05 + 60, screenHeight * 0.65, 50, 50),
-            pygame.Rect(screenWidth * 0.05 + 120, screenHeight * 0.65, 50, 50),
-            pygame.Rect(screenWidth * 0.05 + 180, screenHeight * 0.65, 50, 50)
+            pygame.Rect(self.screen_width * 0.05, self.screen_height * 0.65, 50, 50),
+            pygame.Rect(self.screen_width * 0.05 + 60, self.screen_height * 0.65, 50, 50),
+            pygame.Rect(self.screen_width * 0.05 + 120, self.screen_height * 0.65, 50, 50),
+            pygame.Rect(self.screen_width * 0.05 + 180, self.screen_height * 0.65, 50, 50)
         ]
 
         self.timerFlag = True
@@ -62,7 +67,7 @@ class GamePage():
             if totalTime - elapsed_time > 0 and deck_cards_num == len(self.game.deck.cards) and player_cards_num == len(self.game.players[0].cards):
                 elapsed_time = (pygame.time.get_ticks()-startTicks) / 1000
                 timer = font.render(str(int(totalTime - elapsed_time)), True, WHITE)
-                screen.blit(timer, (20, 20))
+                self.screen.blit(timer, (20, 20))
                 self.who_is_current_player()
             elif deck_cards_num != len(self.game.deck.cards) or player_cards_num != len(self.game.players[0].cards):
                 setTimer = False
@@ -73,7 +78,7 @@ class GamePage():
                 # game.next_turn()
             elif totalTime - elapsed_time > -1:
                 timeout = font.render("TIME OUT", True, WHITE)
-                screen.blit(timeout, (20, 20))
+                self.screen.blit(timeout, (20, 20))
                 self.who_is_current_player()
             else:
                 setTimer = False
@@ -87,9 +92,9 @@ class GamePage():
     def draw_deck(self):
         for i, card in enumerate(self.game.deck.cards):
             card_back_img = pygame.image.load(card.back).convert_alpha()
-            top = screenHeight * 0.25 - i / 10
-            left = screenWidth * 0.25 - i / 10
-            screen.blit(card_back_img, (left, top))
+            top = self.screen_height * 0.25 - i / 10
+            left = self.screen_width * 0.25 - i / 10
+            self.screen.blit(card_back_img, (left, top))
         deck_rec = pygame.Rect(left, top, card_back_img.get_width(),
                         card_back_img.get_height())
         return deck_rec
@@ -103,10 +108,10 @@ class GamePage():
             card_rec = card_back_img.get_rect()
             card_back_img = pygame.transform.scale(
                 card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
-            card_rec.top = screenHeight * 0.15
-            card_rec.left = screenWidth * 0.92 - i * 20
+            card_rec.top = self.screen_height * 0.15
+            card_rec.left = self.screen_width * 0.92 - i * 20
             computer_card_rect_list.append(card_rec)
-            screen.blit(card_back_img, card_rec)
+            self.screen.blit(card_back_img, card_rec)
         return computer_card_rect_list
 
     # 덱 카드 한 장 뒤집기
@@ -122,19 +127,19 @@ class GamePage():
             print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
 
             # 카드의 현재 위치 저장
-            card_loc = screenWidth * 0.25
+            card_loc = self.screen_width * 0.25
             flip_card = False
 
         # 오픈된 카드 목표 위치
-        top = screenHeight * 0.25
-        left = screenWidth * 0.4
+        top = self.screen_height * 0.25
+        left = self.screen_width * 0.4
 
         # 카드 목표 위치 도달까지 위치 변경
         if card_loc <= left:
             card_loc += 10
-            draw_card_front(screen, openned_cards[-1], top, card_loc)
+            draw_card_front(self.screen, openned_cards[-1], top, card_loc)
         else:
-            draw_card_front(screen, openned_cards[-1], top, card_loc)
+            draw_card_front(self.screen, openned_cards[-1], top, card_loc)
 
             if self.timerFlag == True:
                 self.timer(self.timerFlag, TIMEOUT)
@@ -158,20 +163,20 @@ class GamePage():
         return result_image
 
     # black카드 일 때
-    def handle_black(self, card_rect, i, chosen_card, screen, cardFrontList, screenWidth, screenHeight):
+    def handle_black(self, card_rect, i, chosen_card, screen, cardFrontList, screen_width, screen_height):
 
-        pygame.draw.rect(screen, SELECT_COLOR['red'], self.color_rects[0])
-        pygame.draw.rect(screen, SELECT_COLOR['green'], self.color_rects[1])
-        pygame.draw.rect(screen, SELECT_COLOR['blue'], self.color_rects[2])
-        pygame.draw.rect(screen, SELECT_COLOR['yellow'], self.color_rects[3])
+        pygame.draw.rect(self.screen, SELECT_COLOR['red'], self.color_rects[0])
+        pygame.draw.rect(self.screen, SELECT_COLOR['green'], self.color_rects[1])
+        pygame.draw.rect(self.screen, SELECT_COLOR['blue'], self.color_rects[2])
+        pygame.draw.rect(self.screen, SELECT_COLOR['yellow'], self.color_rects[3])
 
         # i+1번째 부터 카드 추가 해야 됨
         for j in range(i+1, len(self.game.players[0].cards)):
-            card_rect.left = cardFrontList[j - 1].left + (screenWidth * 0.05)
-            card_rect.top = screenHeight * 0.80
+            card_rect.left = cardFrontList[j - 1].left + (self.screen_width * 0.05)
+            card_rect.top = self.screen_height * 0.80
             cardFrontList.append(card_rect)
-            cardFrontList[j].top = screenHeight * 0.80
-            screen.blit(pygame.image.load(
+            cardFrontList[j].top = self.screen_height * 0.80
+            self.screen.blit(pygame.image.load(
                 self.game.players[0].cards[j].front).convert_alpha(), cardFrontList[j])
 
         pygame.display.flip()
@@ -199,7 +204,7 @@ class GamePage():
                                     added_card = self.game.deck.cards[-(i+1)]
                                     added_card_img = pygame.image.load(added_card.back).convert_alpha()
                                     added_card_rect = added_card_img.get_rect()
-                                    start_pos = self.draw_deck(self.game)
+                                    start_pos = self.draw_deck()
                                     end_pos.x = end_pos.x - 20
                                     self.card_move_sound.play()
                                     self.move_card_animation(self.game, added_card_img, added_card_rect,
@@ -213,14 +218,14 @@ class GamePage():
 
     def redraw_card(self, i, screen, card_rect, card_rect_list):
         for j in range(i+1, len(self.game.players[0].cards)):
-            card_rect.left = card_rect_list[j - 1].left + (screenWidth * 0.05)
-            card_rect.top = screenHeight * 0.80
+            card_rect.left = card_rect_list[j - 1].left + (self.screen_width * 0.05)
+            card_rect.top = self.screen_height * 0.80
             card_rect_list.append(card_rect)
-            card_rect_list[j].top = screenHeight * 0.80
-            screen.blit(pygame.image.load(
+            card_rect_list[j].top = self.screen_height * 0.80
+            self.screen.blit(pygame.image.load(
                 self.game.players[0].cards[j].front).convert_alpha(), card_rect_list[j])
 
-    def handle_card_hover(self, screen, card_rect_list, screenHeight):
+    def handle_card_hover(self, screen, card_rect_list, screen_height):
         mouse_pos = pygame.mouse.get_pos()
         global openned_cards
 
@@ -232,13 +237,13 @@ class GamePage():
             card_front_img = pygame.image.load(self.game.players[0].cards[i].front).convert_alpha()
 
             if not card_reacted and card_rect.collidepoint(mouse_pos):
-                card_rect.top = screenHeight * 0.75
+                card_rect.top = self.screen_height * 0.75
                 darkened_image = self.apply_shadow(card_front_img)
-                screen.blit(darkened_image, card_rect)
+                self.screen.blit(darkened_image, card_rect)
                 card_reacted = True
 
                 if self.valid_play(self.game.players[0].cards[i], openned_cards[-1]):
-                    screen.blit(card_front_img, card_rect)
+                    self.screen.blit(card_front_img, card_rect)
 
                     # 카드 클릭 로직
                     for event in pygame.event.get():
@@ -252,15 +257,15 @@ class GamePage():
                             start_pos = card_rect_list[i]
                             self.card_move_sound.play()
                             self.move_card_animation(chosen_card_img, chosen_card_rect,
-                                                (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
+                                                (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
                             self.game.current_card = openned_cards[-1]
 
 
                             # 기능 카드 눌렀을 때
                             if self.game.current_card.type == 'wildcard':
-                                self.handle_black(card_rect, i, chosen_card, screen, card_rect_list, screenWidth, screenHeight)
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == '+4':
-                                self.handle_black(card_rect, i, chosen_card, screen, card_rect_list, screenWidth, screenHeight)
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == '+2':
                                 end_pos = self.draw_computer_cards()[-1]
                                 for i in range(2):
@@ -272,11 +277,11 @@ class GamePage():
                                     self.card_move_sound.play()
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
                                 self.game.plus2_card_clicked(self.game.players[0])
                             elif self.game.current_card.type == 'reverse':
                                 # 클릭했을 때 오른쪽 카드 이미지들 누락 방지를 위한 코드
-                                self.redraw_card(i, screen, card_rect, card_rect_list)
+                                self.redraw_card(i, self.screen, card_rect, card_rect_list)
 
                                 if self.game.direction == 1:
                                     reverse_icon = pygame.image.load("./assets/counterclockwise.png")
@@ -285,7 +290,7 @@ class GamePage():
                                     reverse_icon = pygame.image.load("./assets/clockwise.png")
                                     reverse_icon = pygame.transform.scale(reverse_icon, (150, 150))
 
-                                display_reverse_animation(screen, reverse_icon)
+                                display_reverse_animation(self.screen, reverse_icon)
 
                                 self.game.reverse_card_clicked()
 
@@ -293,11 +298,11 @@ class GamePage():
                                 del card_rect_list[i+1: len(self.game.players[0].cards)]
 
                             elif self.game.current_card.type == 'skip':
-                                self.redraw_card(i, screen, card_rect, card_rect_list)
+                                self.redraw_card(i, self.screen, card_rect, card_rect_list)
 
                                 self.game.skip_card_clicked()
                                 # 로직은 나중에 functionCard 기능 고쳐지면 그 때 수정 --> 지금은 일시적으로
-                                display_skip_animation(screen, self.game.players[self.game.current_player_index + 1].name)
+                                display_skip_animation(self.screen, self.game.players[self.game.current_player_index + 1].name)
 
                                 del card_rect_list[i+1: len(self.game.players[0].cards)]
                             else:
@@ -308,8 +313,8 @@ class GamePage():
                             print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
 
             else:
-                card_rect.top = screenHeight * 0.80
-                screen.blit(card_front_img, card_rect)
+                card_rect.top = self.screen_height * 0.80
+                self.screen.blit(card_front_img, card_rect)
 
     def display_player_cards(self):
         card_rect_list = []
@@ -318,42 +323,42 @@ class GamePage():
             card_front_img = pygame.image.load(card.front).convert_alpha()
             card_rect = card_front_img.get_rect()
             if i == 0:
-                card_rect.left = screenWidth * 0.05
-                card_rect.top = screenHeight * 0.80
+                card_rect.left = self.screen_width * 0.05
+                card_rect.top = self.screen_height * 0.80
             else:
-                card_rect.left = card_rect_list[i - 1].left + (screenWidth * 0.05)
-                card_rect.top = screenHeight * 0.80
+                card_rect.left = card_rect_list[i - 1].left + (self.screen_width * 0.05)
+                card_rect.top = self.screen_height * 0.80
 
             card_rect_list.append(card_rect)
 
-        self.handle_card_hover(screen, card_rect_list, screenHeight)
+        self.handle_card_hover(self.screen, card_rect_list, self.screen_height)
         return card_rect_list
 
     def current_card_color(self):
         card_color = self.game.current_card.color
-        current_card_rect = pygame.Rect(playerBgx - 60, playerBgy + 20, 40, 40)
+        current_card_rect = pygame.Rect(self.screen_width*0.75 - 60, 20, 40, 40)
         if card_color == 'red':
-            pygame.draw.rect(screen, RED, current_card_rect)
+            pygame.draw.rect(self.screen, RED, current_card_rect)
         elif card_color == 'blue':
-            pygame.draw.rect(screen, BLUE, current_card_rect)
+            pygame.draw.rect(self.screen, BLUE, current_card_rect)
         elif card_color == 'green':
-            pygame.draw.rect(screen, GREEN, current_card_rect)
+            pygame.draw.rect(self.screen, GREEN, current_card_rect)
         elif card_color == 'yellow':
-            pygame.draw.rect(screen, YELLOW, current_card_rect)
+            pygame.draw.rect(self.screen, YELLOW, current_card_rect)
 
     def who_is_current_player(self):
         player = font.render(self.game.players[self.game.current_player_index].name, True, WHITE)
         player_rect = player.get_rect()
-        player_rect.centerx = round(boardx + boardWidth*0.5)
+        player_rect.centerx = round(self.screen_width * 0.75 * 0.5)
         player_rect.y = 20
-        screen.blit(player, player_rect)
+        self.screen.blit(player, player_rect)
 
     def unobutton(self):
         unobutton_img = pygame.image.load('./assets/unobutton.png').convert_alpha()
         unobutton_rect = unobutton_img.get_rect()
         unobutton_rect.centerx = round(boardx + boardWidth*0.5)
-        unobutton_rect.y = screenHeight * 0.45
-        screen.blit(unobutton_img, unobutton_rect)
+        unobutton_rect.y = self.screen_height * 0.45
+        self.screen.blit(unobutton_img, unobutton_rect)
         return unobutton_rect
 
     def move_card_animation(self, card_img, card_rect, start_pos, end_pos, duration=500):
@@ -367,15 +372,15 @@ class GamePage():
             progress = min(elapsed_time / duration, 10)
             new_pos = start_pos[0] + distance[0] * progress, start_pos[1] + distance[1] * progress
             card_rect.x, card_rect.y = new_pos
-            screen.blit(card_img, (card_rect.left, card_rect.top))
+            self.screen.blit(card_img, (card_rect.left, card_rect.top))
             pygame.display.flip()
             draw_game_screen(self)
             self.uno_button.draw()
             self.draw_deck()
             if openned_cards[-1] == self.game.current_card:
-                draw_card_front(screen, openned_cards[-1], screenHeight * 0.25, card_loc)
+                draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
             else:
-                draw_card_front(screen, openned_cards[-2], screenHeight * 0.25, card_loc)
+                draw_card_front(self.screen, openned_cards[-2], self.screen_height * 0.25, card_loc)
             self.current_card_color()
             self.who_is_current_player()
             self.draw_computer_cards()
@@ -383,7 +388,7 @@ class GamePage():
 
     def process_deck_clicked(self, deck_rect, end_pos):
         popped_card = self.game.deck.pop_card()
-        end_pos.x = end_pos.x + (screenWidth * 0.05)
+        end_pos.x = end_pos.x + (self.screen_width * 0.05)
         card_img = pygame.image.load(popped_card.front).convert_alpha()
         card_rect = card_img.get_rect()
 
@@ -407,11 +412,11 @@ class GamePage():
                     added_card_img = pygame.image.load(added_card.front).convert_alpha()
                     added_card_rect = added_card_img.get_rect()
                     start_pos = self.draw_deck()
-                    end_pos.x = end_pos.x + (screenWidth * 0.05)
+                    end_pos.x = end_pos.x + (self.screen_width * 0.05)
                     self.card_move_sound.play()
                     self.move_card_animation(added_card_img, added_card_rect,
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                    screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                    self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
                 self.game.plus4_card_clicked(self.game.players[self.game.current_player_index], choiced_color)
         elif self.game.current_card.type == '+2':
             end_pos = self.display_player_cards()[-1]
@@ -420,11 +425,11 @@ class GamePage():
                 added_card_img = pygame.image.load(added_card.front).convert_alpha()
                 added_card_rect = added_card_img.get_rect()
                 start_pos = self.draw_deck()
-                end_pos.x = end_pos.x + (screenWidth * 0.05)
+                end_pos.x = end_pos.x + (self.screen_width * 0.05)
                 self.card_move_sound.play()
                 self.move_card_animation(added_card_img, added_card_rect,
                                     (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
             self.game.plus2_card_clicked(self.game.players[self.game.current_player_index])
         elif self.game.current_card.type == 'reverse':
             if self.game.direction == 1:
@@ -433,12 +438,12 @@ class GamePage():
             else:
                 reverse_icon = pygame.image.load("./assets/clockwise.png")
                 reverse_icon = pygame.transform.scale(reverse_icon, (200, 200))
-            display_reverse_animation(screen, reverse_icon)
+            display_reverse_animation(self.screen, reverse_icon)
             self.game.reverse_card_clicked()
         elif self.game.current_card.type == 'skip':
             self.game.skip_card_clicked()
             # 게임 function card 버그 고쳐지면 수정 --> 지금은 애니메이션만 일시적으로 해놓음
-            display_skip_animation(screen, self.game.players[self.game.current_player_index - 1].name)
+            display_skip_animation(self.screen, self.game.players[self.game.current_player_index - 1].name)
         else:
             # 그냥 number카드 일 때
             self.game.next_turn()
@@ -474,32 +479,29 @@ class GamePage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    del self.background_sound
                     return "main"
 
-                elif event.type == pygame.KEYDOWN:
-
-                    if event.key == pygame.K_ESCAPE:
-                        print("esc")
-                        paused = True
-                        return "pause"
+                elif event.type == pygame.K_ESCAPE:
+                    print("esc")
+                    paused = True
+                    return "pause"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if deck_rect.collidepoint(event.pos):
                         if self.game.current_player_index == 0:
                             self.process_deck_clicked(deck_rect, card_rect_list[-1])
                         else:
-                            Message(screen, "It's not your turn!", 32, RED).draw()
+                            Message(self.screen, "It's not your turn!", 32, RED).draw()
                     if self.uno_button.rect.collidepoint(event.pos):
                         print("UNO button clicked - user")
                         if self.uno_button.clicked(0):
-                            Message(screen, "UNO", 100, BLUE).draw()
+                            Message(self.screen, "UNO", 100, BLUE).draw()
                         else:
-                            Message(screen, "WRONG UNO", 100, RED).draw()
+                            Message(self.screen, "WRONG UNO", 100, RED).draw()
 
 
                 self.uiManager.process_events(event)
-            if paused:
+            if paused is True:
                 return "pause"
             else:
                 draw_game_screen(self)
@@ -514,9 +516,14 @@ class GamePage():
                 player_with_one_card = [player for player in self.game.players if len(player.cards) == 1]
                 player_with_no_card = [player for player in self.game.players if len(player.cards) == 0]
                 if player_with_one_card:
-                    if randint(0, 1):
+                    if randint(0, 1) and not self.uno_button_pressed:
                         self.game.uno_button_clicked(1)
+<<<<<<< HEAD
+                        Message(self.screen, "UNO", 100, BLUE).draw()
+=======
+                        self.uno_button_pressed = True
                         Message(screen, "UNO", 100, BLUE).draw()
+>>>>>>> d10d6bde8ca5249c9976277af80bd3dad81d5a89
                         print("UNO button clicked - computer")
 
                 if player_with_no_card:
@@ -537,6 +544,7 @@ class GamePage():
                             print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
                             # 현재 플레이어 화면 출력
                             self.who_is_current_player()
+                            draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
                             pygame.display.update()
 
                             card_idx_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
@@ -555,7 +563,7 @@ class GamePage():
                             start_pos = popped_card_rect
                             self.card_move_sound.play()
                             self.move_card_animation(popped_card_back_img, popped_card_rect,
-                                                (start_pos.x, start_pos.y), (screenWidth*0.4, screenHeight*0.25))
+                                                (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
                             # current card 업데이트
                             self.game.current_card = openned_cards[-1]
 
@@ -572,6 +580,7 @@ class GamePage():
                             print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
                             # 현재 플레이어 화면 출력
                             self.who_is_current_player()
+                            draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
                             pygame.display.update()
 
                             print(f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
@@ -587,7 +596,7 @@ class GamePage():
                             self.game.next_turn()
 
                 self.uiManager.update(dt)
-                self.uiManager.draw_ui(screen)
+                self.uiManager.draw_ui(self.screen)
                 pygame.display.update()
 
         return "game"
