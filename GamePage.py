@@ -471,7 +471,8 @@ class GamePage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    return "exit"
+                    del self.background_sound
+                    return "main"
 
                 elif event.type == pygame.K_ESCAPE:
                     print("esc")
