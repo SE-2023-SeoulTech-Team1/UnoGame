@@ -8,6 +8,7 @@ from draw import *
 from Message import Message
 from UnoButton import UnoButton
 from PausedPage import *
+from resource_path import *
 
 
 class GamePage():
@@ -31,9 +32,9 @@ class GamePage():
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
 
-        self.background_sound = pygame.mixer.Sound('./assets/background.mp3')
-        self.card_move_sound = pygame.mixer.Sound('./assets/cardmove.mp3')
-        self.card_select_sound = pygame.mixer.Sound('./assets/cardclick.mp3')
+        self.background_sound = pygame.mixer.Sound(resource_path('./assets/background.mp3'))
+        self.card_move_sound = pygame.mixer.Sound(resource_path('./assets/cardmove.mp3'))
+        self.card_select_sound = pygame.mixer.Sound(resource_path('./assets/cardclick.mp3'))
 
         self.color_rects = [
             pygame.Rect(self.screen_width * 0.05, self.screen_height * 0.65, 50, 50),
@@ -281,10 +282,10 @@ class GamePage():
                                 self.redraw_card(i, self.screen, card_rect, card_rect_list)
 
                                 if self.game.direction == 1:
-                                    reverse_icon = pygame.image.load("./assets/counterclockwise.png")
+                                    reverse_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
                                     reverse_icon = pygame.transform.scale(reverse_icon, (150, 150))
                                 elif self.game.direction == -1:
-                                    reverse_icon = pygame.image.load("./assets/clockwise.png")
+                                    reverse_icon = pygame.image.load(resource_path("./assets/clockwise.png"))
                                     reverse_icon = pygame.transform.scale(reverse_icon, (150, 150))
 
                                 display_reverse_animation(self.screen, reverse_icon)
@@ -351,7 +352,7 @@ class GamePage():
         self.screen.blit(player, player_rect)
 
     def unobutton(self):
-        unobutton_img = pygame.image.load('./assets/unobutton.png').convert_alpha()
+        unobutton_img = pygame.image.load(resource_path('./assets/unobutton.png')).convert_alpha()
         unobutton_rect = unobutton_img.get_rect()
         unobutton_rect.centerx = round(self.screen_width*0.75*0.5)
         unobutton_rect.y = self.screen_height * 0.45
@@ -430,10 +431,10 @@ class GamePage():
             self.game.plus2_card_clicked(self.game.players[self.game.current_player_index])
         elif self.game.current_card.type == 'reverse':
             if self.game.direction == 1:
-                reverse_icon = pygame.image.load("./assets/counterclockwise.png")
+                reverse_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
                 reverse_icon = pygame.transform.scale(reverse_icon, (200, 200))
             else:
-                reverse_icon = pygame.image.load("./assets/clockwise.png")
+                reverse_icon = pygame.image.load(resource_path("./assets/clockwise.png"))
                 reverse_icon = pygame.transform.scale(reverse_icon, (200, 200))
             display_reverse_animation(self.screen, reverse_icon)
             self.game.reverse_card_clicked()
@@ -476,6 +477,8 @@ class GamePage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    pygame.mixer.music.stop()
+                    del self
                     return "main"
 
                 if event.type == pygame.KEYDOWN:
