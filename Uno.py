@@ -14,11 +14,10 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode(setting.screen_size)
     pygame.display.set_caption("Uno Game")
 
-    game = Game([Player("PLAYER0"), Computer("computer0")], setting.color_weak)
 
     main_page = MainPage(screen)
     setting_page = SettingPage(screen, setting)
-    game_page = GamePage(screen, setting, game)
+    game_page = GamePage(screen, setting)
     map_page = MapPage(screen, setting)
 
     page = main_page.running()

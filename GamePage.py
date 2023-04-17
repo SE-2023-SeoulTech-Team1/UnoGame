@@ -10,9 +10,9 @@ from UnoButton import UnoButton
 
 
 class GamePage():
-    def __init__(self, screen, setting, game):
+    def __init__(self, screen, setting):
         self.setting = setting
-        self.game = game
+        self.game = Game([Player("PLAYER0"), Computer("computer0")], setting.color_weak)
         self.screen = screen
 
         self.timer_obj = None
@@ -471,6 +471,8 @@ class GamePage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    del self.background_sound
+                    return "main"
 
                 elif event.type == pygame.K_ESCAPE:
                     print("esc")
