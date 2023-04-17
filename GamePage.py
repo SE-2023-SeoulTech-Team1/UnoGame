@@ -210,26 +210,59 @@ class GamePage():
                                     start_pos = self.draw_deck()
                                     end_pos.x = end_pos.x - 20
                                     self.card_move_sound.play()
-                                    self.move_card_animation(self.game, added_card_img, added_card_rect,
+                                    self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                     screen.blit(added_card_img, (end_pos.x, end_pos.y))
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
                             elif chosen_card.type == 'bomb':
-
-                                self.game.bombcard_card_clicked(chosen_color)
-
                                 # bomb 그림
                                 bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
                                 bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
                                 display_bomb_animation(self.screen, bomb_icon)
+                                end_pos = self.draw_computer_cards()[-1]
+                                for i in range(3):
+                                    added_card = self.game.deck.cards[-(i+1)]
+                                    added_card_img = pygame.image.load(added_card.back).convert_alpha()
+                                    added_card_rect = added_card_img.get_rect()
+                                    start_pos = self.draw_deck()
+                                    end_pos.x = end_pos.x - 20
+                                    self.card_move_sound.play()
+                                    self.move_card_animation(added_card_img, added_card_rect,
+                                                        (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                                    screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                self.game.bombcard_card_clicked(chosen_color)
+
                                 
                             elif chosen_card.type == 'all':
-
                                 current_name = self.game.players[self.game.current_player_index].name
                                 target_name = self.game.players[self.game.current_player_index + 1].name
                                 all_change_icon = pygame.image.load(resource_path("./assets/all_change.png"))
                                 all_change_icon = pygame.transform.scale(all_change_icon, (200, 200))
                                 display_all_change_animation(self.screen, all_change_icon, current_name, target_name)
+
+                                # end_pos = player_card_rect_list[0]
+                                # for i, card in enumerate(self.game.players[1].cards):
+                                #     computer_card_img = pygame.image.load(card.front).convert_alpha()
+                                #     computer_card_rect = computer_card_img.get_rect()
+                                #     start_pos = computer_card_rect_list[i]
+                                #     end_pos.x = end_pos.x + (self.screen_width * 0.05)
+                                #     self.move_card_animation(computer_card_img, computer_card_rect,
+                                #                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                                
+                                # pygame.display.update()
+
+                                # end_pos = computer_card_rect_list[0]
+                                # for i, card in enumerate(self.game.players[0].cards):
+                                #     player_card_img = pygame.image.load(card.back).convert_alpha()
+                                #     player_card_rect = player_card_img.get_rect()
+                                #     player_card_img = pygame.transform.scale(
+                                #         player_card_img, (player_card_rect.size[0]*0.7, player_card_rect.size[1]*0.7))
+                                #     start_pos = player_card_rect_list[i]
+                                #     end_pos.x = end_pos.x - i*20
+                                #     self.move_card_animation(player_card_img, player_card_rect,
+                                #                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                                
+
 
                                 self.game.change_all_clicked(1, chosen_color)
 
@@ -455,6 +488,16 @@ class GamePage():
                 bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
                 bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
                 display_bomb_animation(self.screen, bomb_icon)
+                end_pos = self.display_player_cards()[-1]
+                for i in range(3):
+                    added_card = self.game.deck.cards[-(i+1)]
+                    added_card_img = pygame.image.load(added_card.front).convert_alpha()
+                    added_card_rect = added_card_img.get_rect()
+                    start_pos = self.draw_deck()
+                    end_pos.x = end_pos.x + (self.screen_width * 0.05)
+                    self.card_move_sound.play()
+                    self.move_card_animation(added_card_img, added_card_rect,
+                                        (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                 
                 self.game.bombcard_card_clicked(choiced_color)
 
