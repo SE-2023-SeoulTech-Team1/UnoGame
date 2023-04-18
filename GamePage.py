@@ -545,7 +545,6 @@ class GamePage():
     def running(self):
         
         self.background_sound.play(-1)
-
         # 카드 초기 세팅
         self.game.deal_cards()
 
@@ -591,14 +590,15 @@ class GamePage():
                         if self.game.current_player_index == 0:
                             self.process_deck_clicked(deck_rect, card_rect_list[-1])
                         else:
-                            Message(self.screen, "It's not your turn!", 32, RED).draw()
+                            Message(self.screen, "It's not your turn!", RED).draw()
                     if self.uno_button.rect.collidepoint(event.pos):
                         print("UNO button clicked - user")
                         if len(self.game.players[0].cards) == 1:
                             self.uno_button_pressed = True
-                            Message(self.screen, "UNO", 100, BLUE).draw()
+                            Message(self.screen, "UNO", BLUE).draw()
+                            self.game.uno_button_clicked(0)
                         else:
-                            Message(self.screen, "WRONG UNO", 100, BLUE).draw()
+                            Message(self.screen, "WRONG UNO", BLUE).draw()
 
                         # print("UNO button clicked - user")
                         # if self.uno_button.clicked(0):
@@ -628,23 +628,37 @@ class GamePage():
                         pygame.time.delay(int(random()*3000))
                         self.game.uno_button_clicked(1)
                         self.uno_button_pressed = True
-                        Message(self.screen, "UNO", 100, RED).draw()
+                        Message(self.screen, "UNO", RED).draw()
                         print("UNO button clicked - computer")
 
                 if not player_with_one_card and self.uno_button_pressed:
                     self.uno_button_pressed = False
 
                 if player_with_no_card:
-                    Message(self.screen, f"{player_with_no_card[0].name} WIN", 100, RED).draw()
-                    return "pause"
+                    Message(self.screen, f"{player_with_no_card[0].name} WIN", WHITE).winner_draw()
+                    Message(self.screen, "Press ESC to go back", WHITE).press_esc_draw()
+                    self.timerFlag = False
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            paused = True
+                            return "pause"
+                        else:
+                            print("press esc")
 
                     # break
                     # exit(0)
 
                 #우노 게임카드 다 썼을 때
                 if self.game.deck.len_card() == 0:
-                    Message(self.screen, "FINISH A TIE", 100, WHITE).draw()
-                    return "pause"
+                    Message(self.screen, "FINISH A TIE", WHITE).winner_draw()
+                    Message(self.screen, "Press ESC to go back", WHITE).press_esc_draw()
+                    self.timerFlag = False
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            paused = True
+                            return "pause"
+                        else:
+                            print("press esc")
 
                 while self.game.current_player_index != 0:
                     if self.game.current_player_index != 0:
