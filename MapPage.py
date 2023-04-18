@@ -6,6 +6,7 @@ from Button import *
 from Colors import *
 from Text import *
 from resource_path import *
+from PausedPage import PausedPage
 
 class MapPage:
     def __init__(self, screen, setting):
@@ -17,6 +18,9 @@ class MapPage:
         self.level1_txt = Text(0.35, 0.35, "LEVEL 1", WHITE)
         self.level2_txt = Text(0.6, 0.65, "LEVEL 2", WHITE)
         self.level3_txt = Text(0.8, 0.35, "LEVEL 3", WHITE)
+
+        self.paused = False
+        self.pause_page = PausedPage(self.screen, self.setting)
 
 
     def running(self):
@@ -41,6 +45,10 @@ class MapPage:
                     return "game_level2"
                 elif self.level3_txt.rect.collidepoint(event.pos):
                     return "game_level3"
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    paused = True
+                    return "pause"
 
         pygame.display.update()
         return "map"
