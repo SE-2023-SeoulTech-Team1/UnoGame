@@ -49,7 +49,8 @@ class Game:
     def pick_current_card(self):
         while True:
             self.current_card = self.deck.pop_card()
-            if self.current_card.color != "black":
+            if (self.current_card.color != "black" and
+                self.current_card.type not in ['+2', 'skip', 'reverse']):
                 break
             else:
                 self.deck.cards.append(self.current_card)
