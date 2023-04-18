@@ -455,7 +455,8 @@ class GamePage():
             else:
                 draw_card_front(self.screen, openned_cards[-2], self.screen_height * 0.25, card_loc)
             self.current_card_color()
-            self.who_is_current_player()
+            if self.game.current_player_index != 0:
+                self.who_is_current_player()
             self.draw_computer_cards()
             self.display_player_cards()
 
@@ -672,9 +673,10 @@ class GamePage():
                         if self.game.players[self.game.current_player_index].can_play(self.game.current_card):
                             print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
                             # 현재 플레이어 화면 출력
+                            pygame.display.flip()
                             self.who_is_current_player()
                             draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
-                            pygame.display.update()
+                            # pygame.display.update()
 
                             card_idx_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
                             popped_card = self.game.players[self.game.current_player_index].play_card(self.game)
@@ -707,9 +709,10 @@ class GamePage():
                             print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
 
                             # 현재 플레이어 화면 출력
+                            pygame.display.flip()
                             self.who_is_current_player()
                             draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
-                            pygame.display.update()
+                            # pygame.display.update()
 
                             print(f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
                             self.game.players[self.game.current_player_index].draw_card(self.game.deck)
