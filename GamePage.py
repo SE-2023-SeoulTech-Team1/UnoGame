@@ -213,7 +213,9 @@ class GamePage():
                                     self.card_move_sound.play()
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    # screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    self.draw_computer_cards()
+                                    pygame.display.flip()
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
                             elif chosen_card.type == 'bomb':
                                 # bomb 그림
@@ -230,7 +232,9 @@ class GamePage():
                                     self.card_move_sound.play()
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    # screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    self.draw_computer_cards()
+                                    pygame.display.flip()
                                 self.game.bombcard_card_clicked(chosen_color)
 
                                 
@@ -340,7 +344,9 @@ class GamePage():
                                     self.card_move_sound.play()
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    # self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    self.draw_computer_cards()
+                                    pygame.display.flip()
                                 self.game.plus2_card_clicked(self.game.players[0])
                             elif self.game.current_card.type == 'reverse':
                                 # 클릭했을 때 오른쪽 카드 이미지들 누락 방지를 위한 코드
@@ -569,7 +575,7 @@ class GamePage():
         card_rect_list = self.display_player_cards()
 
         while running:
-            
+
             dt = self.clock.tick(60)/1000.0
 
             for event in pygame.event.get():
