@@ -57,3 +57,32 @@ class TextButton(Button):
             'normal': '#FFFFFF',
             'hover': '#EEEEEE',
         }
+
+class Slider():
+    def __init__(self, x, y, width, height, text_color=BLACK, text_size = 24):
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.text_size = text_size
+        self.font = pygame.font.SysFont('arialroundedmtbold', self.text_size)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.length = 200
+        self.top = (screen_width * self.x) - (self.width / 2)
+        self.left = (screen_height * self.y) - (self.height / 2) + 25
+        self.rect = pygame.Rect(self.top, self.left - 5, self.length, 10)
+        self.surface = pygame.Surface((self.width, self.height))
+        self.min_val = 0
+        self.max_val = 100
+        self.value = 50
+
+    def process_slider(self, screen):
+        pygame.draw.rect(screen, GRAY, [self.top, self.left - 5, self.length, 10])
+        pygame.draw.rect(screen, BLACK, [self.top + int((self.value - self.min_val) / (self.max_val - self.min_val) * self.length) - 5, self.left - 10, 10, 20])
+
+        text_min = self.font.render(str(self.min_val), True, GRAY)
+        screen.blit(text_min, [self.top - text_min.get_width() / 2, self.left + 15])
+        text_max = self.font.render(str(self.max_val), True, GRAY)
+        screen.blit(text_max, [self.top + self.length - text_max.get_width() / 2, self.left + 15])
+        text_value = self.font.render(str(self.value), True, BLACK)
+        screen.blit(text_value, [self.top + int((self.value - self.min_val) / (self.max_val - self.min_val) * self.length) - text_value.get_width() / 2, self.left - 25])

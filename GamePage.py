@@ -32,7 +32,6 @@ class GamePage():
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
 
-        self.background_sound = pygame.mixer.Sound(resource_path('./assets/background.mp3'))
         self.card_move_sound = pygame.mixer.Sound(resource_path('./assets/cardmove.mp3'))
         self.card_select_sound = pygame.mixer.Sound(resource_path('./assets/cardclick.mp3'))
 
@@ -123,6 +122,7 @@ class GamePage():
             self.game.pick_current_card()
             openned_cards.append(self.game.current_card)
             self.card_move_sound.play()
+            self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
             print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
 
             # 카드의 현재 위치 저장
@@ -196,6 +196,7 @@ class GamePage():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.card_select_sound.play()
+                    self.card_select_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                     mouse_pos = pygame.mouse.get_pos()
                     for idx, color_rect in enumerate(self.color_rects):
                         if color_rect.collidepoint(mouse_pos):
@@ -211,6 +212,7 @@ class GamePage():
                                     start_pos = self.draw_deck()
                                     end_pos.x = end_pos.x - 20
                                     self.card_move_sound.play()
+                                    self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                     # screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -230,6 +232,7 @@ class GamePage():
                                     start_pos = self.draw_deck()
                                     end_pos.x = end_pos.x - 20
                                     self.card_move_sound.play()
+                                    self.card_move_sound.set_volume(self.setting.volume * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                     # screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -320,6 +323,7 @@ class GamePage():
                             chosen_card_rect = card_rect_list[i]
                             start_pos = card_rect_list[i]
                             self.card_move_sound.play()
+                            self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                             self.move_card_animation(chosen_card_img, chosen_card_rect,
                                                 (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
                             self.game.current_card = openned_cards[-1]
@@ -342,6 +346,7 @@ class GamePage():
                                     start_pos = self.draw_deck()
                                     end_pos.x = end_pos.x - 20
                                     self.card_move_sound.play()
+                                    self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                                     # self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -467,6 +472,7 @@ class GamePage():
         card_rect = card_img.get_rect()
 
         self.card_move_sound.play()
+        self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
         self.move_card_animation(card_img, card_rect, (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
         self.game.players[0].cards.append(popped_card)
         print(f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
@@ -488,6 +494,7 @@ class GamePage():
                     start_pos = self.draw_deck()
                     end_pos.x = end_pos.x + (self.screen_width * 0.05)
                     self.card_move_sound.play()
+                    self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                     self.move_card_animation(added_card_img, added_card_rect,
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                     self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -504,6 +511,7 @@ class GamePage():
                     start_pos = self.draw_deck()
                     end_pos.x = end_pos.x + (self.screen_width * 0.05)
                     self.card_move_sound.play()
+                    self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                     self.move_card_animation(added_card_img, added_card_rect,
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                 
@@ -528,6 +536,7 @@ class GamePage():
                 start_pos = self.draw_deck()
                 end_pos.x = end_pos.x + (self.screen_width * 0.05)
                 self.card_move_sound.play()
+                self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                 self.move_card_animation(added_card_img, added_card_rect,
                                     (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                 self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
@@ -551,9 +560,11 @@ class GamePage():
 
     def running(self):
         
-        self.background_sound.play(-1)
         # 카드 초기 세팅
         self.game.deal_cards()
+        pygame.mixer.music.load(resource_path('./assets/background.mp3'))
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(self.setting.volume * 0.01 * self.setting.back_volume * 0.01)
 
         # players[0] 카드 출력
         print(f"\n{self.game.players[0].name}'s cards:")
@@ -565,7 +576,6 @@ class GamePage():
         running = True
         paused = False
         
-        
 
         draw_game_screen(self)
         deck_rect = self.draw_deck()
@@ -576,7 +586,6 @@ class GamePage():
         card_rect_list = self.display_player_cards()
 
         while running:
-
             dt = self.clock.tick(60)/1000.0
 
             for event in pygame.event.get():
@@ -693,6 +702,7 @@ class GamePage():
 
                             start_pos = popped_card_rect
                             self.card_move_sound.play()
+                            self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                             self.move_card_animation(popped_card_back_img, popped_card_rect,
                                                 (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
                             # current card 업데이트
@@ -722,6 +732,7 @@ class GamePage():
                             end_pos = computer_card_rect_list[-1]
                             end_pos.x = end_pos.x - 20
                             self.card_move_sound.play()
+                            self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                             self.move_card_animation(new_computer_card_img, new_computer_card_rect,
                                                 (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
                             self.game.next_turn()

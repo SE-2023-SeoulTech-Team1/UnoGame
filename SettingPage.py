@@ -1,6 +1,6 @@
 import sys
 import pygame
-from Button import Button, TextButton
+from Button import Button, TextButton, Slider
 from Colors import *
 
 
@@ -12,40 +12,43 @@ class SettingPage():
         self.key_idx = 0
         self.setting = setting
 
-        self.screen_size_txt = TextButton(0.3, 0.25, 200, 50, 'screen size')
-        self.color_weak_txt = TextButton(0.3, 0.35, 200, 50, 'color weak mode')
-        self.key_txt = TextButton(0.3, 0.45, 200, 50, 'key')
-        self.volume_txt = TextButton(0.3, 0.55, 200, 50, 'volume')
-        self.save_txt = TextButton(0.5, 0.65, 200, 50, 'SAVE')
-        self.reset_txt = TextButton(0.5, 0.75, 200, 50, 'RESET')
-        self.back_txt = TextButton(0.5, 0.85, 200, 50, 'BACK')
+        self.screen_size_txt = TextButton(0.3, 0.2, 200, 50, 'screen size')
+        self.color_weak_txt = TextButton(0.3, 0.3, 200, 50, 'color weak mode')
+        self.key_txt = TextButton(0.3, 0.4, 200, 50, 'key')
+        self.volume_txt = TextButton(0.3, 0.5, 200, 50, 'vol.')
+        self.back_volume_txt = TextButton(0.3, 0.6, 200, 50, 'background vol.')
+        self.effect_volume_txt = TextButton(0.3, 0.7, 200, 50, 'effect vol.')
+        self.save_txt = TextButton(0.25, 0.85, 200, 50, 'SAVE')
+        self.reset_txt = TextButton(0.5, 0.85, 200, 50, 'RESET')
+        self.back_txt = TextButton(0.75, 0.85, 200, 50, 'BACK')
 
         self.size_opt = {"idx": 0, "opt": ("800 x 600", "1000 x 750", "1200 x 900")}
-        self.size_opt_btn = Button(0.7, 0.25, 200, 50, str(self.size_opt["opt"][self.size_opt["idx"]]))
-        self.left_btn_0 = TextButton(0.55, 0.25, 30, 30, '<', background_color=LIGHT_GRAY)
-        self.right_btn_0 = TextButton(0.85, 0.25, 30, 30, '>', background_color=LIGHT_GRAY)
+        self.size_opt_btn = Button(0.7, 0.2, 200, 50, str(self.size_opt["opt"][self.size_opt["idx"]]))
+        self.left_btn_0 = TextButton(0.55, 0.2, 30, 30, '<', background_color=LIGHT_GRAY)
+        self.right_btn_0 = TextButton(0.85, 0.2, 30, 30, '>', background_color=LIGHT_GRAY)
 
         self.color_weak_opt = {"idx": 0, "opt": ("off", "on")}
-        self.color_weak_opt_btn = Button(0.7, 0.35, 200, 50, self.color_weak_opt["opt"][self.color_weak_opt["idx"]])
-        self.left_btn_1 = TextButton(0.55, 0.35, 30, 30, '<', background_color=LIGHT_GRAY)
-        self.right_btn_1 = TextButton(0.85, 0.35, 30, 30, '>', background_color=LIGHT_GRAY)
+        self.color_weak_opt_btn = Button(0.7, 0.3, 200, 50, self.color_weak_opt["opt"][self.color_weak_opt["idx"]])
+        self.left_btn_1 = TextButton(0.55, 0.3, 30, 30, '<', background_color=LIGHT_GRAY)
+        self.right_btn_1 = TextButton(0.85, 0.3, 30, 30, '>', background_color=LIGHT_GRAY)
 
         self.key_opt = {"idx": 0, "opt": ("mouse", "WSAD", "arrow keys")}
-        self.key_opt_btn = Button(0.7, 0.45, 200, 50, self.key_opt["opt"][self.key_opt["idx"]])
-        self.left_btn_2 = TextButton(0.55, 0.45, 30, 30, '<', background_color=LIGHT_GRAY)
-        self.right_btn_2 = TextButton(0.85, 0.45, 30, 30, '>', background_color=LIGHT_GRAY)
+        self.key_opt_btn = Button(0.7, 0.4, 200, 50, self.key_opt["opt"][self.key_opt["idx"]])
+        self.left_btn_2 = TextButton(0.55, 0.4, 30, 30, '<', background_color=LIGHT_GRAY)
+        self.right_btn_2 = TextButton(0.85, 0.4, 30, 30, '>', background_color=LIGHT_GRAY)
 
-        self.volume_opt = {"idx": 0, "opt": ("a", "b", "c")}
-        self.volume_opt_btn = Button(0.7, 0.55, 200, 50, self.volume_opt["opt"][self.volume_opt["idx"]])
-        self.left_btn_3 = TextButton(0.55, 0.55, 30, 30, '<', background_color=LIGHT_GRAY)
-        self.right_btn_3 = TextButton(0.85, 0.55, 30, 30, '>', background_color=LIGHT_GRAY)
+        self.volume_slider = Slider(0.7, 0.5, 200, 50)
+        self.back_volume_slider = Slider(0.7, 0.6, 200, 50)
+        self.effect_volume_slider = Slider(0.7, 0.7, 200, 50)
 
-        self.opt_texts = [self.screen_size_txt, self.color_weak_txt,
-                        self.key_txt, self.volume_txt, self.save_txt, self.reset_txt, self.back_txt]
-        self.opt = [self.size_opt, self.color_weak_opt, self.key_opt, self.volume_opt]
-        self.opt_buttons = [self.size_opt_btn, self.color_weak_opt_btn, self.key_opt_btn, self.volume_opt_btn]
-        self.left_buttons = [self.left_btn_0, self.left_btn_1, self.left_btn_2, self.left_btn_3]
-        self.right_buttons = [self.right_btn_0, self.right_btn_1, self.right_btn_2, self.right_btn_3]
+        self.opt_texts = [self.screen_size_txt, self.color_weak_txt, self.key_txt, 
+                    self.volume_txt, self.back_volume_txt, self.effect_volume_txt,
+                    self.save_txt, self.reset_txt, self.back_txt]
+        self.opt = [self.size_opt, self.color_weak_opt, self.key_opt]
+        self.opt_buttons = [self.size_opt_btn, self.color_weak_opt_btn, self.key_opt_btn]
+        self.left_buttons = [self.left_btn_0, self.left_btn_1, self.left_btn_2]
+        self.right_buttons = [self.right_btn_0, self.right_btn_1, self.right_btn_2]
+        self.volume_sliders = [self.volume_slider, self.back_volume_slider, self.effect_volume_slider]
 
     def running(self):
         self.screen.fill(WHITE)
@@ -68,21 +71,30 @@ class SettingPage():
                         self.opt[self.key_idx]["idx"] += 1
                         self.opt[self.key_idx]["idx"] %= len(self.opt[self.key_idx]["opt"])
                         self.opt_buttons[self.key_idx].text = self.opt[self.key_idx]["opt"][self.opt[self.key_idx]["idx"]]
+                
+                for slider in self.volume_sliders:
+                    if event.pos[0] >= slider.top and event.pos[0] <= slider.top + slider.length and event.pos[1] >= slider.left - 10 and event.pos[1] <= slider.left + 10:
+                        slider.value = int((event.pos[0] - slider.top) / slider.length * (slider.max_val - slider.min_val) + slider.min_val)
+
 
                 if self.save_txt.rect.collidepoint(event.pos):
                     width, height = self.size_opt_btn.text.split(' x ')
                     screen_size = (int(width), int(height))
                     color_weak = True if self.color_weak_opt_btn.text == "on" else False
                     key = self.key_opt_btn.text
-                    volumn = self.volume_opt_btn
-                    self.setting.set(screen_size, color_weak, key, volumn)
+                    volumn = self.volume_slider.value
+                    back_volumn = self.back_volume_slider.value
+                    effect_volumn = self.effect_volume_slider.value
+                    self.setting.set(screen_size, color_weak, key, volumn, back_volumn, effect_volumn)
                     return "main"
 
                 elif self.reset_txt.rect.collidepoint(event.pos):
                     self.size_opt_btn.text = "800 x 600"
                     self.color_weak_opt_btn.text = "off"
                     self.key_opt_btn.text = "mouse"
-                    self.volume_opt_btn.text = "a"
+                    self.volume_slider.value = 50
+                    self.back_volume_slider.value = 50
+                    self.effect_volume_slider.value = 50
                     self.setting.reset()
                     return "main"
 
@@ -119,8 +131,7 @@ class SettingPage():
                         screen_size = (int(width), int(height))
                         color_weak = True if self.color_weak_opt_btn.text == "on" else False
                         key = self.key_opt_btn.text
-                        volumn = self.volume_opt_btn
-                        self.setting.set(screen_size, color_weak, key, volumn)
+                        self.setting.set(screen_size, color_weak, key)
                         return "main"
 
                     elif self.key_idx == 5:
@@ -132,6 +143,9 @@ class SettingPage():
 
         for button in (self.opt_texts + self.opt_buttons + self.left_buttons + self.right_buttons):
             button.process(self.screen)
+
+        for slider in self.volume_sliders:
+            slider.process_slider(self.screen)
 
         pygame.display.flip()
         fpsClock.tick(fps)
