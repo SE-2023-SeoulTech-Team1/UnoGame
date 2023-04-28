@@ -15,11 +15,11 @@ if __name__ == "__main__":
     setting = Setting()
     screen = pygame.display.set_mode(setting.screen_size)
     pygame.display.set_caption("Uno Game")
-
+    save_game_state = None
     main_page = MainPage(screen)
     setting_page = SettingPage(screen, setting)
     map_page = MapPage(screen, setting)
-    pause_page = PausedPage(screen, setting)
+    pause_page = PausedPage(screen, setting, save_game_state)
 
     page = main_page.running()
 
@@ -30,6 +30,8 @@ if __name__ == "__main__":
             page = setting_page.running()
         elif page == "game":
             game_page = GamePage(screen, setting)
+            if save_game_state:
+                game_page.game = save_game_state
             page = game_page.running()
 
         elif page == "game_level0":
@@ -48,7 +50,7 @@ if __name__ == "__main__":
         elif page == "map":
             page = map_page.running()
         elif page == "pause":
-            page = pause_page.running()
+            state, page = pause_page.running()
         elif page == "exit":
             exit(0)
 

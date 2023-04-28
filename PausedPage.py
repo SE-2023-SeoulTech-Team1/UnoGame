@@ -4,7 +4,7 @@ from Colors import *
 from Button import Button
 
 class PausedPage():
-    def __init__(self, screen, setting):
+    def __init__(self, screen, setting, save_game_state):
         self.screen = screen
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.setting = setting
@@ -15,6 +15,7 @@ class PausedPage():
         self.setting_btn = Button(0.5, 0.4, 200, 50, "SETTING",text_size=40)
         self.back_btn = Button(0.5, 0.5, 200, 50, "BACK",text_size=40)
         self.buttons = [self.pause_btn, self.setting_btn, self.back_btn]
+        self.save_game_state = save_game_state
 
     def running(self):
 
@@ -24,6 +25,7 @@ class PausedPage():
                 return "exit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.pause_btn.rect.collidepoint(event.pos):
+                    
                     return "game"
                 elif self.setting_btn.rect.collidepoint(event.pos):
                     return "setting"

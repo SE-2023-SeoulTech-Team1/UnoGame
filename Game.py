@@ -169,6 +169,8 @@ class Game:
         self.current_card.color = chosen_color
         self.next_turn()
         return self
+    
+    
 
     def uno_button_clicked(self, player_idx):
 

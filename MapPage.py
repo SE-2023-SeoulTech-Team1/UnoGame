@@ -20,7 +20,7 @@ class MapPage:
         self.level3_txt = Text(0.8, 0.35, "LEVEL 3", WHITE)
 
         self.paused = False
-        self.pause_page = PausedPage(self.screen, self.setting)
+        self.pause_page = PausedPage(self.screen, self.setting, save_game_state=None)
 
 
     def running(self):

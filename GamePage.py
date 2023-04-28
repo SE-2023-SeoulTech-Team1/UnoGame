@@ -213,7 +213,9 @@ class GamePage():
                                     self.card_move_sound.play()
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    # screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    self.draw_computer_cards()
+                                    pygame.display.flip()
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
                             elif chosen_card.type == 'bomb':
                                 # bomb 그림
@@ -230,7 +232,9 @@ class GamePage():
                                     self.card_move_sound.play()
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    # screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    self.draw_computer_cards()
+                                    pygame.display.flip()
                                 self.game.bombcard_card_clicked(chosen_color)
 
                                 
@@ -340,7 +344,9 @@ class GamePage():
                                     self.card_move_sound.play()
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    # self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
+                                    self.draw_computer_cards()
+                                    pygame.display.flip()
                                 self.game.plus2_card_clicked(self.game.players[0])
                             elif self.game.current_card.type == 'reverse':
                                 # 클릭했을 때 오른쪽 카드 이미지들 누락 방지를 위한 코드
@@ -449,7 +455,8 @@ class GamePage():
             else:
                 draw_card_front(self.screen, openned_cards[-2], self.screen_height * 0.25, card_loc)
             self.current_card_color()
-            self.who_is_current_player()
+            if self.game.current_player_index != 0:
+                self.who_is_current_player()
             self.draw_computer_cards()
             self.display_player_cards()
 
@@ -569,7 +576,7 @@ class GamePage():
         card_rect_list = self.display_player_cards()
 
         while running:
-            
+
             dt = self.clock.tick(60)/1000.0
 
             for event in pygame.event.get():
@@ -666,9 +673,10 @@ class GamePage():
                         if self.game.players[self.game.current_player_index].can_play(self.game.current_card):
                             print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
                             # 현재 플레이어 화면 출력
+                            pygame.display.flip()
                             self.who_is_current_player()
                             draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
-                            pygame.display.update()
+                            # pygame.display.update()
 
                             card_idx_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
                             popped_card = self.game.players[self.game.current_player_index].play_card(self.game)
@@ -701,9 +709,10 @@ class GamePage():
                             print(f"\n현재 {self.game.players[self.game.current_player_index].name}의 턴입니다.")
 
                             # 현재 플레이어 화면 출력
+                            pygame.display.flip()
                             self.who_is_current_player()
                             draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
-                            pygame.display.update()
+                            # pygame.display.update()
 
                             print(f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
                             self.game.players[self.game.current_player_index].draw_card(self.game.deck)
