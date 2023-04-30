@@ -59,7 +59,7 @@ class TextButton(Button):
         }
 
 class Slider():
-    def __init__(self, x, y, width, height, text_color=BLACK, text_size = 24):
+    def __init__(self, x, y, width, height, value = None, text_color=BLACK, text_size = 24):
         screen_width, screen_height = pygame.display.get_surface().get_size()
         self.text_size = text_size
         self.font = pygame.font.SysFont('arialroundedmtbold', self.text_size)
@@ -74,7 +74,10 @@ class Slider():
         self.surface = pygame.Surface((self.width, self.height))
         self.min_val = 0
         self.max_val = 100
-        self.value = 50
+        if value is None:
+            self.value = 50
+        else:
+            self.value = value
 
     def process_slider(self, screen):
         pygame.draw.rect(screen, GRAY, [self.top, self.left - 5, self.length, 10])

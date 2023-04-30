@@ -17,6 +17,10 @@ if __name__ == "__main__":
     pygame.init()
 
     setting = Setting()
+    if os.path.exists('setting_state.pkl'):
+            with open('setting_state.pkl', 'rb') as f:
+                setting_state = pickle.load(f)
+            setting = setting_state
     screen = pygame.display.set_mode(setting.screen_size)
     pygame.display.set_caption("Uno Game")
 
