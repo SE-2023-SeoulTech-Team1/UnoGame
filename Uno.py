@@ -7,6 +7,10 @@ from Game import Game
 from Player import Player, Computer
 from MapPage import MapPage
 from PausedPage import PausedPage
+import pickle
+import os
+import atexit
+
 
 
 if __name__ == "__main__":
@@ -22,6 +26,10 @@ if __name__ == "__main__":
     pause_page = PausedPage(screen, setting)
 
     page = main_page.running()
+    def delete_pickle():
+        if os.path.exists('game_state.pkl'):
+            os.remove('game_state.pkl')
+
 
     while True:
         if page == "main":
@@ -31,6 +39,7 @@ if __name__ == "__main__":
         elif page == "game":
             game_page = GamePage(screen, setting)
             page = game_page.running()
+            
 
         elif page == "game_level0":
             game_page_level0 = GamePage(screen, setting)
@@ -50,6 +59,8 @@ if __name__ == "__main__":
         elif page == "pause":
             page = pause_page.running()
         elif page == "exit":
+            atexit.register(delete_pickle)
             exit(0)
+
 
         

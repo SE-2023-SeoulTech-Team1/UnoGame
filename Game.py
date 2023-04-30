@@ -1,6 +1,7 @@
 from Card import *
 from random import shuffle
 from Player import *
+import os
 
 TIMEOUT = 10
 
@@ -13,7 +14,10 @@ class Game:
 
         cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
         cards += [Card("black", type, color_weak_mode) for type in BLACK_CARD_TYPES]
-        shuffle(cards)
+        if os.path.exists('game_state.pkl'):
+            pass
+        else: 
+            shuffle(cards)
 
         self.deck = Deck(cards)
         self.players = players
@@ -22,7 +26,6 @@ class Game:
         self.direction = 1
         self.uno = None
         self.color_weak_mode = color_weak_mode
-
     
     def reset_deck(self, color_weak_mode=False):
         cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]

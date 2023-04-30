@@ -4,13 +4,14 @@ from Button import Button, TextButton, Slider
 from Colors import *
 
 
+
 class SettingPage():
     def __init__(self, screen, setting):
 
         self.screen = screen
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.key_idx = 0
-        self.setting = setting
+        self.setting = setting     
 
         self.screen_size_txt = TextButton(0.3, 0.2, 200, 50, 'screen size')
         self.color_weak_txt = TextButton(0.3, 0.3, 200, 50, 'color weak mode')
@@ -75,7 +76,6 @@ class SettingPage():
                 for slider in self.volume_sliders:
                     if event.pos[0] >= slider.top and event.pos[0] <= slider.top + slider.length and event.pos[1] >= slider.left - 10 and event.pos[1] <= slider.left + 10:
                         slider.value = int((event.pos[0] - slider.top) / slider.length * (slider.max_val - slider.min_val) + slider.min_val)
-
 
                 if self.save_txt.rect.collidepoint(event.pos):
                     width, height = self.size_opt_btn.text.split(' x ')

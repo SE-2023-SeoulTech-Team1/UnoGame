@@ -9,7 +9,8 @@ from Message import Message
 from UnoButton import UnoButton
 from PausedPage import *
 from resource_path import *
-
+import pickle
+import os 
 
 class GamePage():
     def __init__(self, screen, setting):
@@ -46,6 +47,7 @@ class GamePage():
         self.count = True
         self.uiManager = pygame_gui.UIManager(setting.screen_size)
         self.clock = pygame.time.Clock()
+        
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -117,9 +119,12 @@ class GamePage():
         global openned_cards, card_loc, timerFlag
 
         # game의 pick_current_card 사용해서 게임 시작 직후 current card 정보 불러오고 open된 카드 리스트에 저장
-        if flip_card is True:
+        if flip_card is True:                
             openned_cards = []
-            self.game.pick_current_card()
+            if os.path.exists('game_state.pkl'):
+                pass
+            else:
+                self.game.pick_current_card()
             openned_cards.append(self.game.current_card)
             self.card_move_sound.play()
             self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
@@ -128,6 +133,7 @@ class GamePage():
             # 카드의 현재 위치 저장
             card_loc = self.screen_width * 0.25
             flip_card = False
+            
 
         # 오픈된 카드 목표 위치
         top = self.screen_height * 0.25
@@ -247,30 +253,6 @@ class GamePage():
                                 all_change_icon = pygame.image.load(resource_path("./assets/all_change.png"))
                                 all_change_icon = pygame.transform.scale(all_change_icon, (200, 200))
                                 display_all_change_animation(self.screen, all_change_icon, current_name, target_name)
-
-                                # end_pos = player_card_rect_list[0]
-                                # for i, card in enumerate(self.game.players[1].cards):
-                                #     computer_card_img = pygame.image.load(card.front).convert_alpha()
-                                #     computer_card_rect = computer_card_img.get_rect()
-                                #     start_pos = computer_card_rect_list[i]
-                                #     end_pos.x = end_pos.x + (self.screen_width * 0.05)
-                                #     self.move_card_animation(computer_card_img, computer_card_rect,
-                                #                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                
-                                # pygame.display.update()
-
-                                # end_pos = computer_card_rect_list[0]
-                                # for i, card in enumerate(self.game.players[0].cards):
-                                #     player_card_img = pygame.image.load(card.back).convert_alpha()
-                                #     player_card_rect = player_card_img.get_rect()
-                                #     player_card_img = pygame.transform.scale(
-                                #         player_card_img, (player_card_rect.size[0]*0.7, player_card_rect.size[1]*0.7))
-                                #     start_pos = player_card_rect_list[i]
-                                #     end_pos.x = end_pos.x - i*20
-                                #     self.move_card_animation(player_card_img, player_card_rect,
-                                #                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                
-
 
                                 self.game.change_all_clicked(1, chosen_color)
 
@@ -558,8 +540,8 @@ class GamePage():
             # 그냥 number카드 일 때
             self.game.next_turn()
 
-    def running(self):
-        
+    def running(self):  
+
         # 카드 초기 세팅
         self.game.deal_cards()
         pygame.mixer.music.load(resource_path('./assets/background.mp3'))
@@ -572,19 +554,27 @@ class GamePage():
             print(self.game.players[0].cards[i])
 
         global openned_cards
-        flip_card = True
+        flip_card2 = True
         running = True
         paused = False
         
-
         draw_game_screen(self)
         deck_rect = self.draw_deck()
         self.draw_computer_cards()
-        flip_card = self.flip_deck_card(flip_card)
-
+        
         self.uno_button.draw()
         card_rect_list = self.display_player_cards()
 
+        # 피클 세팅 
+        if os.path.exists('game_state.pkl'):
+            with open('game_state.pkl', 'rb') as f:
+                game_state = pickle.load(f)
+            self.game = game_state
+        
+        print("current card : "+str(self.game.current_card))
+        
+        self.flip_deck_card(flip_card2)
+        
         while running:
             dt = self.clock.tick(60)/1000.0
 
@@ -599,6 +589,8 @@ class GamePage():
                     if event.key == pygame.K_ESCAPE:
                         print("esc")
                         paused = True
+                        with open("game_state.pkl", "wb") as f:
+                            pickle.dump(self.game, f)
                         return "pause"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -616,12 +608,6 @@ class GamePage():
                         else:
                             Message(self.screen, "WRONG UNO", BLUE).draw()
 
-                        # print("UNO button clicked - user")
-                        # if self.uno_button.clicked(0):
-                        #     Message(self.screen, "UNO", 100, BLUE).draw()
-                        # else:
-                        #     Message(self.screen, "WRONG UNO", 100, RED).draw()
-
                 self.uiManager.process_events(event)
             if paused is True:
                 return "pause"
@@ -630,7 +616,7 @@ class GamePage():
                 self.uno_button.draw()
                 deck_rect = self.draw_deck()
                 self.current_card_color()
-                flip_card = self.flip_deck_card(flip_card)
+                self.flip_deck_card(None)
                 self.draw_computer_cards()
                 card_rect_list = self.display_player_cards()
                 computer_card_rect_list = self.draw_computer_cards()
@@ -639,7 +625,6 @@ class GamePage():
                 player_with_no_card = [player for player in self.game.players if len(player.cards) == 0]
                 if player_with_one_card:
                     if randint(0, 1) and not self.uno_button_pressed:
-                        # time.sleep(random() * 3)
                         pygame.display.flip()
                         pygame.time.delay(int(random()*3000))
                         self.game.uno_button_clicked(1)
@@ -685,7 +670,6 @@ class GamePage():
                             pygame.display.flip()
                             self.who_is_current_player()
                             draw_card_front(self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
-                            # pygame.display.update()
 
                             card_idx_can_play = self.game.players[self.game.current_player_index].can_play(self.game.current_card)
                             popped_card = self.game.players[self.game.current_player_index].play_card(self.game)

@@ -59,7 +59,6 @@ class MainPage():
                     self.buttons[(self.key_idx - 1) % len(self.buttons)].key_hovered = False
                     self.buttons[self.key_idx].key_hovered = True
                 elif event.key == pygame.K_UP:
-                    # if self.key_idx > 0:
                     self.key_idx -= 1
                     self.key_idx %= len(self.buttons)
                     self.buttons[(self.key_idx + 1) % len(self.buttons)].key_hovered = False

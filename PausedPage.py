@@ -49,7 +49,7 @@ class PausedPage():
                         return "setting"
                     elif self.key_idx == 2:
                         return "main"
-       
+        
         for button in self.buttons:
             button.process(self.screen)
 
