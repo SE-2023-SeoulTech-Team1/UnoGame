@@ -4,8 +4,8 @@ from SettingPage import SettingPage
 from GamePage import GamePage
 from LobbyPage import LobbyPage
 from Setting import Setting
-from src.MapPage import MapPage
-from src.PausedPage import PausedPage
+from MapPage import MapPage
+from PausedPage import PausedPage
 import pickle
 import os
 import atexit
@@ -69,4 +69,4 @@ if __name__ == "__main__":
             exit(0)
 
 
-        
+

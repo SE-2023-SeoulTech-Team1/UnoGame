@@ -10,7 +10,7 @@ from UnoButton import UnoButton
 from PausedPage import *
 from resource_path import *
 import pickle
-import os 
+import os
 
 class GamePage():
     def __init__(self, screen, setting, player_names=None):
@@ -33,8 +33,8 @@ class GamePage():
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
 
-        self.card_move_sound = pygame.mixer.Sound(resource_path('../assets/cardmove.mp3'))
-        self.card_select_sound = pygame.mixer.Sound(resource_path('../assets/cardclick.mp3'))
+        self.card_move_sound = pygame.mixer.Sound(resource_path('./assets/cardmove.mp3'))
+        self.card_select_sound = pygame.mixer.Sound(resource_path('./assets/cardclick.mp3'))
 
         self.color_rects = [
             pygame.Rect(self.screen_width * 0.05, self.screen_height * 0.65, 50, 50),
@@ -47,7 +47,7 @@ class GamePage():
         self.count = True
         self.uiManager = pygame_gui.UIManager(setting.screen_size)
         self.clock = pygame.time.Clock()
-        
+
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -72,7 +72,7 @@ class GamePage():
                 setTimer = False
                 timerFlag = False
                 self.count = True
-        
+
                 # 여기서 next_turn 안하고 카드들 선택한다음 그곳에서 next_turn하는 방식으로 바꿈
                 # game.next_turn()
             elif totalTime - elapsed_time > -1:
@@ -119,7 +119,7 @@ class GamePage():
         global openned_cards, card_loc, timerFlag
 
         # game의 pick_current_card 사용해서 게임 시작 직후 current card 정보 불러오고 open된 카드 리스트에 저장
-        if flip_card is True:                
+        if flip_card is True:
             openned_cards = []
             if os.path.exists('game_state.pkl'):
                 pass
@@ -133,7 +133,7 @@ class GamePage():
             # 카드의 현재 위치 저장
             card_loc = self.screen_width * 0.25
             flip_card = False
-            
+
 
         # 오픈된 카드 목표 위치
         top = self.screen_height * 0.25
@@ -227,7 +227,7 @@ class GamePage():
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
                             elif chosen_card.type == 'bomb':
                                 # bomb 그림
-                                bomb_icon = pygame.image.load(resource_path("../assets/bomb.png"))
+                                bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
                                 bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
                                 display_bomb_animation(self.screen, bomb_icon)
                                 end_pos = self.draw_computer_cards()[-1]
@@ -246,17 +246,17 @@ class GamePage():
                                     pygame.display.flip()
                                 self.game.bombcard_card_clicked(chosen_color)
 
-                                
+
                             elif chosen_card.type == 'all':
                                 current_name = self.game.players[self.game.current_player_index].name
                                 target_name = self.game.players[self.game.current_player_index + 1].name
-                                all_change_icon = pygame.image.load(resource_path("../assets/all_change.png"))
+                                all_change_icon = pygame.image.load(resource_path("./assets/all_change.png"))
                                 all_change_icon = pygame.transform.scale(all_change_icon, (200, 200))
                                 display_all_change_animation(self.screen, all_change_icon, current_name, target_name)
 
                                 self.game.change_all_clicked(1, chosen_color)
 
-                                
+
 
 
 
@@ -312,13 +312,13 @@ class GamePage():
 
                             # 기능 카드 눌렀을 때
                             if self.game.current_card.type == 'all':
-                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)   
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == 'wildcard':
                                 self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == '+4':
-                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height) 
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == 'bomb':
-                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height) 
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == '+2':
                                 end_pos = self.draw_computer_cards()[-1]
                                 for i in range(2):
@@ -340,10 +340,10 @@ class GamePage():
                                 self.redraw_card(i, self.screen, card_rect, card_rect_list)
 
                                 if self.game.direction == 1:
-                                    reverse_icon = pygame.image.load(resource_path("../assets/counterclockwise.png"))
+                                    reverse_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
                                     reverse_icon = pygame.transform.scale(reverse_icon, (150, 150))
                                 elif self.game.direction == -1:
-                                    reverse_icon = pygame.image.load(resource_path("../assets/clockwise.png"))
+                                    reverse_icon = pygame.image.load(resource_path("./assets/clockwise.png"))
                                     reverse_icon = pygame.transform.scale(reverse_icon, (150, 150))
 
                                 display_reverse_animation(self.screen, reverse_icon)
@@ -414,7 +414,7 @@ class GamePage():
         self.screen.blit(player, player_rect)
 
     def unobutton(self):
-        unobutton_img = pygame.image.load(resource_path('../assets/unobutton.png')).convert_alpha()
+        unobutton_img = pygame.image.load(resource_path('./assets/unobutton.png')).convert_alpha()
         unobutton_rect = unobutton_img.get_rect()
         unobutton_rect.centerx = round(self.screen_width*0.75*0.5)
         unobutton_rect.y = self.screen_height * 0.45
@@ -482,7 +482,7 @@ class GamePage():
                     self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
                 self.game.plus4_card_clicked(self.game.players[self.game.current_player_index], choiced_color)
             elif self.game.current_card.type == 'bomb':
-                bomb_icon = pygame.image.load(resource_path("../assets/bomb.png"))
+                bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
                 bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
                 display_bomb_animation(self.screen, bomb_icon)
                 end_pos = self.display_player_cards()[-1]
@@ -496,14 +496,14 @@ class GamePage():
                     self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                     self.move_card_animation(added_card_img, added_card_rect,
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                
+
                 self.game.bombcard_card_clicked(choiced_color)
 
             elif self.game.current_card.type == 'all':
                 # 일단 user와 바꿈
                 current_name = self.game.players[self.game.current_player_index].name
                 target_name = self.game.players[self.game.current_player_index - 1].name
-                all_change_icon = pygame.image.load(resource_path("../assets/all_change.png"))
+                all_change_icon = pygame.image.load(resource_path("./assets/all_change.png"))
                 all_change_icon = pygame.transform.scale(all_change_icon, (200, 200))
                 display_all_change_animation(self.screen, all_change_icon, current_name, target_name)
 
@@ -525,10 +525,10 @@ class GamePage():
             self.game.plus2_card_clicked(self.game.players[self.game.current_player_index])
         elif self.game.current_card.type == 'reverse':
             if self.game.direction == 1:
-                reverse_icon = pygame.image.load(resource_path("../assets/counterclockwise.png"))
+                reverse_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
                 reverse_icon = pygame.transform.scale(reverse_icon, (200, 200))
             else:
-                reverse_icon = pygame.image.load(resource_path("../assets/clockwise.png"))
+                reverse_icon = pygame.image.load(resource_path("./assets/clockwise.png"))
                 reverse_icon = pygame.transform.scale(reverse_icon, (200, 200))
             display_reverse_animation(self.screen, reverse_icon)
             self.game.reverse_card_clicked()
@@ -540,11 +540,11 @@ class GamePage():
             # 그냥 number카드 일 때
             self.game.next_turn()
 
-    def running(self):  
+    def running(self):
 
         # 카드 초기 세팅
         self.game.deal_cards()
-        pygame.mixer.music.load(resource_path('../assets/background.mp3'))
+        pygame.mixer.music.load(resource_path('./assets/background.mp3'))
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(self.setting.volume * 0.01 * self.setting.back_volume * 0.01)
 
@@ -557,24 +557,24 @@ class GamePage():
         flip_card2 = True
         running = True
         paused = False
-        
+
         draw_game_screen(self)
         deck_rect = self.draw_deck()
         self.draw_computer_cards()
-        
+
         self.uno_button.draw()
         card_rect_list = self.display_player_cards()
 
-        # 피클 세팅 
+        # 피클 세팅
         if os.path.exists('game_state.pkl'):
             with open('game_state.pkl', 'rb') as f:
                 game_state = pickle.load(f)
             self.game = game_state
-        
+
         print("current card : "+str(self.game.current_card))
-        
+
         self.flip_deck_card(flip_card2)
-        
+
         while running:
             dt = self.clock.tick(60)/1000.0
 

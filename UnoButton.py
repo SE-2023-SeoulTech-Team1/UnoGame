@@ -5,7 +5,7 @@ class UnoButton:
     def __init__(self, game_page):
         self.game_page = game_page
         self.game = game_page.game
-        self.img = pygame.image.load(resource_path('../assets/unobutton.png')).convert_alpha()
+        self.img = pygame.image.load(resource_path('./assets/unobutton.png')).convert_alpha()
         self.rect = self.img.get_rect()
 
 
