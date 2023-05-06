@@ -1,12 +1,10 @@
 import pygame
-from MainPage import MainPage
-from SettingPage import SettingPage
-from GamePage import GamePage
+from src.MainPage import MainPage
+from src.SettingPage import SettingPage
+from src.GamePage import GamePage
 from Setting import Setting
-from Game import Game
-from Player import Player, Computer
-from MapPage import MapPage
-from PausedPage import PausedPage
+from src.MapPage import MapPage
+from src.PausedPage import PausedPage
 import pickle
 import os
 import atexit
@@ -17,8 +15,8 @@ if __name__ == "__main__":
     pygame.init()
 
     setting = Setting()
-    if os.path.exists('setting_state.pkl'):
-            with open('setting_state.pkl', 'rb') as f:
+    if os.path.exists('../setting_state.pkl'):
+            with open('../setting_state.pkl', 'rb') as f:
                 setting_state = pickle.load(f)
             setting = setting_state
     screen = pygame.display.set_mode(setting.screen_size)
