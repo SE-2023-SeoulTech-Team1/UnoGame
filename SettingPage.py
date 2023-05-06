@@ -15,7 +15,7 @@ class SettingPage():
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.setting = setting
         self.key_idx = 0
-        if os.path.exists("setting_state.pkl"):
+        if os.path.exists("../setting_state.pkl"):
             self.size_idx = setting.size_idx
             self.color_idx = setting.color_idx
             self.keys_idx = setting.keys_idx
@@ -103,7 +103,7 @@ class SettingPage():
                     setting2 = self.setting
 
                     # pickle에 현재 데이터 저장 
-                    with open("setting_state.pkl", "wb") as f:
+                    with open("../setting_state.pkl", "wb") as f:
                         pickle.dump(setting2, f)
                     return "main"
 
@@ -117,7 +117,7 @@ class SettingPage():
                     self.effect_volume_slider.value = 50
                     self.setting.reset()
                     setting2 = self.setting
-                    with open("setting_state.pkl", "wb") as f:
+                    with open("../setting_state.pkl", "wb") as f:
                         pickle.dump(setting2, f)
                     return "main"
 
