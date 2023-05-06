@@ -13,7 +13,7 @@ class MapPage:
         self.screen = screen
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.setting = setting
-        self.img = pygame.transform.scale(pygame.image.load(resource_path("./assets/map.png")), (self.screen_width, self.screen_height))
+        self.img = pygame.transform.scale(pygame.image.load(resource_path("../assets/map.png")), (self.screen_width, self.screen_height))
         self.level0_txt = Text(0.05, 0.65, "LEVEL 0", WHITE)
         self.level1_txt = Text(0.35, 0.35, "LEVEL 1", WHITE)
         self.level2_txt = Text(0.6, 0.65, "LEVEL 2", WHITE)
@@ -25,7 +25,7 @@ class MapPage:
 
     def running(self):
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
-        self.img = pygame.transform.scale(pygame.image.load(resource_path("./assets/map.png")), (self.screen_width, self.screen_height))
+        self.img = pygame.transform.scale(pygame.image.load(resource_path("../assets/map.png")), (self.screen_width, self.screen_height))
 
         self.screen.blit(self.img, (0, 0))
         self.level0_txt.render(self.screen)
