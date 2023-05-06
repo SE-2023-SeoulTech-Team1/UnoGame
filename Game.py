@@ -6,9 +6,9 @@ import os
 TIMEOUT = 10
 
 class Game:
-    def __init__(self, players, color_weak_mode=False):
+    def __init__(self, player_names, color_weak_mode=False):
 
-        if not players:
+        if not player_names:
             print("Number of Players should be at least one.")
             exit(-1)
 
@@ -20,7 +20,7 @@ class Game:
             shuffle(cards)
 
         self.deck = Deck(cards)
-        self.players = players
+        self.players = [Player(player_names[0])] + [Computer(name) for name in player_names[1:]]
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1

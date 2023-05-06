@@ -13,9 +13,9 @@ import pickle
 import os 
 
 class GamePage():
-    def __init__(self, screen, setting):
+    def __init__(self, screen, setting, player_names=None):
         self.setting = setting
-        self.game = Game([Player("PLAYER 0"), Computer("COMPUTER 0")], self.setting.color_weak)
+        self.game = Game(player_names, self.setting.color_weak)
         self.screen = screen
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
