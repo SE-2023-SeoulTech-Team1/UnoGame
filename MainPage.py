@@ -44,7 +44,7 @@ class MainPage():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.start_btn.rect.collidepoint(event.pos):
-                    return "game"
+                    return "lobby"
                 if self.map_btn.rect.collidepoint(event.pos):
                     return "map"
                 if self.setting_btn.rect.collidepoint(event.pos):
@@ -65,7 +65,7 @@ class MainPage():
                     self.buttons[self.key_idx].key_hovered = True
                 elif event.key == pygame.K_RETURN:
                     if self.key_idx == 0:
-                        return "game"
+                        return "lobby"
                     elif self.key_idx == 1:
                         return "map"
                     elif self.key_idx == 2:
