@@ -540,6 +540,20 @@ class GamePage():
             # 그냥 number카드 일 때
             self.game.next_turn()
 
+    def game_deck_used_all(self, event=None):
+        Message(self.screen, "FINISH A TIE", WHITE).winner_draw()
+        Message(self.screen, "Press ESC to go back", WHITE).press_esc_draw()
+        self.timerFlag = False
+        if event == None:
+            paused = True
+            return "pause"
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                paused = True
+                return "pause"
+            else:
+                print("press esc")
+
     def running(self):
 
         # 카드 초기 세팅
@@ -651,15 +665,7 @@ class GamePage():
 
                 #우노 게임카드 다 썼을 때
                 if self.game.deck.len_card() == 0:
-                    Message(self.screen, "FINISH A TIE", WHITE).winner_draw()
-                    Message(self.screen, "Press ESC to go back", WHITE).press_esc_draw()
-                    self.timerFlag = False
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            paused = True
-                            return "pause"
-                        else:
-                            print("press esc")
+                    self.game_deck_used_all(event)
 
                 while self.game.current_player_index != 0:
                     if self.game.current_player_index != 0:
