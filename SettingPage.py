@@ -51,7 +51,7 @@ class SettingPage():
         self.right_btn_2 = TextButton(0.85, 0.4, 30, 30, '>', background_color=LIGHT_GRAY)
 
         self.volume_slider = Slider(0.7, 0.5, 200, 50, setting.volume)
-        self.back_volume_slider = Slider(0.7, 0.6, 200, setting.back_volume)
+        self.back_volume_slider = Slider(0.7, 0.6, 200, 50, setting.back_volume)
         self.effect_volume_slider = Slider(0.7, 0.7, 200, 50, setting.effect_volume)
 
         self.opt_texts = [self.screen_size_txt, self.color_weak_txt, self.key_txt, 

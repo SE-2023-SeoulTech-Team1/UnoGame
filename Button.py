@@ -70,8 +70,6 @@ class Slider():
         self.length = 200
         self.top = (screen_width * self.x) - (self.width / 2)
         self.left = (screen_height * self.y) - (self.height / 2) + 25
-        self.rect = pygame.Rect(self.top, self.left - 5, self.length, 10)
-        self.surface = pygame.Surface((self.width, self.height))
         self.min_val = 0
         self.max_val = 100
         if value is None:
@@ -80,6 +78,10 @@ class Slider():
             self.value = value
 
     def process_slider(self, screen):
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.top = (screen_width * self.x) - (self.width / 2)
+        self.left = (screen_height * self.y) - (self.height / 2) + 25
+
         pygame.draw.rect(screen, GRAY, [self.top, self.left - 5, self.length, 10])
         pygame.draw.rect(screen, BLACK, [self.top + int((self.value - self.min_val) / (self.max_val - self.min_val) * self.length) - 5, self.left - 10, 10, 20])
 
