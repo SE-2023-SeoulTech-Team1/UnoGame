@@ -10,12 +10,12 @@ from UnoButton import UnoButton
 from PausedPage import *
 from resource_path import *
 import pickle
-import os 
+import os
 
 class GamePage():
-    def __init__(self, screen, setting):
+    def __init__(self, screen, setting, player_names=None):
         self.setting = setting
-        self.game = Game([Player("PLAYER 0"), Computer("COMPUTER 0")], self.setting.color_weak)
+        self.game = Game(player_names, self.setting.color_weak)
         self.screen = screen
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
@@ -47,7 +47,7 @@ class GamePage():
         self.count = True
         self.uiManager = pygame_gui.UIManager(setting.screen_size)
         self.clock = pygame.time.Clock()
-        
+
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -72,7 +72,7 @@ class GamePage():
                 setTimer = False
                 timerFlag = False
                 self.count = True
-        
+
                 # 여기서 next_turn 안하고 카드들 선택한다음 그곳에서 next_turn하는 방식으로 바꿈
                 # game.next_turn()
             elif totalTime - elapsed_time > -1:
@@ -119,7 +119,7 @@ class GamePage():
         global openned_cards, card_loc, timerFlag
 
         # game의 pick_current_card 사용해서 게임 시작 직후 current card 정보 불러오고 open된 카드 리스트에 저장
-        if flip_card is True:                
+        if flip_card is True:
             openned_cards = []
             if os.path.exists('game_state.pkl'):
                 pass
@@ -133,7 +133,7 @@ class GamePage():
             # 카드의 현재 위치 저장
             card_loc = self.screen_width * 0.25
             flip_card = False
-            
+
 
         # 오픈된 카드 목표 위치
         top = self.screen_height * 0.25
@@ -246,7 +246,7 @@ class GamePage():
                                     pygame.display.flip()
                                 self.game.bombcard_card_clicked(chosen_color)
 
-                                
+
                             elif chosen_card.type == 'all':
                                 current_name = self.game.players[self.game.current_player_index].name
                                 target_name = self.game.players[self.game.current_player_index + 1].name
@@ -256,7 +256,7 @@ class GamePage():
 
                                 self.game.change_all_clicked(1, chosen_color)
 
-                                
+
 
 
 
@@ -312,13 +312,13 @@ class GamePage():
 
                             # 기능 카드 눌렀을 때
                             if self.game.current_card.type == 'all':
-                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)   
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == 'wildcard':
                                 self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == '+4':
-                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height) 
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == 'bomb':
-                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height) 
+                                self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
                             elif self.game.current_card.type == '+2':
                                 end_pos = self.draw_computer_cards()[-1]
                                 for i in range(2):
@@ -496,7 +496,7 @@ class GamePage():
                     self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                     self.move_card_animation(added_card_img, added_card_rect,
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                
+
                 self.game.bombcard_card_clicked(choiced_color)
 
             elif self.game.current_card.type == 'all':
@@ -540,7 +540,7 @@ class GamePage():
             # 그냥 number카드 일 때
             self.game.next_turn()
 
-    def running(self):  
+    def running(self):
 
         # 카드 초기 세팅
         self.game.deal_cards()
@@ -557,24 +557,24 @@ class GamePage():
         flip_card2 = True
         running = True
         paused = False
-        
+
         draw_game_screen(self)
         deck_rect = self.draw_deck()
         self.draw_computer_cards()
-        
+
         self.uno_button.draw()
         card_rect_list = self.display_player_cards()
 
-        # 피클 세팅 
+        # 피클 세팅
         if os.path.exists('game_state.pkl'):
             with open('game_state.pkl', 'rb') as f:
                 game_state = pickle.load(f)
             self.game = game_state
-        
+
         print("current card : "+str(self.game.current_card))
-        
+
         self.flip_deck_card(flip_card2)
-        
+
         while running:
             dt = self.clock.tick(60)/1000.0
 
