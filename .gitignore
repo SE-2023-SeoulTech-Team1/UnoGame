@@ -1,5 +1,8 @@
+*.pkl
+
 .DS_Store
 .idea/
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

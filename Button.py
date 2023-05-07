@@ -4,7 +4,7 @@ from Colors import *
 
 
 class Button():
-    def __init__(self, x,  y, width, height, text = 'Button', background_color=RED, hover_color=RED_HOVER, text_color=BLACK, text_size = 24):
+    def __init__(self, x,  y, width, height, text = 'Button', background_color=RED, hover_color=RED_HOVER, text_color=BLACK, text_size = 24, boarder = False):
         screen_width, screen_height = pygame.display.get_surface().get_size()
         self.x = x
         self.y = y
