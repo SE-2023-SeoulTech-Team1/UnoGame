@@ -6,6 +6,7 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.cards = []
+        self.is_computer = False
 
     def draw_card(self, deck):
         card = deck.pop_card()
@@ -14,13 +15,12 @@ class Player:
     def play_card(self, card_index):
         return self.cards.pop(card_index)
 
-class Computer:
+class Computer(Player):
     def __init__(self, name):
-        self.name = name
-        self.cards = []
+        super().__init__(name)
+        self.is_computer = True
 
     def draw_card(self, deck):
-        pygame.display.flip()
         pygame.time.delay(int(random()*3000))
         card = deck.pop_card()
         self.cards.append(card)
@@ -37,7 +37,7 @@ class Computer:
         pygame.time.delay(int(random()*3000))
         card_idx_can_play = self.can_play(game.current_card)
         return self.cards.pop(choice(card_idx_can_play))
-    
+    1
     def black_card_clicked(self):
         color_list = ['red', 'green', 'yellow', 'blue']
         return choice(color_list)

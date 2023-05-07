@@ -19,9 +19,9 @@ class Game:
             pass
         else:
             shuffle(cards)
-
         self.deck = Deck(cards)
         self.players = [Player(player_names[0])] + [Computer(name) for name in player_names[1:]]
+        self.computer_players = [player for player in self.players if isinstance(player, Computer)]
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
@@ -62,6 +62,7 @@ class Game:
             else:
                 self.deck.cards.append(self.current_card)
                 shuffle(self.deck.cards)
+        return self.current_card
 
     def draw_card_clicked(self, player):
         """
