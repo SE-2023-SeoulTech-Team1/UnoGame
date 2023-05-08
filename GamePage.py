@@ -221,7 +221,6 @@ class GamePage():
                                     self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    # screen.blit(added_card_img, (end_pos.x, end_pos.y))
                                     self.draw_computer_cards()
                                     pygame.display.flip()
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
@@ -241,11 +240,9 @@ class GamePage():
                                     self.card_move_sound.set_volume(self.setting.volume * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    # screen.blit(added_card_img, (end_pos.x, end_pos.y))
                                     self.draw_computer_cards()
                                     pygame.display.flip()
                                 self.game.bombcard_card_clicked(chosen_color)
-
 
                             elif chosen_card.type == 'all':
                                 current_name = self.game.players[self.game.current_player_index].name
@@ -255,10 +252,6 @@ class GamePage():
                                 display_all_change_animation(self.screen, all_change_icon, current_name, target_name)
 
                                 self.game.change_all_clicked(1, chosen_color)
-
-
-
-
 
                             color_selected = True
                             break
@@ -331,7 +324,6 @@ class GamePage():
                                     self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    # self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
                                     self.draw_computer_cards()
                                     pygame.display.flip()
                                 self.game.plus2_card_clicked(self.game.players[0])
@@ -365,7 +357,6 @@ class GamePage():
                                 # 그냥 number카드 일 때
                                 self.game.next_turn()
 
-                            # game.players[0].cards.pop(i)
                             print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
 
             else:

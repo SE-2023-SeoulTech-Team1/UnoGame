@@ -57,5 +57,3 @@ def draw_game_screen(game_page):
         direction_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
         direction_icon = pygame.transform.scale(direction_icon, (30, 30))
     game_page.screen.blit(direction_icon, (game_page.screen.get_width() * 0.06, game_page.screen.get_height() * 0.025))
-
-

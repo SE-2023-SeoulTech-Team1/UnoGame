@@ -48,13 +48,13 @@ if __name__ == "__main__":
             game_page = GamePage(screen, setting)
             page = game_page.running()
         elif page == "game_level0":
-            game_page_level0 = GamePage(screen, setting)
+            game_page_level0 = GamePage(screen, setting, ["Player", "Alien"])
             page = game_page_level0.running()
         elif page == "game_level1":
-            game_page_level1 = GamePage(screen, setting)
+            game_page_level1 = GamePage(screen, setting, ["Player", "Alien0", "Alien1", "Alien2"])
             page = game_page_level1.running()
         elif page == "game_level2":
-            game_page_level2 = GamePage(screen, setting)
+            game_page_level2 = GamePage(screen, setting, ["Player", "Alien0", "Alien1"])
             page = game_page_level2.running()
         elif page == "game_level3":
             game_page_level3 = GamePage(screen, setting)

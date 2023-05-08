@@ -20,7 +20,7 @@ class Computer:
         self.cards = []
 
     def draw_card(self, deck):
-        pygame.display.flip()
+        # pygame.display.flip()
         pygame.time.delay(int(random()*3000))
         card = deck.pop_card()
         self.cards.append(card)
@@ -33,7 +33,6 @@ class Computer:
         return card_idx_can_play
 
     def play_card(self, game):
-        pygame.display.flip()
         pygame.time.delay(int(random()*3000))
         card_idx_can_play = self.can_play(game.current_card)
         return self.cards.pop(choice(card_idx_can_play))
@@ -47,3 +46,19 @@ class Computer:
     #     pygame.display.flip()
     #     pygame.time.delay(int(random()*3000))
     #     game.uno_button_clicked(1)
+
+
+class StoryComputerA(Computer):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def play_card(self, game):
+        """
+        컴퓨터 플레이어가 거꾸로 진행과 건너 뛰기 등의 기술카드를 적절히 조합하여 2~3장 이상의 카드를 한 번에 낼 수 있는 콤보를 사용.
+        """
+        while self.can_play(game.current_card):
+            card_idx_can_play = self.can_play(game.current_card)
+            if len(card_idx_can_play) >= 2:
+                return self.cards.pop(choice(card_idx_can_play))
+            else:
+                return self.cards.pop(card_idx_can_play[0])
