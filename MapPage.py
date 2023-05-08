@@ -22,6 +22,7 @@ class MapPage:
         self.level1_img = pygame.image.load(resource_path("./assets/planet1.png"))
         self.level2_img = pygame.image.load(resource_path("./assets/planet2.png"))
         self.level3_img = pygame.image.load(resource_path("./assets/planet3.png"))
+        self.level_imgs = [self.level0_img, self.level1_img, self.level2_img, self.level3_img]
         self.level0_rect = self.level0_img.get_rect()
         self.level1_rect = self.level1_img.get_rect()
         self.level2_rect = self.level2_img.get_rect()
@@ -29,10 +30,8 @@ class MapPage:
 
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
-
-
-
-    def running(self):
+    
+    def display_stage(self, screen):
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.img = pygame.transform.scale(pygame.image.load(resource_path("./assets/map.jpg")), (self.screen_width, self.screen_height))
 
@@ -42,44 +41,47 @@ class MapPage:
         self.level2_txt.render(self.screen)
         self.level3_txt.render(self.screen)
 
-        self.level0_rect.left = self.screen_width * 0.05
+        self.level0_rect.left = self.screen_width * 0.02
         self.level0_rect.top =self.screen_height * 0.75 - 150
-        self.level1_rect.left = self.screen_width * 0.35
+        self.level1_rect.left = self.screen_width * 0.34
         self.level1_rect.top = self.screen_height * 0.45 - 150
-        self.level2_rect.left = self.screen_width * 0.6
+        self.level2_rect.left = self.screen_width * 0.58
         self.level2_rect.top = self.screen_height * 0.75 - 130
-        self.level3_rect.left = self.screen_width * 0.8
+        self.level3_rect.left = self.screen_width * 0.78
         self.level3_rect.top = self.screen_height * 0.45 - 150
+        self.level_rects = [self.level0_rect, self.level1_rect, self.level2_rect, self.level3_rect]
 
-        self.screen.blit(self.level0_img, self.level0_rect)
-        self.screen.blit(self.level1_img, self.level1_rect)
-        self.screen.blit(self.level2_img, self.level2_rect)
-        self.screen.blit(self.level3_img, self.level3_rect)
+        # self.screen.blit(self.level0_img, self.level0_rect)
+        # self.screen.blit(self.level1_img, self.level1_rect)
+        # self.screen.blit(self.level2_img, self.level2_rect)
+        # self.screen.blit(self.level3_img, self.level3_rect)
 
+        mouse_pos = pygame.mouse.get_pos()
+        for i, rect in enumerate(self.level_rects):
+            if rect.collidepoint(mouse_pos):
+                hover = pygame.transform.scale(
+                        self.level_imgs[i], (rect.size[0]*1.2, rect.size[1]*1.2))
+                self.screen.blit(hover, rect)
+            else:
+                self.screen.blit(self.level_imgs[i], rect)
+
+
+
+    def running(self):
+
+        self.display_stage(self.screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return "exit"
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.level0_rect.collidepoint(event.pos):
-                    level0_hover = pygame.transform.scale(
-                        self.level0_img, (self.level0_rect.size[0]*1.1, self.level0_rect.size[1]*1.1))
-                    self.screen.blit(level0_hover, self.level0_rect)
                     return "game_level0"
                 elif self.level1_rect.collidepoint(event.pos):
-                    level1_hover = pygame.transform.scale(
-                        self.level0_img, (self.level1_rect.size[0]*1.1, self.level1_rect.size[1]*1.1))
-                    self.screen.blit(level1_hover, self.level1_rect)
                     return "game_level1"
                 elif self.level2_rect.collidepoint(event.pos):
-                    level2_hover = pygame.transform.scale(
-                        self.level2_img, (self.level2_rect.size[0]*1.1, self.level2_rect.size[1]*1.1))
-                    self.screen.blit(level2_hover, self.level2_rect)
                     return "game_level2"
                 elif self.level3__rect.collidepoint(event.pos):
-                    level3_hover = pygame.transform.scale(
-                        self.level3_img, (self.level3_rect.size[0]*1.1, self.level3_rect.size[1]*1.1))
-                    self.screen.blit(level3_hover, self.level3_rect)
                     return "game_level3"
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
