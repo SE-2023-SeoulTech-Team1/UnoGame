@@ -41,19 +41,12 @@ class Game:
         return -1
 
     def deal_cards(self):
-        """
-        게임 시작 시 플레이어들에게 카드를 나눠주는 함수
-        :return:
-        """
+        self.deck.shuffle()
         for i in range(7):
             for player in self.players:
                 player.cards.append(self.deck.pop_card())
 
     def pick_current_card(self):
-        """
-        게임 시작 시 current card를 뽑는 함수
-        :return: None
-        """
         while True:
             self.current_card = self.deck.pop_card()
             if (self.current_card.color != "black" and
@@ -64,20 +57,9 @@ class Game:
                 shuffle(self.deck.cards)
 
     def draw_card_clicked(self, player):
-        """
-        플레이어가 드로우 버튼을 클릭하는 함수
-        :param player:
-        :return: None
-        """
         player.draw_card(self.deck)
 
-    #
-
     def next_turn(self):
-        """
-         플레이어의 턴을 진행하는 함수
-        :return: None
-        """
         self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
 
     def reverse_card_clicked(self):
@@ -210,7 +192,6 @@ class Game:
                 player.draw_card(self.deck)
         return True
 
-    # 게임 종료 조건
     def game_win(self, player):
         if len(player.cards) == 0:
             return True

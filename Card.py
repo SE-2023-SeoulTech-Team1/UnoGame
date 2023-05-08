@@ -1,3 +1,5 @@
+from random import shuffle, choices
+
 COLORS = ['red', 'yellow', 'green', 'blue']
 ALL_COLORS = COLORS + ['black']
 NUMBERS = list(range(1, 10))
@@ -34,8 +36,17 @@ class Deck:
             print("At least one more cards should be in deck.")
             exit(-1)
         self.cards = cards
+        
     def len_card(self):
         return len(self.cards)
 
     def pop_card(self):
         return self.cards.pop()
+
+    def shuffle(self):
+        shuffle(self.cards)
+
+    def choice_card(self):
+        weights = [1 / 68] * 36 + [2 / 68] * 32
+        idx = choices(range(len(self.cards)), weights=weights)
+        return self.cards.pop(idx)
