@@ -10,6 +10,7 @@ WINNERFONT = pygame.font.SysFont('arialroundedmtblod', 100, True, True)
 # 색상 정의
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+DARK_GRAY = (32, 32, 32)
 
 RED = (255, 0, 0)
 W_RED = (199, 109, 156)
