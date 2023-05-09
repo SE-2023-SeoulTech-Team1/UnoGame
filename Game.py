@@ -19,7 +19,7 @@ class Game:
             pass
         else:
             shuffle(cards)
-
+        self.player_names = player_names
         self.deck = Deck(cards)
         self.players = [Player(player_names[0])] + [Computer(name) for name in player_names[1:]]
         self.current_player_index = 0

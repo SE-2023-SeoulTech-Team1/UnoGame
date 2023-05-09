@@ -6,15 +6,13 @@ import pickle
 import os 
 
 class SettingPage():
-    def __init__(self, screen, setting):
-        # 출력 Test 
-        print("setting volume : " + str(setting.volume))
-        print("key : " + str(setting.key))
-        print("colorweak : " + str(setting.color_weak))
+    def __init__(self, screen, setting, pre_page = None):
+
         self.screen = screen
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.setting = setting
         self.key_idx = 0
+        self.pre_page = pre_page
         if os.path.exists("../setting_state.pkl"):
             self.size_idx = setting.size_idx
             self.color_idx = setting.color_idx
@@ -105,7 +103,16 @@ class SettingPage():
                     # pickle에 현재 데이터 저장 
                     with open("../setting_state.pkl", "wb") as f:
                         pickle.dump(setting2, f)
-                    return "main"
+                    if self.pre_page is not None:
+                        if os.path.exists('game_state.pkl'):
+                            with open('game_state.pkl', 'rb') as f:
+                                game_state = pickle.load(f)
+                            player_names = game_state.player_names
+
+                        return "game", player_names 
+                    else:
+                        
+                        return "main"
 
                 elif self.reset_txt.rect.collidepoint(event.pos):
                     self.size_opt_btn.text = "800 x 600"
