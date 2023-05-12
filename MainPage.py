@@ -69,7 +69,7 @@ class MainPage():
                     elif self.key_idx == 1:
                         return "map"
                     elif self.key_idx == 2:
-                        return "setting"
+                        return "setting", "main"
                     elif self.key_idx == 3:
                         return "exit"
 

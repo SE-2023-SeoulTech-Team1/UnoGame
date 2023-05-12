@@ -4,7 +4,7 @@ from SettingPage import SettingPage
 from GamePage import GamePage
 from LobbyPage import LobbyPage
 from Setting import Setting
-from MapPage import MapPage
+from MapPage import MapPage 
 from PausedPage import PausedPage
 import pickle
 import os
@@ -35,8 +35,16 @@ if __name__ == "__main__":
 
     while True:
         if len(page) == 2:
-            game_page = GamePage(screen, setting, page[1])
-            page = game_page.running()
+            # 이전 페이지가 게임 페이지 일 때 
+            if page[1] == "game":
+                setting_page = SettingPage(screen, setting, page[1])
+                page = setting_page.running()
+            elif page[1] == "main":
+                setting_page = SettingPage(screen, setting, page[1])
+                page = setting_page.running()
+            else: 
+                game_page = GamePage(screen, setting, page[1])
+                page = game_page.running()
         if page == "main":
             page = main_page.running()
         elif page == "setting":
@@ -62,7 +70,7 @@ if __name__ == "__main__":
 
         elif page == "map":
             page = map_page.running()
-        elif page == "pause":
+        elif page == "pause":   
             page = pause_page.running()
         elif page == "exit":
             atexit.register(delete_pickle)

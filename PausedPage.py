@@ -2,6 +2,8 @@ import pygame
 import sys
 from Colors import *
 from Button import Button
+import pickle
+import os
 
 class PausedPage():
     def __init__(self, screen, setting):
@@ -9,7 +11,6 @@ class PausedPage():
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.setting = setting
         self.key_idx = 0
-
         self.pause_btn = Button(0.5, 0.3, 200, 50, "RESUME",text_size=40)
         self.pause_btn.key_hovered = True
         self.setting_btn = Button(0.5, 0.4, 200, 50, "SETTING",text_size=40)
@@ -24,9 +25,13 @@ class PausedPage():
                 return "exit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.pause_btn.rect.collidepoint(event.pos):
-                    return "game"
+                    if os.path.exists('game_state.pkl'):
+                        with open('game_state.pkl', 'rb') as f:
+                            game_state = pickle.load(f)
+                        player_names = game_state.player_names
+                    return "game", player_names 
                 elif self.setting_btn.rect.collidepoint(event.pos):
-                    return "setting"
+                    return "setting", "game"
                 elif self.back_btn.rect.collidepoint(event.pos):
                     return "main"
 
