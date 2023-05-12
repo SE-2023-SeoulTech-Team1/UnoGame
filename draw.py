@@ -36,13 +36,16 @@ def draw_card_back(screens, card, top, left):
     screens.blit(card_back_img, (left, top))
 
 
+def draw_computer_player_names(game_page):
+    for computer_player_text in game_page.computer_players_names:
+        computer_player_text.render(game_page.screen)
+
 def draw_game_screen(game_page):
     player_bg_x = game_page.screen.get_width()*0.75
     player_bg_width = game_page.screen.get_width()*0.25
     # 배경 색 설정/추후 배경사진 추가
     game_page.screen.fill(backgroundColor)
-    for computer_player_text in game_page.computer_players_name:
-        computer_player_text.render(game_page.screen)
+    draw_computer_player_names(game_page)
 
     # 현재 방향 아이콘 표시
     if game_page.game.direction == 1:

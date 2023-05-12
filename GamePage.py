@@ -21,10 +21,11 @@ class GamePage():
         self.screen = screen
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
-        self.computer_players_name = [
-            Text(text=name, x=0.8, y=0.1 * (i + 1), size=24, color=WHITE)
+        self.computer_players_names = [
+            Text(text=name, x=0.8, y=0.17 * (i + 1) - 0.03, size=24, color=WHITE)
             for i, name in enumerate(player_names[1:])
         ]
+        # card_rec.top = self.screen_height * 0.17 * (computer_player_idx + 1)
 
         self.uno_button = UnoButton(self)
         self.uno_button_pressed = False
@@ -106,7 +107,7 @@ class GamePage():
                 card_rec = card_back_img.get_rect()
                 card_back_img = pygame.transform.scale(
                     card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
-                card_rec.top = self.screen_height * 0.15 * (computer_player_idx + 1)
+                card_rec.top = self.screen_height * 0.17 * (computer_player_idx + 1)
                 card_rec.left = self.screen_width * 0.92 - card_idx * 20
                 computer_card_rect_list.append(card_rec)
                 self.screen.blit(card_back_img, card_rec)
