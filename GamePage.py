@@ -6,11 +6,13 @@ from FunctionAnimation import *
 from random import randint, random
 from draw import *
 from Message import Message
+from Text import Text
 from UnoButton import UnoButton
 from PausedPage import *
 from resource_path import *
 import pickle
 import os
+
 
 class GamePage():
     def __init__(self, screen, setting, player_names=None):
@@ -19,18 +21,13 @@ class GamePage():
         self.screen = screen
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
+        self.computer_players_name = [
+            Text(text=name, x=0.8, y=0.1 * (i + 1), size=24, color=WHITE)
+            for i, name in enumerate(player_names[1:])
+        ]
 
-        self.timer_obj = None
-        self.direction = None
-        self.current_color = None
-        self.current_player = None
-        self.player_cards = None
-        self.computer_cards = None
-        self.deck = None
-        self.open_cards = None
         self.uno_button = UnoButton(self)
         self.uno_button_pressed = False
-        self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
 
         self.card_move_sound = pygame.mixer.Sound(resource_path('./assets/cardmove.mp3'))
@@ -102,16 +99,17 @@ class GamePage():
     # 컴퓨터 카드 그리기
     def draw_computer_cards(self):
         computer_card_rect_list = []
-        computer = self.game.players[1]
-        for i, card in enumerate(computer.cards):
-            card_back_img = pygame.image.load(card.back).convert_alpha()
-            card_rec = card_back_img.get_rect()
-            card_back_img = pygame.transform.scale(
-                card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
-            card_rec.top = self.screen_height * 0.15
-            card_rec.left = self.screen_width * 0.92 - i * 20
-            computer_card_rect_list.append(card_rec)
-            self.screen.blit(card_back_img, card_rec)
+        computer_players = self.game.players[1:]
+        for computer_player_idx, computer_player in enumerate(computer_players):
+            for card_idx, card in enumerate(computer_player.cards):
+                card_back_img = pygame.image.load(card.back).convert_alpha()
+                card_rec = card_back_img.get_rect()
+                card_back_img = pygame.transform.scale(
+                    card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
+                card_rec.top = self.screen_height * 0.15 * (computer_player_idx + 1)
+                card_rec.left = self.screen_width * 0.92 - card_idx * 20
+                computer_card_rect_list.append(card_rec)
+                self.screen.blit(card_back_img, card_rec)
         return computer_card_rect_list
 
     # 덱 카드 한 장 뒤집기
@@ -210,7 +208,7 @@ class GamePage():
                             if chosen_card.type == 'wildcard':
                                 self.game.wildcard_card_clicked(chosen_color)
                             elif chosen_card.type == '+4':
-                                end_pos = self.draw_computer_cards()[-1]
+                                end_pos = self.draw_computer_cards()[self.game.current_player_index][-1]
                                 for i in range(4):
                                     added_card = self.game.deck.cards[-(i+1)]
                                     added_card_img = pygame.image.load(added_card.back).convert_alpha()

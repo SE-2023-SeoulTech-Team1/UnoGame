@@ -41,12 +41,8 @@ def draw_game_screen(game_page):
     player_bg_width = game_page.screen.get_width()*0.25
     # 배경 색 설정/추후 배경사진 추가
     game_page.screen.fill(backgroundColor)
-
-    who_are_players = font.render("PLAYER", True, WHITE)
-    players_rect = who_are_players.get_rect()
-    players_rect.centerx = round(player_bg_x + player_bg_width*0.5)
-    players_rect.y = 20
-    game_page.screen.blit(who_are_players, players_rect)
+    for computer_player_text in game_page.computer_players_name:
+        computer_player_text.render(game_page.screen)
 
     # 현재 방향 아이콘 표시
     if game_page.game.direction == 1:
