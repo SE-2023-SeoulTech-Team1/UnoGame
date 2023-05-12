@@ -36,17 +36,16 @@ def draw_card_back(screens, card, top, left):
     screens.blit(card_back_img, (left, top))
 
 
+def draw_computer_player_names(game_page):
+    for computer_player_text in game_page.computer_players_names:
+        computer_player_text.render(game_page.screen)
+
 def draw_game_screen(game_page):
     player_bg_x = game_page.screen.get_width()*0.75
     player_bg_width = game_page.screen.get_width()*0.25
     # 배경 색 설정/추후 배경사진 추가
     game_page.screen.fill(backgroundColor)
-
-    who_are_players = font.render("PLAYER", True, WHITE)
-    players_rect = who_are_players.get_rect()
-    players_rect.centerx = round(player_bg_x + player_bg_width*0.5)
-    players_rect.y = 20
-    game_page.screen.blit(who_are_players, players_rect)
+    draw_computer_player_names(game_page)
 
     # 현재 방향 아이콘 표시
     if game_page.game.direction == 1:
@@ -57,5 +56,3 @@ def draw_game_screen(game_page):
         direction_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
         direction_icon = pygame.transform.scale(direction_icon, (30, 30))
     game_page.screen.blit(direction_icon, (game_page.screen.get_width() * 0.06, game_page.screen.get_height() * 0.025))
-
-
