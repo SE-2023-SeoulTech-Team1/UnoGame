@@ -4,7 +4,8 @@ from SettingPage import SettingPage
 from GamePage import GamePage
 from LobbyPage import LobbyPage
 from Setting import Setting
-from MapPage import MapPage 
+from MapPage import MapPage
+# from StoryLobbyPage import StoryLobbyPage
 from PausedPage import PausedPage
 import pickle
 import os
@@ -70,7 +71,10 @@ if __name__ == "__main__":
 
         elif page == "map":
             page = map_page.running()
-        elif page == "pause":   
+        # elif page == "story_lobby":
+        #     story_lobby_page = StoryLobbyPage(screen, setting)
+        #     page = story_lobby_page.running()
+        elif page == "pause":
             page = pause_page.running()
         elif page == "exit":
             atexit.register(delete_pickle)

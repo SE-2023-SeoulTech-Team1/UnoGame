@@ -103,15 +103,18 @@ class GamePage():
         computer_card_rect_list = []
         computer_players = self.game.players[1:]
         for computer_player_idx, computer_player in enumerate(computer_players):
+            rect_list = []
             for card_idx, card in enumerate(computer_player.cards):
-                card_back_img = pygame.image.load(card.back).convert_alpha()
+                card_back_img = pygame.image.load(card.front).convert_alpha()
                 card_rec = card_back_img.get_rect()
                 card_back_img = pygame.transform.scale(
                     card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
                 card_rec.top = self.screen_height * 0.17 * (computer_player_idx + 1)
                 card_rec.left = self.screen_width * 0.92 - card_idx * 20
-                computer_card_rect_list.append(card_rec)
+                rect_list.append(card_rec)
                 self.screen.blit(card_back_img, card_rec)
+            computer_card_rect_list.append(rect_list)
+        # print(computer_card_rect_list)
         return computer_card_rect_list
 
     # 덱 카드 한 장 뒤집기
@@ -748,7 +751,7 @@ class GamePage():
                             card_idx = [x for x in card_idx_can_play if x not in card_idx_after_can_play]
                             idx = card_idx[0]
                             popped_card_back_img = pygame.image.load(popped_card.back).convert_alpha()
-                            popped_card_rect = computer_card_rect_list[idx]
+                            popped_card_rect = computer_card_rect_list[self.game.current_player_index - 1][idx]
 
                             openned_cards.append(popped_card)
 
@@ -781,7 +784,7 @@ class GamePage():
                             new_computer_card = self.game.players[self.game.current_player_index].cards[-1]
                             new_computer_card_img = pygame.image.load(new_computer_card.back).convert_alpha()
                             new_computer_card_rect = new_computer_card_img.get_rect()
-                            end_pos = computer_card_rect_list[-1]
+                            end_pos = computer_card_rect_list[self.game.current_player_index - 1][-1]
                             end_pos.x = end_pos.x - 20
                             self.card_move_sound.play()
                             self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
