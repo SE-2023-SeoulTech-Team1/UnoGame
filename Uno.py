@@ -6,7 +6,7 @@ from LobbyPage import LobbyPage
 from AchievementPage import AchievementPage
 from Setting import Setting
 from MapPage import MapPage
-# from StoryLobbyPage import StoryLobbyPage
+from StoryLobbyPage import StoryLobbyPage
 from PausedPage import PausedPage
 import pickle
 import os
@@ -78,9 +78,18 @@ if __name__ == "__main__":
             page = game_page_level3.running()
         elif page == "map":
             page = map_page.running()
-        # elif page == "story_lobby":
-        #     story_lobby_page = StoryLobbyPage(screen, setting)
-        #     page = story_lobby_page.running()
+        elif page == "story_lobby_0":
+            story_lobby_page = StoryLobbyPage(screen, setting)
+            page = story_lobby_page.running(0)
+        elif page == "story_lobby_1":
+            story_lobby_page = StoryLobbyPage(screen, setting)
+            page = story_lobby_page.running(1)
+        elif page == "story_lobby_2":
+            story_lobby_page = StoryLobbyPage(screen, setting)
+            page = story_lobby_page.running(2)
+        elif page == "story_lobby_3":
+            story_lobby_page = StoryLobbyPage(screen, setting)
+            page = story_lobby_page.running(3)
         elif page == "achievement":
             page = achievement_page.running()
         elif page == "pause":

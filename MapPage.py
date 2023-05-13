@@ -29,6 +29,7 @@ class MapPage:
         self.level2_rect = self.level2_img.get_rect()
         self.level3_rect = self.level3_img.get_rect()
         self.game_start = False
+        self.key_idx = 0
 
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
@@ -36,14 +37,13 @@ class MapPage:
 
     def about_stage(self, screen, x, y):
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
-        self.level0_about = ["  < GAME RULE >", "  Computer 50% more skill card", "  Computer can combine 2-3 skill card"]
-        self.level1_about = ["  < GAME RULE >", "  3 computer players", "  All cards equally divided except first card"]
-        self.level2_about = ["  < GAME RULE >", "  2 computer players", "  Random color change every 5 turns"]
-        self.level3_about = ["  < GAME RULE >", "", ""]
+        self.level0_about = ["  < GAME RULE >", "  1 computer player", "  Computer can combine 2 or more color cards"]
+        self.level1_about = ["  < GAME RULE >", "  Computer 50% more skill card", "  Computer can combine 2 or more skill cards"]
+        self.level2_about = ["  < GAME RULE >", "  3 computer players", "  All cards equally divided except first card"]
+        self.level3_about = ["  < GAME RULE >", "  2 computer players", "  Random color change every 5 turns"]
         self.levels_about = [self.level0_about, self.level1_about, self.level2_about,self.level3_about]
-        if x + 310 > self.screen_width:
-            self.about = pygame.Rect(x - 200, y - 100, 310, 100)
-        self.about = pygame.Rect(x, y - 100, 310, 100)
+
+        self.about = pygame.Rect(x, y - 100, 330, 100)
         if x + 310 > self.screen_width:
             self.about.topright = (self.screen_width - 20, y - 100)
         pygame.draw.rect(screen, DARK_GRAY, self.about)
@@ -69,12 +69,23 @@ class MapPage:
         self.level3_rect.top = self.screen_height * 0.45 - 150
         self.level_rects = [self.level0_rect, self.level1_rect, self.level2_rect, self.level3_rect]
 
+        self.level0_img_hover = pygame.transform.scale(
+                        self.level_imgs[0], (self.level_rects[0].size[0]*1.2, self.level_rects[0].size[1]*1.2))
+        self.level1_img_hover = pygame.transform.scale(
+                        self.level_imgs[1], (self.level_rects[1].size[0]*1.2, self.level_rects[1].size[1]*1.2))
+        self.level2_img_hover = pygame.transform.scale(
+                        self.level_imgs[2], (self.level_rects[2].size[0]*1.2, self.level_rects[2].size[1]*1.2))
+        self.level3_img_hover = pygame.transform.scale(
+                        self.level_imgs[3], (self.level_rects[3].size[0]*1.2, self.level_rects[3].size[1]*1.2))
+        self.level_hover_imgs = [self.level0_img_hover, self.level1_img_hover, self.level2_img_hover, self.level3_img_hover]
+        
+
         mouse_pos = pygame.mouse.get_pos()
         for i, rect in enumerate(self.level_rects):
             if rect.collidepoint(mouse_pos):
-                hover = pygame.transform.scale(
-                        self.level_imgs[i], (rect.size[0]*1.2, rect.size[1]*1.2))
-                self.screen.blit(hover, rect)
+                # hover = pygame.transform.scale(
+                #         self.level_imgs[i], (rect.size[0]*1.2, rect.size[1]*1.2))
+                self.screen.blit(self.level_hover_imgs[i], self.level_rects[i])
                 self.about_stage(self.screen, rect.x, rect.y)
                 for j in range(3):
                     text = self.font.render(self.levels_about[i][j], True, WHITE)
@@ -95,18 +106,17 @@ class MapPage:
                 return "exit"
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.level0_rect.collidepoint(event.pos):
-                    return "game_level0"
+                    return "story_lobby_0"
                 elif self.level1_rect.collidepoint(event.pos):
-                    return "game_level1"
+                    return "story_lobby_1"
                 elif self.level2_rect.collidepoint(event.pos):
-                    return "game_level2"
-                elif self.level3__rect.collidepoint(event.pos):
-                    return "game_level3"
+                    return "story_lobby_2"
+                elif self.level3_rect.collidepoint(event.pos):
+                    return "story_lobby_3"
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     paused = True
                     return "pause"
-
 
         pygame.display.update()
         return "map"
