@@ -27,7 +27,6 @@ class GamePage():
             for i, name in enumerate(player_names[1:])
         ]
         # card_rec.top = self.screen_height * 0.17 * (computer_player_idx + 1)
-
         self.uno_button = UnoButton(self)
         self.uno_button_pressed = False
         self.pause_page = PausedPage(self.screen, self.setting)
