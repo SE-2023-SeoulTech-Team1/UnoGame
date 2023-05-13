@@ -8,6 +8,9 @@ from Setting import Setting
 from MapPage import MapPage
 from StoryLobbyPage import StoryLobbyPage
 from PausedPage import PausedPage
+from MultiSettingPage import MultiSettingPage
+from MultiLobbyPage import MultiLobbyPage
+from SelectPage import SelectPage
 import pickle
 import os
 import atexit
@@ -39,7 +42,9 @@ if __name__ == "__main__":
     setting_page = SettingPage(screen, setting)
     map_page = MapPage(screen, setting)
     pause_page = PausedPage(screen, setting)
+    multi_setting_page = MultiSettingPage(screen, setting)
     achievement_page = AchievementPage(screen, setting)
+    select_page = SelectPage(screen, setting)
 
     page = main_page.running()
     while True:
@@ -51,6 +56,9 @@ if __name__ == "__main__":
             elif page[1] == "main":
                 setting_page = SettingPage(screen, setting, page[1])
                 page = setting_page.running()
+            elif page[0] == "multi_lobby" and page[1] == True:
+                    multi_lobby_page = MultiLobbyPage(screen, setting, True)
+                    page = multi_lobby_page.running()
             else: 
                 game_page = GamePage(screen, setting, page[1])
                 page = game_page.running()
@@ -64,6 +72,13 @@ if __name__ == "__main__":
         elif page == "game":
             game_page = GamePage(screen, setting)
             page = game_page.running()
+        elif page == "multi_lobby":
+            multi_lobby_page = MultiLobbyPage(screen, setting)
+            page = multi_lobby_page.running()
+        elif page == "select":
+            page = select_page.running()
+        elif page == "multi_setting":
+            page = multi_setting_page.running()
         elif page == "game_level0":
             game_page_level0 = GamePage(screen, setting, ["Player", "Alien"])
             page = game_page_level0.running()
