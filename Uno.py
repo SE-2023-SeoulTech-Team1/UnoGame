@@ -6,6 +6,9 @@ from LobbyPage import LobbyPage
 from Setting import Setting
 from MapPage import MapPage 
 from PausedPage import PausedPage
+from MultiSettingPage import MultiSettingPage
+from SelectPage import SelectPage
+from MultiLobbyPage import MultiLobbyPage
 import pickle
 import os
 import atexit
@@ -23,9 +26,12 @@ if __name__ == "__main__":
     pygame.display.set_caption("Uno Game")
 
     main_page = MainPage(screen)
+    
     setting_page = SettingPage(screen, setting)
     map_page = MapPage(screen, setting)
     pause_page = PausedPage(screen, setting)
+    multi_setting_page = MultiSettingPage(screen, setting)
+    select_page = SelectPage(screen, setting)
 
     page = main_page.running()
     def delete_pickle():
@@ -42,6 +48,9 @@ if __name__ == "__main__":
             elif page[1] == "main":
                 setting_page = SettingPage(screen, setting, page[1])
                 page = setting_page.running()
+            elif page[0] == "multi_lobby" and page[1] == True:
+                multi_lobby_page = MultiLobbyPage(screen, setting, True)
+                page = multi_lobby_page.running()
             else: 
                 game_page = GamePage(screen, setting, page[1])
                 page = game_page.running()
@@ -52,6 +61,13 @@ if __name__ == "__main__":
         elif page == "lobby":
             lobby_page = LobbyPage(screen, setting)
             page = lobby_page.running()
+        elif page == "multi_lobby":
+            multi_lobby_page = MultiLobbyPage(screen, setting)
+            page = multi_lobby_page.running()
+        elif page == "select":
+            page = select_page.running()
+        elif page == "multi_setting":
+            page = multi_setting_page.running()
         elif page == "game":
             game_page = GamePage(screen, setting)
             page = game_page.running()

@@ -25,6 +25,7 @@ class LobbyPage():
                     pygame.quit()
                     quit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+
                     if self.btn_player.rect.collidepoint(event.pos):
                         selected_idx = -1
 
@@ -34,6 +35,8 @@ class LobbyPage():
                                 player_selected[i] = False
                                 self.btn_computer_players[i].text = ""
                                 selected_idx = None
+                                
+                            
                             else:
                                 player_selected[i] = True
                                 selected_idx = i
