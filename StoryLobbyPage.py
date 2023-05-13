@@ -1,58 +1,47 @@
 import pygame
-from Button import Button, TextButton
+from Button import Button
+from Colors import *
 
 fps = 60
 fpsClock = pygame.time.Clock()
 
-# 색상 정의
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-
-# 폰트 설정
-font = pygame.font.SysFont('arialroundedmtbold', 48)
-
-
-class MainPage():
-    def __init__(self, screen):
-
+class StoryLobbyPage:
+    def __init__(self, screen, setting):
         self.screen = screen
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-
-        self.title = TextButton(1/2, 1/6, 200, 50, "UNO GAME", hover_color=WHITE, text_color=BLUE)
-
+        self.setting = setting
+        self.game0 = False
+        self.game1 = False
+        self.game2 = False
+        self.game3 = False
         self.key_idx = 0
         self.start_btn = Button(0.5, 0.3, 200, 50, 'START', text_size=32)
         self.start_btn.key_hovered = True
-        self.map_btn = Button(0.5, 0.4, 200, 50, 'GO TO MAP', text_size=32)
-        self.achievment_btn = Button(0.5, 0.5, 200, 50, 'ACHEIVEMENT', text_size=32)
-        self.setting_btn = Button(0.5, 0.6, 200, 50, 'SETTINGS', text_size=32)
-        self.exit_btn = Button(0.5, 0.7, 200, 50, 'EXIT', text_size=32)
-
-        self.buttons = [self.start_btn, self.map_btn, self.achievment_btn, self.setting_btn, self.exit_btn]
-
-
-    def running(self):
-
+        self.back_btn = Button(0.5, 0.4, 200, 50, "MAP",text_size=32)
+        self.exit_btn = Button(0.5, 0.5, 200, 50, 'EXIT', text_size=32)
+        self.buttons = [self.start_btn, self.back_btn, self.exit_btn]
+    
+    
+    def running(self, game_level):
         self.screen.fill(WHITE)
-
+        self.game_level = game_level
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return "exit"
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.start_btn.rect.collidepoint(event.pos):
-                    return "lobby"
-                if self.map_btn.rect.collidepoint(event.pos):
+                    if self.game_level == 0:
+                        return "game_level0"
+                    elif self.game_level == 1:
+                        return "game_level1"
+                    elif self.game_level == 2:
+                        return "game_level2"
+                    elif self.game_level == 3:
+                        return "game_level3"
+                elif self.back_btn.rect.collidepoint(event.pos):
                     return "map"
-                if self.achievment_btn.rect.collidepoint(event.pos):
-                    return "achievement"
-                if self.setting_btn.rect.collidepoint(event.pos):
-                    return "setting"
-                if self.exit_btn.rect.collidepoint(event.pos):
+                elif self.exit_btn.rect.collidepoint(event.pos):
                     return "exit"
 
             elif event.type == pygame.KEYDOWN:
@@ -68,21 +57,24 @@ class MainPage():
                     self.buttons[self.key_idx].key_hovered = True
                 elif event.key == pygame.K_RETURN:
                     if self.key_idx == 0:
-                        return "lobby"
+                        return "game_level0"
                     elif self.key_idx == 1:
                         return "map"
                     elif self.key_idx == 2:
-                        return "achievement"
-                    elif self.key_idx == 3:
-                        return "setting", "main"
-                    elif self.key_idx == 4:
                         return "exit"
 
-        self.title.process(self.screen)
+        
         for button in self.buttons:
             button.process(self.screen)
 
-        # 화면 업데이트
         pygame.display.flip()
         fpsClock.tick(fps)
-        return "main"
+
+        if self.game_level == 0:
+            return "story_lobby_0"
+        elif self.game_level == 1:
+            return "story_lobby_1"
+        elif self.game_level == 2:
+            return "story_lobby_2"
+        elif self.game_level == 3:
+            return "story_lobby_3"

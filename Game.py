@@ -15,18 +15,19 @@ class Game:
 
         cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
         cards += [Card("black", type, color_weak_mode) for type in BLACK_CARD_TYPES]
+        self.deck = Deck(cards)
         if os.path.exists('game_state.pkl'):
             pass
         else:
-            shuffle(cards)
-        self.player_names = player_names
-        self.deck = Deck(cards)
+            self.deck.shuffle()
+
         self.players = [Player(player_names[0])] + [Computer(name) for name in player_names[1:]]
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
         self.uno = None
         self.color_weak_mode = color_weak_mode
+        self.turn_count = 0
 
     def reset_deck(self, color_weak_mode=False):
         cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
@@ -61,6 +62,7 @@ class Game:
 
     def next_turn(self):
         self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
+        self.turn_count += 1
 
     def reverse_card_clicked(self):
         self.direction *= -1
@@ -100,9 +102,7 @@ class Game:
 
     def bombcard_card_clicked(self, chosen_color):
         """
-        bombcard 추가(자신을 제외한 모든 플레이어가 카드를 3개씩 받음)
-        :param chosen_color:
-        :return:
+        자신을 제외한 모든 플레이어가 카드를 3개씩 받음
         """
         player = self.players[self.current_player_index]
         for p in self.players:
@@ -115,12 +115,7 @@ class Game:
 
     def changecard_card_clicked(self, player, change_indices, chosen_color, card_index):
         """
-        changecard 추가(자신의 카드를 2장 선택하여 덱에서 교환)
-        :param player:
-        :param change_indices:
-        :param chosen_color:
-        :param card_index:
-        :return:
+        자신의 카드를 2장 선택하여 덱에서 교환
         """
         player = self.players[self.current_player_index]
         change_indices = []
@@ -138,10 +133,7 @@ class Game:
 
     def copy_card_clicked(self, player_index, chosen_color):
         """
-        copycard 추가 (선택한 다른 플레이어의 임의의 카드를 복사해 자신의 카드로 추가)
-        :param player_index:
-        :param chosen_color:
-        :return: self
+        선택한 다른 플레이어의 임의의 카드를 복사해 자신의 카드로 추가
         """
         player = self.players[self.current_player_index]
         target_player = self.players[player_index]
@@ -157,23 +149,17 @@ class Game:
 
     def change_all_clicked(self, player_index, chosen_color):
         """
-        changeall추가 (선택한 다른 플레이어의 모든 카드를 자신의 카드로 교환)
-        :param player_index:
-        :param chosen_color:
-        :return: self
+        선택한 다른 플레이어의 모든 카드를 자신의 카드로 교환
         """
         player = self.players[self.current_player_index]
         target_player = self.players[player_index]
 
-        # 플레이어와 타겟 플레이어의 카드 리스트를 복사해둔다.
         player_cards = player.cards.copy()
         target_player_cards = target_player.cards.copy()
 
-        # 카드를 교환한다.
         player.cards = target_player_cards
         target_player.cards = player_cards
 
-        # print(f"{player.name}님의 모든 카드와 {target_player.name}님의 모든 카드가 교환되었습니다.")
         self.current_card.color = chosen_color
         self.next_turn()
         return self

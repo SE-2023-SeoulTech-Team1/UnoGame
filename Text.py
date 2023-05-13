@@ -8,8 +8,7 @@ class Text():
         self.text = text
         self.color = color
         self.size = size
-        self.font = FONT.render(self.text, True, self.color, None)
-
+        self.font = pygame.font.SysFont('arialrounded', size).render(self.text, True, self.color, None)
 
     def render(self, screen):
         screen_width, screen_height = pygame.display.get_surface().get_size()
