@@ -2,6 +2,7 @@ import pygame as pygame
 import pygame_gui as pygame_gui
 import sys
 from Game import *
+from StoryGame import *
 from FunctionAnimation import *
 from random import randint, random
 from draw import *
@@ -15,10 +16,19 @@ import os
 
 
 class GamePage():
-    def __init__(self, screen, setting, player_names=None):
+    def __init__(self, screen, setting, player_names=None, story_mode=None):
         self.setting = setting
         self.player_names = player_names
-        self.game = Game(self.player_names, self.setting.color_weak)
+        if story_mode is None:
+            self.game = Game(self.player_names, self.setting.color_weak)
+        elif story_mode == "A":
+            self.game = StoryGameA(self.setting.color_weak)
+        elif story_mode == "B":
+            self.game = StoryGameB(self.setting.color_weak)
+        elif story_mode == "C":
+            self.game = StoryGameC(self.setting.color_weak)
+        else:
+            self.game = StoryGameD(self.setting.color_weak)
         self.screen = screen
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
