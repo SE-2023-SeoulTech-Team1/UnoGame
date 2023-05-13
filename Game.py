@@ -27,6 +27,7 @@ class Game:
         self.direction = 1
         self.uno = None
         self.color_weak_mode = color_weak_mode
+        self.turn_count = 0
 
     def reset_deck(self, color_weak_mode=False):
         cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
@@ -61,6 +62,7 @@ class Game:
 
     def next_turn(self):
         self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
+        self.turn_count += 1
 
     def reverse_card_clicked(self):
         self.direction *= -1
