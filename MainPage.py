@@ -28,10 +28,11 @@ class MainPage():
         self.start_btn = Button(0.5, 0.3, 200, 50, 'START', text_size=32)
         self.start_btn.key_hovered = True
         self.map_btn = Button(0.5, 0.4, 200, 50, 'GO TO MAP', text_size=32)
-        self.setting_btn = Button(0.5, 0.5, 200, 50, 'SETTINGS', text_size=32)
-        self.exit_btn = Button(0.5, 0.6, 200, 50, 'EXIT', text_size=32)
+        self.achievment_btn = Button(0.5, 0.5, 200, 50, 'ACHEIVEMENT', text_size=32)
+        self.setting_btn = Button(0.5, 0.6, 200, 50, 'SETTINGS', text_size=32)
+        self.exit_btn = Button(0.5, 0.7, 200, 50, 'EXIT', text_size=32)
 
-        self.buttons = [self.start_btn, self.map_btn, self.setting_btn, self.exit_btn]
+        self.buttons = [self.start_btn, self.map_btn, self.achievment_btn, self.setting_btn, self.exit_btn]
 
 
     def running(self):
@@ -47,6 +48,8 @@ class MainPage():
                     return "lobby"
                 if self.map_btn.rect.collidepoint(event.pos):
                     return "map"
+                if self.achievment_btn.rect.collidepoint(event.pos):
+                    return "achievement"
                 if self.setting_btn.rect.collidepoint(event.pos):
                     return "setting"
                 if self.exit_btn.rect.collidepoint(event.pos):
@@ -69,8 +72,10 @@ class MainPage():
                     elif self.key_idx == 1:
                         return "map"
                     elif self.key_idx == 2:
-                        return "setting", "main"
+                        return "achievement"
                     elif self.key_idx == 3:
+                        return "setting", "main"
+                    elif self.key_idx == 4:
                         return "exit"
 
         self.title.process(self.screen)
