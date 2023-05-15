@@ -41,6 +41,7 @@ if __name__ == "__main__":
     main_page = MainPage(screen)
     setting_page = SettingPage(screen, setting)
     map_page = MapPage(screen, setting)
+    story_lobby_page = StoryLobbyPage(screen, setting)
     pause_page = PausedPage(screen, setting)
     multi_setting_page = MultiSettingPage(screen, setting)
     achievement_page = AchievementPage(screen, setting)
@@ -98,16 +99,12 @@ if __name__ == "__main__":
         elif page == "map":
             page = map_page.running()
         elif page == "story_lobby_0":
-            story_lobby_page = StoryLobbyPage(screen, setting)
             page = story_lobby_page.running(0)
         elif page == "story_lobby_1":
-            story_lobby_page = StoryLobbyPage(screen, setting)
             page = story_lobby_page.running(1)
         elif page == "story_lobby_2":
-            story_lobby_page = StoryLobbyPage(screen, setting)
             page = story_lobby_page.running(2)
         elif page == "story_lobby_3":
-            story_lobby_page = StoryLobbyPage(screen, setting)
             page = story_lobby_page.running(3)
         elif page == "achievement":
             page = achievement_page.running()
