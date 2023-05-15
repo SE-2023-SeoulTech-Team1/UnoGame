@@ -233,7 +233,7 @@ class GamePage():
                                     self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    self.draw_computer_cards()
+                                    self.draw_computer_cards()[self.game.current_player_index]
                                     pygame.display.flip()
                                 self.game.plus4_card_clicked(self.game.players[0], chosen_color)
                             elif chosen_card.type == 'bomb':
@@ -241,7 +241,7 @@ class GamePage():
                                 bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
                                 bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
                                 display_bomb_animation(self.screen, bomb_icon)
-                                end_pos = self.draw_computer_cards()[-1]
+                                end_pos = self.draw_computer_cards()[self.game.current_player_index][-1]
                                 for i in range(3):
                                     added_card = self.game.deck.cards[-(i+1)]
                                     added_card_img = pygame.image.load(added_card.back).convert_alpha()
@@ -252,7 +252,7 @@ class GamePage():
                                     self.card_move_sound.set_volume(self.setting.volume * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,
                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    self.draw_computer_cards()
+                                    self.draw_computer_cards()[self.game.current_player_index]
                                     pygame.display.flip()
                                 self.game.bombcard_card_clicked(chosen_color)
 
@@ -294,7 +294,7 @@ class GamePage():
         elif self.game.current_card.type == 'bomb':
             self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
         elif self.game.current_card.type == '+2':
-            end_pos = self.draw_computer_cards()[-1]
+            end_pos = self.draw_computer_cards()[self.game.current_player_index][-1]
             for i in range(2):
                 added_card = self.game.deck.cards[-(i+1)]
                 added_card_img = pygame.image.load(added_card.back).convert_alpha()
@@ -305,7 +305,7 @@ class GamePage():
                 self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                 self.move_card_animation(added_card_img, added_card_rect,
                                     (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                self.draw_computer_cards()
+                self.draw_computer_cards()[self.game.current_player_index]
                 pygame.display.flip()
             self.game.plus2_card_clicked(self.game.players[0])
         elif self.game.current_card.type == 'reverse':
@@ -496,7 +496,7 @@ class GamePage():
                     self.move_card_animation(added_card_img, added_card_rect,
                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                     self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
-                self.game.plus4_card_clicked(self.game.players[self.game.current_player_index], choiced_color)
+                self.game.plus4_card_clicked(choiced_color)
             elif self.game.current_card.type == 'bomb':
                 bomb_icon = pygame.image.load(resource_path("./assets/bomb.png"))
                 bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
