@@ -123,7 +123,7 @@ class GamePage():
                 rect_list.append(card_rec)
                 self.screen.blit(card_back_img, card_rec)
             computer_card_rect_list.append(rect_list)
-        # print(computer_card_rect_list)
+
         return computer_card_rect_list
 
     # 덱 카드 한 장 뒤집기
@@ -284,7 +284,7 @@ class GamePage():
         self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
     
     # 기능 카드 눌렸을 때 
-    def func_card_clicked(self, card_rect, chosen_card, card_rect_list):
+    def func_card_clicked(self, i, card_rect, chosen_card, card_rect_list):
         if self.game.current_card.type == 'all':
             self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
         elif self.game.current_card.type == 'wildcard':
@@ -330,8 +330,8 @@ class GamePage():
             self.redraw_card(i, self.screen, card_rect, card_rect_list)
 
             self.game.skip_card_clicked()
-            # 로직은 나중에 functionCard 기능 고쳐지면 그 때 수정 --> 지금은 일시적으로
-            display_skip_animation(self.screen, self.game.players[self.game.current_player_index + 1].name)
+            # 로직은 나중에 functionCard 기능 고쳐지면 그 때 수정 --> 지금은 일시적으로 : 수정함 
+            display_skip_animation(self.screen, self.game.players[(self.game.current_player_index + 1) % len(self.game.players)].name)
 
             del card_rect_list[i+1: len(self.game.players[0].cards)]
         else:
@@ -381,63 +381,8 @@ class GamePage():
                             # 현재 카드 업데이트 
                             self.game.current_card = openned_cards[-1]
 
-                            # 기능 카드 눌렀을 때
-#                             if self.game.current_card.type == 'all':
-#                                 self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
-#                             elif self.game.current_card.type == 'wildcard':
-#                                 self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
-#                             elif self.game.current_card.type == '+4':
-#                                 self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
-#                             elif self.game.current_card.type == 'bomb':
-#                                 self.handle_black(card_rect, i, chosen_card, self.screen, card_rect_list, self.screen_width, self.screen_height)
-#                             elif self.game.current_card.type == '+2':
-#                                 end_pos = self.draw_computer_cards()[-1]
-#                                 for i in range(2):
-#                                     added_card = self.game.deck.cards[-(i+1)]
-#                                     added_card_img = pygame.image.load(added_card.back).convert_alpha()
-#                                     added_card_rect = added_card_img.get_rect()
-#                                     start_pos = self.draw_deck()
-#                                     end_pos.x = end_pos.x - 20
-#                                     self.card_move_sound.play()
-#                                     self.card_move_sound.set_volume(self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
-#                                     self.move_card_animation(added_card_img, added_card_rect,
-#                                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-#                                     self.draw_computer_cards()
-#                                     pygame.display.flip()
-#                                 self.game.plus2_card_clicked(self.game.players[0])
-#                             elif self.game.current_card.type == 'reverse':
-#                                 # 클릭했을 때 오른쪽 카드 이미지들 누락 방지를 위한 코드
-#                                 self.redraw_card(i, self.screen, card_rect, card_rect_list)
-
-#                                 if self.game.direction == 1:
-#                                     reverse_icon = pygame.image.load(resource_path("./assets/counterclockwise.png"))
-#                                     reverse_icon = pygame.transform.scale(reverse_icon, (150, 150))
-#                                 elif self.game.direction == -1:
-#                                     reverse_icon = pygame.image.load(resource_path("./assets/clockwise.png"))
-#                                     reverse_icon = pygame.transform.scale(reverse_icon, (150, 150))
-
-#                                 display_reverse_animation(self.screen, reverse_icon)
-
-#                                 self.game.reverse_card_clicked()
-
-#                                 # 다시 오른쪽카드들 그려지므로 삭제
-#                                 del card_rect_list[i+1: len(self.game.players[0].cards)]
-
-#                             elif self.game.current_card.type == 'skip':
-#                                 self.redraw_card(i, self.screen, card_rect, card_rect_list)
-
-#                                 self.game.skip_card_clicked()
-#                                 # 로직은 나중에 functionCard 기능 고쳐지면 그 때 수정 --> 지금은 일시적으로
-#                                 display_skip_animation(self.screen, self.game.players[self.game.current_player_index + 1].name)
-
-#                                 del card_rect_list[i+1: len(self.game.players[0].cards)]
-#                             else:
-#                                 # 그냥 number카드 일 때
-#                                 self.game.next_turn()
-
-#                             print(f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
-
-                            self.func_card_clicked(card_rect, chosen_card, card_rect_list)
+                            self.func_card_clicked(i, card_rect, chosen_card, card_rect_list)
+                            
 
             else:
                 card_rect.top = self.screen_height * 0.80
@@ -606,7 +551,7 @@ class GamePage():
         elif self.game.current_card.type == 'skip':
             self.game.skip_card_clicked()
             # 게임 function card 버그 고쳐지면 수정 --> 지금은 애니메이션만 일시적으로 해놓음
-            display_skip_animation(self.screen, self.game.players[self.game.current_player_index - 1].name)
+            display_skip_animation(self.screen, self.game.players[(self.game.current_player_index + 1)%len(self.game.players)].name)
         else:
             # 그냥 number카드 일 때
             self.game.next_turn()
