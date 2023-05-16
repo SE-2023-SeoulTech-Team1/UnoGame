@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
             else: 
                 game_page = GamePage(screen, setting, page[1])
-
+                page = game_page.running()
         if page == "main":
             page = main_page.running()
         elif page == "setting":
