@@ -21,7 +21,7 @@ class Computer:
 
     def draw_card(self, deck):
         # pygame.display.flip()
-        pygame.time.delay(int(random()*3000))
+        # pygame.time.delay(int(random()*3000))
         card = deck.pop_card()
         self.cards.append(card)
 
@@ -33,7 +33,7 @@ class Computer:
         return card_idx_can_play
 
     def play_card(self, game):
-        pygame.time.delay(int(random()*3000))
+        # pygame.time.delay(int(random()*3000))
         card_idx_can_play = self.can_play(game.current_card)
         return self.cards.pop(choice(card_idx_can_play))
     
@@ -49,6 +49,39 @@ class Computer:
 
 
 class StoryComputerA(Computer):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def play_card(self, game):
+        """
+        컴퓨터 플레이어가 같은 색깔카드를 적절히 조합하여 2~3장 이상의 카드를 한 번에 낼 수 있는 콤보를 사용.
+        """
+        card_idx_can_play = self.can_play(game.current_card)
+        card_idx_same_color = []
+        card_same_color = []
+        for i in range(len(card_idx_can_play)):
+            if self.cards[card_idx_can_play[i]].color == game.current_card.color:
+                card_idx_same_color.append(card_idx_can_play[i])
+        print("card_idx_same_color", card_idx_same_color)
+        print("card_idx_can_play", card_idx_can_play)
+        if len(card_idx_same_color) >= 2:
+            for i in range(len(card_idx_same_color)):
+                card_same_color.append(self.cards[card_idx_same_color[i]])
+                self.cards.pop(card_idx_same_color[i])
+            return card_same_color
+        elif len(card_idx_can_play) >= 2:
+            return self.cards.pop(choice(card_idx_can_play))
+        else:
+            return self.cards.pop(card_idx_can_play[0])
+
+        # while self.can_play(game.current_card):
+        #     card_idx_can_play = self.can_play(game.current_card)
+        #     if len(card_idx_can_play) >= 2:
+        #         return self.cards.pop(choice(card_idx_can_play))
+        #     else:
+        #         return self.cards.pop(card_idx_can_play[0])
+
+class StoryComputerB(Computer):
     def __init__(self, name):
         super().__init__(name)
 
