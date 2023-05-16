@@ -1,5 +1,6 @@
 import socket
 import threading
+import json
 
 class Server:
     def __init__(self, multi_lobby_page):
@@ -8,43 +9,62 @@ class Server:
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
-        self.clients = []
         self.multi_lobby_page = multi_lobby_page
+        self.clients = []
+        self.clients_name = []
+        self.data = {'clients' : []}
+        self.ready_clients = {}
+        self.player_seleceted = [False for _ in range(5)]
+        self.run()
 
     def handle_client(self, client_socket, client_address):
+
         print(f'New client connected: {client_address}')
         name = client_socket.recv(1024).decode()
         print(f'{name} has connected.')
 
-        for i, player in enumerate(self.multi_lobby_page.player_selected):
-            if player and self.multi_lobby_page.btn_clients[i].text is "":
-                self.multi_lobby_page.btn_clients[i].text = name
-                break
-        
-        for c in self.clients:
-            c.sendall(f'update,{",".join(str(p) for p in self.multi_lobby_page.player_selected)}'.encode() + b'|n')
-            c.sendall(f'update_btn_text,{",".join(self.multi_lobby_page.btn_clients[i].text for i in range(5))}'.encode() + b'|n')
+        while True:
+            try:
+                data = client_socket.recv(1024)
+                if not data:
+                    break
+                json_data = data.decode()
+                message = json.loads(json_data)
+                pwd = message.get("pwd")
+                name = message.get("name")
+                self.clients_name.append(name)
+                if str(pwd) == "1234":
+                    data = {'name' : name, 'enter_lobby' : True}
+                    self.data['clients'].append(data)
+                else:
+                    break
 
+                # 응답 처리해서 클라이언트에게 다시 보내기 
+                json_data = json.dumps(self.data)
+                client_socket.sendall(json_data.encode())
+                break
+            except: 
+                print("error!!")
+                break
         while True:
             try:
                 data = client_socket.recv(1024).decode()
+                print(data)
                 if not data:
                     break
                 
-                # handle received data here
-                print(data)
+                if data == "enter_lobby":
+                    for i, c in enumerate(self.clients):
+                        json_data = json.dumps(self.data)
+                        c.sendall(json_data.encode())
+                    # 여기서 업데이트 
+                    print(self.clients_name)
+                    for i, player in enumerate(self.multi_lobby_page.player_selected):
+                        if player and self.multi_lobby_page.btn_clients[i].text is "":
+                            self.multi_lobby_page.btn_clients[i].text = self.clients_name[i]
+
+                    
             except:
-                print(f'Client {name} has disconnected.')
-
-                # reset client's selected player data
-                for i, text in enumerate(self.multi_lobby_page.btn_clients):
-                    if text == name:
-                        self.multi_lobby_page.btn_clients[i].text = ""
-                        break
-
-                # update all clients with updated button text
-                for c in self.clients:
-                    c.sendall(f'update_btn_text,{",".join(self.multi_lobby_page.btn_clients[i].text if self.multi_lobby_page.btn_clients[i].text else "None" for i in range(5))}'.encode())
                 break
 
     def run(self):
@@ -54,3 +74,4 @@ class Server:
             self.clients.append(client_socket)
             client_thread = threading.Thread(target=self.handle_client, args=(client_socket, client_address))
             client_thread.start()
+          

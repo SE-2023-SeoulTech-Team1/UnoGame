@@ -1,48 +1,67 @@
 import socket
 import threading
+import json
+import pickle
 
 class Client:
-    def __init__(self, multi_lobby_page):
+    def __init__(self, multi_setting_page = None, multi_lobby_page = None):
         self.host = "localhost"
         self.port = 12345
         self.name = "Player"
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.multi_setting_page = multi_setting_page
         self.multi_lobby_page = multi_lobby_page
+        self.data = {}
+        self.my_data = {}
         try:
             self.socket.connect((self.host, self.port))
         except:
             print("Connection failed.")
             return
-        self.name = input("이름을 입력하세요 : ")
+        self.name = "hi"
         self.send_data(self.name)
-        self.receive_data()
-
-
-
+        threading.Thread(target=self.receive_data).start()
+        
+        
     def receive_data(self):
         while True:
             try:
                 data = self.socket.recv(1024).decode()
-                print(data)
-                if data:
-                    commands = data.split('|n')
-                    for command in commands:
-                        parts = command.split(',')
-                        if parts[0] == 'update':
-                            for i, part in enumerate(parts[1:]):
-                                self.multi_lobby_page.player_selected[i] = part == 'True'
-                        elif parts[0] == 'update_btn_text':
-                            for i, part in enumerate(parts[1:]):
-                                self.multi_lobby_page.btn_clients[i].text = part
+                if not data: 
+                    pass
+                json_data = data
+                message = json.loads(json_data)
 
-                    
+                self.data = message
 
+                print(self.name)
 
+                for client in self.data['clients']:
+                    name = client.get('name')
+                    if name == self.name:
+                        self.my_data = client
+                        #multi_lobby_page에 접속 하도록 
+                        self.multi_setting_page.enter = True
+                break
             except:
+                print("client error!")
                 break
 
-
+        while True:
+            try:
+                data = self.socket.recv(1024).decode()
+                if not data: 
+                    pass
+                json_data = data
+                message = json.loads(json_data)
+                print(message)
+                self.multi_lobby_page.client_data = message
+                
+            except:
+                break
     def send_data(self, data):
         self.socket.sendall(data.encode())
+    
 
-
+    def disconnect(self):
+        self.socket.close()
