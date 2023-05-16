@@ -1,6 +1,8 @@
 import time
 import pygame
 from random import random, choice
+from Card import *
+
 
 class Player:
     def __init__(self, name):
@@ -10,9 +12,10 @@ class Player:
     def draw_card(self, deck):
         card = deck.pop_card()
         self.cards.append(card)
-        
+
     def play_card(self, card_index):
         return self.cards.pop(card_index)
+
 
 class Computer:
     def __init__(self, name):
@@ -20,8 +23,7 @@ class Computer:
         self.cards = []
 
     def draw_card(self, deck):
-        # pygame.display.flip()
-        pygame.time.delay(int(random()*3000))
+        # pygame.time.delay(int(random()*3000))
         card = deck.pop_card()
         self.cards.append(card)
 
@@ -33,10 +35,10 @@ class Computer:
         return card_idx_can_play
 
     def play_card(self, game):
-        pygame.time.delay(int(random()*3000))
+        # pygame.time.delay(int(random()*3000))
         card_idx_can_play = self.can_play(game.current_card)
         return self.cards.pop(choice(card_idx_can_play))
-    
+
     def black_card_clicked(self):
         color_list = ['red', 'green', 'yellow', 'blue']
         return choice(color_list)
@@ -52,13 +54,42 @@ class StoryComputerA(Computer):
     def __init__(self, name):
         super().__init__(name)
 
+    def can_play(self, current_card):
+        card_idx_can_play = []
+        for idx, card in enumerate(self.cards):
+            if card.color == current_card.color or card.type == current_card.type or card.color == "black":
+                card_idx_can_play.append(idx)
+        return card_idx_can_play
+
     def play_card(self, game):
-        """
-        컴퓨터 플레이어가 거꾸로 진행과 건너 뛰기 등의 기술카드를 적절히 조합하여 2~3장 이상의 카드를 한 번에 낼 수 있는 콤보를 사용.
-        """
-        while self.can_play(game.current_card):
+        # pygame.time.delay(int(random()*3000))
+        card_idx_can_play = self.can_play(game.current_card)
+        return self.cards.pop(choice(card_idx_can_play))
+
+
+class StoryComputerB(Computer):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def can_play_combo(self, current_card):
+        if current_card.color == "black":
+            return False
+        combination = [idx for idx, card in enumerate(self.cards) if (
+            card.color == current_card.color and card.type == SPECIAL_CARD_TYPES)]
+        print(combination)
+        if combination:
+            return combination
+        else:
+            return False
+
+    def play_card(self, game):
+        # pygame.time.delay(int(random()*3000))
+        combination = self.can_play_combo(game.current_card)
+        if combination:
+            print("combo")
+            for idx in combination:
+                self.cards.pop(idx)
+            return combination
+        else:
             card_idx_can_play = self.can_play(game.current_card)
-            if len(card_idx_can_play) >= 2:
-                return self.cards.pop(choice(card_idx_can_play))
-            else:
-                return self.cards.pop(card_idx_can_play[0])
+            return self.cards.pop(choice(card_idx_can_play))
