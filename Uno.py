@@ -14,7 +14,7 @@ from SelectPage import SelectPage
 import pickle
 import os
 import atexit
-
+import threading
 
 def delete_pickle():
     if os.path.exists('game_state.pkl'):
@@ -57,15 +57,15 @@ if __name__ == "__main__":
                 setting_page = SettingPage(screen, setting, page[1])
                 page = setting_page.running()
             elif page[0] == "multi_lobby" and page[1] == True:
-                multi_lobby_page = MultiLobbyPage(screen, setting, True)
+                multi_lobby_page = MultiLobbyPage(screen, setting, None, True)
                 page = multi_lobby_page.running()
             elif page[0] == "multi_lobby":
-                multi_setting_page = page[1]
-                multi_lobby_page = MultiLobbyPage(screen, setting, False, multi_setting_page)
+                multi_lobby_page = page[1]
                 page = multi_lobby_page.running()
+
             else: 
                 game_page = GamePage(screen, setting, page[1])
-                page = game_page.running()
+
         if page == "main":
             page = main_page.running()
         elif page == "setting":
