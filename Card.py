@@ -47,6 +47,7 @@ class Deck:
         shuffle(self.cards)
 
     def choice_card(self):
+        # TODO len(self.cards)에 맞춰서 weights 계산
         weights = [1 / 68] * 36 + [2 / 68] * 32
         idx = choices(range(len(self.cards)), weights=weights)
         return self.cards.pop(idx)

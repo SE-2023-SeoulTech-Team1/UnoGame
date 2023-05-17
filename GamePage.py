@@ -3,6 +3,7 @@ import pygame_gui as pygame_gui
 import sys
 from Game import *
 from StoryGame import *
+from Achievement import *
 from FunctionAnimation import *
 from random import randint, random
 from draw import *
