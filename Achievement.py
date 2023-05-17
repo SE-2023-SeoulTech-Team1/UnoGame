@@ -28,9 +28,9 @@ class Achievement:
             return data
 
     def draw(self, screen, y):
-        Text(0.2, y, self.name, size=30).render(screen)
-        Text(0.2, y + 0.03, self.description, size=20).render(screen)
+        Text(0.2, y, self.name, size=20).render(screen)
+        Text(0.2, y + 0.03, self.description, size=15).render(screen)
         if self.completed:
-            Text(0.7, y, "complete", color=GREEN, size=40).render(screen)
+            Text(0.7, y, "complete", color=GREEN, size=30).render(screen)
         else:
-            Text(0.7, y, "incomplete", color=RED, size=40).render(screen)
+            Text(0.7, y, "incomplete", color=RED, size=30).render(screen)

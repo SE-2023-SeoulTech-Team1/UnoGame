@@ -1,14 +1,30 @@
 import pygame
+import pygame_gui
 import pickle
 import os
 from Achievement import Achievement
+from resource_path import *
 from Colors import *
 
 class AchievementPage:
 
     def __init__(self, screen, setting):
         self.screen = screen
+        self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.setting = setting
+        self.single_medal_img =  pygame.image.load(resource_path("./assets/single_medal.png"))
+        self.level0_medal_img =  pygame.image.load(resource_path("./assets/level0_medal.png"))
+        self.level1_medal_img =  pygame.image.load(resource_path("./assets/level1_medal.png"))
+        self.level2_medal_img =  pygame.image.load(resource_path("./assets/level2_medal.png"))
+        self.level3_medal_img =  pygame.image.load(resource_path("./assets/level3_medal.png"))      
+        self.turn10_medal_img =  pygame.image.load(resource_path("./assets/10turn_medal.png"))
+        self.turn15_medal_img =  pygame.image.load(resource_path("./assets/15turn_medal.png"))
+        self.turn20_medal_img =  pygame.image.load(resource_path("./assets/20turn_medal.png"))
+        self.skill_medal_img =  pygame.image.load(resource_path("./assets/skill_medal.png"))
+        self.uno_medal_img =  pygame.image.load(resource_path("./assets/uno_medal.png"))
+        self.medal_imgs = [self.single_medal_img, self.level0_medal_img, self.level1_medal_img, self.level2_medal_img,
+                            self.level3_medal_img, self.turn10_medal_img, self.turn15_medal_img, self.turn20_medal_img,
+                            self.skill_medal_img, self.uno_medal_img]
         if os.path.exists('achievements.pickle'):
             with open('achievements.pickle', 'rb') as f:
                 self.achievements = pickle.load(f)
@@ -34,5 +50,17 @@ class AchievementPage:
                     quit()
             self.screen.fill(WHITE)
             for i, achievement in enumerate(self.achievements):
-                achievement.draw(self.screen, (i + 1) * 0.1)
+                achievement.draw(self.screen, (i + 1) * 0.08)
+            for i, img in enumerate(self.medal_imgs):
+                img_rect = img.get_rect()
+                img = pygame.transform.scale(
+                    img, (img_rect.size[0] * 0.2, img_rect.size[1] * 0.2))
+                img_rect.x = self.screen_width * 0.08
+                img_rect.y = self.screen_height * (i + 1) * 0.08
+                self.screen.blit(img, img_rect)
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.paused = True
+                        return "pause"
             pygame.display.flip()

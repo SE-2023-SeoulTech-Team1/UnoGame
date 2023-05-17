@@ -21,7 +21,7 @@ class Computer:
 
     def draw_card(self, deck):
         # pygame.display.flip()
-        pygame.time.delay(int(random()*3000))
+        pygame.time.delay(int(random()*1000))
         card = deck.pop_card()
         self.cards.append(card)
 
@@ -33,7 +33,7 @@ class Computer:
         return card_idx_can_play
 
     def play_card(self, game):
-        pygame.time.delay(int(random()*3000))
+        pygame.time.delay(int(random()*1000))
         card_idx_can_play = self.can_play(game.current_card)
         return self.cards.pop(choice(card_idx_can_play))
     
