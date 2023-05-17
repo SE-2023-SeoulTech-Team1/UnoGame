@@ -12,16 +12,18 @@ class Game:
         if not player_names:
             print("Number of Players should be at least one.")
             exit(-1)
-
-        cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
-        cards += [Card("black", type, color_weak_mode) for type in BLACK_CARD_TYPES]
+        self.player_names = player_names
+        cards = [Card(color, type, color_weak_mode)
+                 for type in COLOR_CARD_TYPES for color in COLORS]
+        cards += [Card("black", type, color_weak_mode)
+                  for type in BLACK_CARD_TYPES]
         self.deck = Deck(cards)
         if os.path.exists('game_state.pkl'):
             pass
         else:
             self.deck.shuffle()
-
-        self.players = [Player(player_names[0])] + [Computer(name) for name in player_names[1:]]
+        self.players = [Player(player_names[0])] + [Computer(name)
+                                                    for name in player_names[1:]]
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
@@ -30,8 +32,10 @@ class Game:
         self.turn_count = 0
 
     def reset_deck(self, color_weak_mode=False):
-        cards = [Card(color, type, color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
-        cards += [Card("black", type, color_weak_mode) for type in BLACK_CARD_TYPES]
+        cards = [Card(color, type, color_weak_mode)
+                 for type in COLOR_CARD_TYPES for color in COLORS]
+        cards += [Card("black", type, color_weak_mode)
+                  for type in BLACK_CARD_TYPES]
         shuffle(cards)
 
         self.deck = Deck(cards)
@@ -61,7 +65,8 @@ class Game:
         player.draw_card(self.deck)
 
     def next_turn(self):
-        self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
+        self.current_player_index = (
+            self.current_player_index + self.direction) % len(self.players)
         self.turn_count += 1
 
     def reverse_card_clicked(self):
@@ -71,7 +76,8 @@ class Game:
         return self
 
     def skip_card_clicked(self):
-        self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
+        self.current_player_index = (
+            self.current_player_index + self.direction) % len(self.players)
         self.next_turn()
         return self
 
@@ -125,7 +131,8 @@ class Game:
             change_indices.append(card_index)
             # print(f"{player.name} 님의 카드가 교환되었습니다.")
             # print(f"\n{player.name}의 카드는:")
-        player.cards[change_indices[0]], player.cards[change_indices[1]] = self.deck.pop_card(), self.deck.pop_card()
+        player.cards[change_indices[0]], player.cards[change_indices[1]
+                                                      ] = self.deck.pop_card(), self.deck.pop_card()
         chosen_color = input("")
         self.current_card.color = chosen_color
         self.next_turn()
@@ -166,7 +173,8 @@ class Game:
 
     def uno_button_clicked(self, player_idx):
 
-        player_with_one_card = [player for player in self.players if len(player.cards) == 1]
+        player_with_one_card = [
+            player for player in self.players if len(player.cards) == 1]
         if not player_with_one_card:
             self.players[player_idx].draw_card(self.deck)
             return False
