@@ -36,7 +36,7 @@ class Deck:
             print("At least one more cards should be in deck.")
             exit(-1)
         self.cards = cards
-
+        
     def len_card(self):
         return len(self.cards)
 
@@ -47,8 +47,7 @@ class Deck:
         shuffle(self.cards)
 
     def choice_card(self):
-        # TODO 확률에 따른 선택 구현 (스토리GameB)
-        # weights = [1 / 68] * 36 + [2 / 68] * 16
-        # idx = choices(range(len(self.cards)), weights=weights)
-        idx = choices(range(len(self.cards)), k=1)
-        return self.cards.pop(idx[0])
+        # TODO len(self.cards)에 맞춰서 weights 계산
+        weights = [1 / 68] * 36 + [2 / 68] * 32
+        idx = choices(range(len(self.cards)), weights=weights)
+        return self.cards.pop(idx)

@@ -12,8 +12,6 @@ class StoryGameA(Game):
         super().__init__(["Player", "Alien"], color_weak_mode)
 
     def deal_cards(self):
-        cards = [Card(color, type, self.color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
-        cards += [Card("black", type, self.color_weak_mode) for type in BLACK_CARD_TYPES]
         # TODO 테스트 코드 작성
         for i in range(7):
             for player in self.players:
@@ -31,8 +29,6 @@ class StoryGameB(Game):
         super().__init__(["Player", "Alien"], color_weak_mode)
 
     def deal_cards(self):
-        cards = [Card(color, type, self.color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
-        cards += [Card("black", type, self.color_weak_mode) for type in BLACK_CARD_TYPES]
         # TODO 테스트 코드 작성
         for i in range(7):
             for player in self.players:
@@ -50,8 +46,6 @@ class StoryGameC(Game):
         super().__init__(["Player", "Alien1", "Alien2", "Alien3"], color_weak_mode)
 
     def deal_cards(self):
-        cards = [Card(color, type, self.color_weak_mode) for type in COLOR_CARD_TYPES for color in COLORS]
-        cards += [Card("black", type, self.color_weak_mode) for type in BLACK_CARD_TYPES]
         for i in range(12):
             for player in self.players:
                     player.cards.append(self.deck.pop_card())
