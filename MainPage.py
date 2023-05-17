@@ -74,11 +74,11 @@ class MainPage():
                     if self.key_idx == 0:
                         return "lobby"
                     elif self.key_idx == 1:
-                        return "map"
-                    elif self.key_idx == 2:
                         return "select"
-                    elif self.key_idx == 3:
+                    elif self.key_idx == 2:
                         return "achievement"
+                    elif self.key_idx == 3:
+                        return "map"
                     elif self.key_idx == 4:
                         return "setting", "main"
                     elif self.key_idx == 5:
