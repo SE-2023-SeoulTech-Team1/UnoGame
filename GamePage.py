@@ -3,6 +3,7 @@ import pygame_gui as pygame_gui
 import sys
 from Game import *
 from StoryGame import *
+from Achievement import *
 from FunctionAnimation import *
 from random import randint, random
 from draw import *
@@ -711,7 +712,7 @@ class GamePage():
                         print("UNO button clicked - user")
                         if len(self.game.players[0].cards) == 1:
                             self.uno_button_pressed = True
-                            Message(self.screen, "UNO", BLUE).draw()
+                            Message(self.screen, "UNO BUTTON CLICKED - USER", BLUE).draw()
                             self.game.uno_button_clicked(0)
                         else:
                             Message(self.screen, "WRONG UNO", BLUE).draw()
@@ -738,11 +739,15 @@ class GamePage():
                 if player_with_one_card:
                     if randint(0, 1) and not self.uno_button_pressed:
                         pygame.display.flip()
-                        pygame.time.delay(int(random()*3000))
+                        pygame.time.delay(int(random()*1500))
                         self.game.uno_button_clicked(1)
                         self.uno_button_pressed = True
-                        Message(self.screen, "UNO", RED).draw()
-                        print("UNO button clicked - computer")
+                        who_pressed_uno = choice(self.game.players[1:]).name
+                        Message(self.screen, f"UNO BUTTON CLICKED - {who_pressed_uno}", RED).draw()
+                        print(f"UNO button clicked - {choice(self.game.players[1:]).name}")
+                        # computer player uno 버튼 못눌렀을 때 처리
+                        if player_with_one_card[0].name != who_pressed_uno:
+                            player_with_one_card[0].draw_card(self.game.deck)
 
                 if not player_with_one_card and self.uno_button_pressed:
                     self.uno_button_pressed = False
@@ -753,6 +758,7 @@ class GamePage():
                     Message(self.screen, "Press ESC to go back",
                             WHITE).press_esc_draw()
                     self.timerFlag = False
+                    pygame.time.delay(3000)
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             paused = True
