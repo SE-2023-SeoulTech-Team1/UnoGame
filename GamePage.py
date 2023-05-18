@@ -14,6 +14,7 @@ from PausedPage import *
 from resource_path import *
 import pickle
 import os
+from threading import Event, Timer
 
 
 class GamePage():
@@ -259,8 +260,7 @@ class GamePage():
                                     self.card_move_sound.set_volume(
                                         self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                                     self.move_card_animation(added_card_img, added_card_rect,(start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                                    self.draw_computer_cards(
-                                    )[self.game.current_player_index]
+                                    self.draw_computer_cards()[self.game.current_player_index]
                                     pygame.display.flip()
                                 self.game.plus4_card_clicked(chosen_color)
                             elif chosen_card.type == 'bomb':
@@ -270,8 +270,7 @@ class GamePage():
                                 bomb_icon = pygame.transform.scale(
                                     bomb_icon, (250, 250))
                                 display_bomb_animation(self.screen, bomb_icon)
-                                end_pos = self.draw_computer_cards(
-                                )[self.game.current_player_index][-1]
+                                end_pos = self.draw_computer_cards()[self.game.current_player_index][-1]
                                 for i in range(3):
                                     added_card = self.game.deck.cards[-(i+1)]
                                     added_card_img = pygame.image.load(
@@ -669,17 +668,13 @@ class GamePage():
 
     def game_deck_used_all(self, event=None):
         Message(self.screen, "FINISH A TIE", WHITE).winner_draw()
-        Message(self.screen, "Press ESC to go back", WHITE).press_esc_draw()
+        Message(self.screen, "Press Enter to go to menu", WHITE).press_esc_draw()
         self.timerFlag = False
-        if event == None:
-            paused = True
-            return "pause"
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                paused = True
-                return "pause"
-            else:
-                print("press esc")
+        for event in pygame.event.get():
+            while True:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return "menu"
 
     def running(self):
 
@@ -745,10 +740,10 @@ class GamePage():
                             Message(self.screen,
                                     "It's not your turn!", RED).draw()
                     if self.uno_button.rect.collidepoint(event.pos):
-                        print("UNO button clicked - user")
+                        print("UNO button clicked - Player")
                         if len(self.game.players[0].cards) == 1:
                             self.uno_button_pressed = True
-                            Message(self.screen, "UNO BUTTON CLICKED - USER", BLUE).draw()
+                            Message(self.screen, "UNO BUTTON CLICKED - YOU", BLUE).draw()
                             self.game.uno_button_clicked(0)
                         else:
                             Message(self.screen, "WRONG UNO", BLUE).draw()
@@ -772,27 +767,16 @@ class GamePage():
                     player for player in self.game.players if len(player.cards) == 1]
                 player_with_no_card = [
                     player for player in self.game.players if len(player.cards) == 0]
-                if player_with_one_card:
-                    if randint(0, 1) and not self.uno_button_pressed:
-                        pygame.display.flip()
-                        pygame.time.delay(int(random()*3000))
-                        self.game.uno_button_clicked(1)
-                        self.uno_button_pressed = True
-                        Message(self.screen, "UNO", RED).draw()
-                        print("UNO button clicked - computer")
 
                 if player_with_one_card:
-                    if randint(0, 1) and not self.uno_button_pressed:
-                        pygame.display.flip()
-                        pygame.time.delay(int(random()*1500))
-                        self.game.uno_button_clicked(1)
-                        self.uno_button_pressed = True
-                        who_pressed_uno = choice(self.game.players[1:]).name
-                        Message(self.screen, f"UNO BUTTON CLICKED - {who_pressed_uno}", RED).draw()
-                        print(f"UNO button clicked - {choice(self.game.players[1:]).name}")
-                        # computer player uno 버튼 못눌렀을 때 처리
-                        if player_with_one_card[0].name != who_pressed_uno:
-                            player_with_one_card[0].draw_card(self.game.deck)
+                    for i, computer in enumerate(self.game.players[1:]):
+                        if randint(0, 1) and not self.uno_button_pressed:
+                            timer = Timer(random()*3, self.game.uno_button_clicked(i + 1))
+                            timer.start()
+                            timer.join()
+                            self.uno_button_pressed = True
+                            Message(self.screen, f"UNO BUTTON CLICKED - {computer.name}", RED).draw()
+
 
                 if not player_with_one_card and self.uno_button_pressed:
                     self.uno_button_pressed = False

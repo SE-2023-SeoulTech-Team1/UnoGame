@@ -41,7 +41,10 @@ class Deck:
         return len(self.cards)
 
     def pop_card(self):
-        return self.cards.pop()
+        try:
+            return self.cards.pop()
+        except IndexError:
+            raise IndexError("No more cards in deck.")
 
     def shuffle(self):
         shuffle(self.cards)

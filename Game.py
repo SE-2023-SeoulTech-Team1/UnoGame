@@ -66,7 +66,7 @@ class Game:
 
     def next_turn(self):
         self.current_player_index = (
-            self.current_player_index + self.direction) % len(self.players)
+                                            self.current_player_index + self.direction) % len(self.players)
         self.turn_count += 1
 
     def reverse_card_clicked(self):
@@ -77,7 +77,7 @@ class Game:
 
     def skip_card_clicked(self):
         self.current_player_index = (
-            self.current_player_index + self.direction) % len(self.players)
+                                            self.current_player_index + self.direction) % len(self.players)
         self.next_turn()
         return self
 
@@ -132,7 +132,7 @@ class Game:
             # print(f"{player.name} 님의 카드가 교환되었습니다.")
             # print(f"\n{player.name}의 카드는:")
         player.cards[change_indices[0]], player.cards[change_indices[1]
-                                                      ] = self.deck.pop_card(), self.deck.pop_card()
+        ] = self.deck.pop_card(), self.deck.pop_card()
         chosen_color = input("")
         self.current_card.color = chosen_color
         self.next_turn()
