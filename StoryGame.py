@@ -1,4 +1,4 @@
-import random
+from random import random
 from Card import *
 from Game import Game
 from Player import *
@@ -28,12 +28,30 @@ class StoryGameB(Game):
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien"], color_weak_mode)
 
+    def test_probability(self):
+        computer = self.players[1]
+        cards = [Card(color, type, color_weak_mode=False)
+                 for type in COLOR_CARD_TYPES for color in COLORS]
+        cards += [Card("black", type, color_weak_mode=False)
+                  for type in BLACK_CARD_TYPES]
+        for i in range(100):
+            deck = Deck(cards)
+            self.deal_cards()
+        print("Number of skill cards from Computer: ",
+              len([card for card in self.players[1].cards if card.type in SPECIAL_CARD_TYPES]))
+        print("Number of skill cards from Player: ",
+              len([card for card in self.players[0].cards if card.type in SPECIAL_CARD_TYPES]))
+
+
     def deal_cards(self):
         # TODO 테스트 코드 작성
         for i in range(7):
             for player in self.players:
                 if isinstance(player, Computer):
-                    player.cards.append(self.deck.choice_card())
+                    if random() < 0.5:
+                        player.cards.append(self.deck.pop_skill_card())
+                    else:
+                        player.cards.append(self.deck.pop_number_card())
                 else:
                     player.cards.append(self.deck.pop_card())
 

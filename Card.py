@@ -54,3 +54,13 @@ class Deck:
         weights = [1 / 68] * 36 + [2 / 68] * 32
         idx = choices(range(len(self.cards)), weights=weights)
         return self.cards.pop(idx)
+
+    def pop_skill_card(self):
+        for i, card in enumerate(self.cards):
+            if card.type in SPECIAL_CARD_TYPES:
+                return self.cards.pop(i)
+
+    def pop_number_card(self):
+        for i, card in enumerate(self.cards):
+            if card.type in NUMBERS:
+                return self.cards.pop(i)
