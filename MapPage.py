@@ -115,7 +115,7 @@ class MapPage:
                     return "story_lobby_3"
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    paused = True
+                    self.paused = True
                     return "pause"
 
         pygame.display.update()
