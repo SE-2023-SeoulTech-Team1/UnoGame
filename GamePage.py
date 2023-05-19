@@ -800,7 +800,6 @@ class GamePage():
                         paused = True
                         with open("game_state.pkl", "wb") as f:
                             pickle.dump(self.game, f)
-
                         return "pause"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:

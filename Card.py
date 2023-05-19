@@ -27,8 +27,6 @@ class Card:
             self.front = f"./assets/cards/{self.color}{self.type}.png"
             self.back = "./assets/cards/unoCardBack.png"
 
-        self.front_img = pygame.image.load(self.front).convert_alpha()
-        self.back_img = pygame.image.load(self.back).convert_alpha()
 
     def __str__(self):
         return f'Uno Card Object: {self.color} {self.type}'
