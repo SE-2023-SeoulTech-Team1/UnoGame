@@ -885,31 +885,46 @@ class GamePage():
                         draw_card_front(
                             self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
 
-                        # TODO popped_card가 list일 때 처리
-                        popped_card = self.game.players[self.game.current_player_index].play_card(
-                            self.game)
-
                         if len(self.game.players[self.game.current_player_index].cards) == 0:
                             print("Computer Win!!")
 
-                        popped_card_back_img = pygame.image.load(
-                            popped_card.back).convert_alpha()
-                        
-                        popped_card_rect = computer_card_rect_list[(self.game.current_player_index - 1)][0]
+                        popped_card = self.game.players[self.game.current_player_index].play_card(self.game)
 
-                        openned_cards.append(popped_card)
+                        # TODO popped_card가 list일 때 처리
+                        if type(popped_card) == list:
+                            for card in popped_card:
+                                # card_back_img = pygame.image.load(card.back).convert_alpha()
+                                card_rect = computer_card_rect_list[(self.game.current_player_index - 1)][0]
+                                openned_cards.append(card)
 
-                        start_pos = popped_card_rect
-                        self.card_move_sound.play()
-                        self.card_move_sound.set_volume(
-                            self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
-                        self.move_card_animation(popped_card_back_img, popped_card_rect,
-                                                 (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
-                        # current card 업데이트
-                        self.game.current_card = openned_cards[-1]
+                                start_pos = card_rect
+                                self.card_move_sound.play()
+                                self.card_move_sound.set_volume(
+                                    self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
+                                self.move_card_animation(card.back_img, card_rect,
+                                                         (start_pos.x, start_pos.y),
+                                                         (self.screen_width * 0.4, self.screen_height * 0.25))
+                                # current card 업데이트
+                                self.game.current_card = openned_cards[-1]
 
-                        # function card 일 때
-                        self.computer_function_card()
+                                # function card 일 때
+                                self.computer_function_card()
+
+                        else:
+                            popped_card_rect = computer_card_rect_list[(self.game.current_player_index - 1)][0]
+                            openned_cards.append(popped_card)
+
+                            start_pos = popped_card_rect
+                            self.card_move_sound.play()
+                            self.card_move_sound.set_volume(
+                                self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
+                            self.move_card_animation(popped_card.back_img, popped_card_rect,
+                                                     (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
+                            # current card 업데이트
+                            self.game.current_card = openned_cards[-1]
+
+                            # function card 일 때
+                            self.computer_function_card()
 
 
                     else:

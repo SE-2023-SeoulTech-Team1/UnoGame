@@ -75,13 +75,15 @@ class AlienA(Computer):
             tmp, tmp2 = number_card_idx_can_play_type, number_card_idx_can_play_color
 
         if len(tmp) > 1:
-            for idx in tmp:
-                self.cards.pop(idx)
-            return tmp
+            card_objects = [card for i, card in enumerate(self.cards) if i in tmp]
+            for card in card_objects:
+                self.cards.remove(card)
+            return card_objects
         elif len(tmp2) > 1:
-            for idx in tmp2:
-                self.cards.pop(idx)
-            return tmp2
+            card_objects = [card for i, card in enumerate(self.cards) if i in tmp2]
+            for card in card_objects:
+                self.cards.remove(card)
+            return card_objects
         else:
             card_idx_can_play = self.can_play(game.current_card)
             return self.cards.pop(card_idx_can_play[0])
@@ -117,12 +119,12 @@ class AlienB(Computer):
             card_objects = [card for i, card in enumerate(self.cards) if i in tmp]
             for card in card_objects:
                 self.cards.remove(card)
-            return tmp
+            return card_objects
         elif len(tmp2) > 1:
             card_objects = [card for i, card in enumerate(self.cards) if i in tmp2]
             for card in card_objects:
                 self.cards.remove(card)
-            return tmp2
+            return card_objects
         else:
             card_idx_can_play = self.can_play(game.current_card)
             return self.cards.pop(card_idx_can_play[0])
