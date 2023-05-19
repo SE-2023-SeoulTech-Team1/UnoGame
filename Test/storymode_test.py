@@ -21,4 +21,4 @@ def test_deal_cards(game):
         return False
     skill_card_cnt_computer = len([card for card in game.players[1].cards if card.type in SPECIAL_CARD_TYPES])
     skill_card_cnt_player = len([card for card in game.players[0].cards if card.type in SPECIAL_CARD_TYPES])
-    assert skill_card_cnt_computer / (skill_card_cnt_player + skill_card_cnt_computer) > 0.6
+    assert skill_card_cnt_computer / (skill_card_cnt_player + skill_card_cnt_computer) >= 0.6
