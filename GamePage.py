@@ -683,6 +683,8 @@ class GamePage():
         if isinstance(self.game, StoryGameB):
             while test_deal_cards(self.game) == False:
                 self.game.deal_cards()
+        else:
+            self.game.deal_cards()
 
         pygame.mixer.music.load(resource_path('./assets/background.mp3'))
         pygame.mixer.music.play(-1)
@@ -818,6 +820,7 @@ class GamePage():
                         draw_card_front(
                             self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
 
+                        # TODO popped_card가 list일 때 처리
                         popped_card = self.game.players[self.game.current_player_index].play_card(
                             self.game)
 
@@ -843,8 +846,6 @@ class GamePage():
                         # function card 일 때
                         self.computer_function_card()
 
-                        print(
-                            f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
 
                     else:
                         print(
