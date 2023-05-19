@@ -13,6 +13,8 @@ class StoryGameA(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [AlienA(name)
+                                                   for name in self.player_names[1:]]
 
     def deal_cards(self):
         for i in range(7):
@@ -26,6 +28,8 @@ class StoryGameB(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [AlienB(name)
+                                                   for name in self.player_names[1:]]
 
     def deal_cards(self):
         for i in range(7):
@@ -45,6 +49,8 @@ class StoryGameC(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien1", "Alien2", "Alien3"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [Computer(name)
+                                                   for name in self.player_names[1:]]
 
     def deal_cards(self):
         for i in range(12):
@@ -59,6 +65,8 @@ class StoryGameD(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien1", "Alien2"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [Computer(name)
+                                                   for name in self.player_names[1:]]
 
     # TODO 매 5턴마다 낼 수 있는 카드 색상 무작위 변경
     def next_turn(self):

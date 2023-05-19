@@ -11,7 +11,6 @@ def test_probability():
               for type in BLACK_CARD_TYPES]
     for i in range(150):
         storygameB = StoryGameB()
-        # storygameB.deck = Deck(cards)
         storygameB.deal_cards()
         skill_card_cnt_computer += len([card for card in storygameB.players[1].cards if card.type in SPECIAL_CARD_TYPES])
         skill_card_cnt_player += len([card for card in storygameB.players[0].cards if card.type in SPECIAL_CARD_TYPES])

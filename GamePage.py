@@ -710,6 +710,7 @@ class GamePage():
         if os.path.exists('game_state.pkl'):
             with open('game_state.pkl', 'rb') as f:
                 game_state = pickle.load(f)
+                print("load pickle")
             self.game = game_state
 
         print("current card : "+str(self.game.current_card))
@@ -788,16 +789,18 @@ class GamePage():
                 if player_with_no_card:
                     Message(
                         self.screen, f"{player_with_no_card[0].name} WIN", WHITE).winner_draw()
-                    Message(self.screen, "Press ESC to go back",
+                    Message(self.screen, "Press ESC or RETURN",
                             WHITE).press_esc_draw()
                     self.timerFlag = False
-                    pygame.time.delay(3000)
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            paused = True
-                            return "pause"
-                        else:
-                            print("press esc")
+
+                    while True:
+                        for event in pygame.event.get():
+                            if event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_ESCAPE:
+                                    paused = True
+                                    return "pause"
+                                elif event.key == pygame.K_RETURN:
+                                    return "main"
 
                 # 우노 게임카드 다 썼을 때
                 # TODO : 카드 다 썼을 때, openned card에서 deck으로 카드 옮기기
