@@ -2,6 +2,7 @@ from Button import Button, TextButton
 from Colors import *
 from multigame.Client import Client
 from MultiLobbyPage import MultiLobbyPage
+from Text import *
 import threading
 import json
 import pickle
@@ -27,6 +28,8 @@ class MultiSettingPage():
         self.btn_submit_pwd = Button(0.5, 0.8, 200, 50, "Submit")
         self.enter = False
         self.multi_lobby_page = MultiLobbyPage(screen, setting, self.multi_setting_page)
+        self.text_error = Text(0.35, 0.85, "More than 5 people", RED)
+        self.over_five = False
 
 
     def running(self):
@@ -100,6 +103,9 @@ class MultiSettingPage():
             pygame.draw.rect(self.screen, BLACK, self.btn_input_ip.rect, 2)
             self.btn_submit_ip.process(self.screen)
             pygame.draw.rect(self.screen, BLACK, self.btn_submit_ip.rect, 2)
+
+            if self.over_five:
+                self.text_error.render(self.screen)
 
             if self.correct_ip == True:
                 self.btn_name.process(self.screen)

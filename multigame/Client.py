@@ -34,14 +34,15 @@ class Client:
 
                 self.data = message
 
-                print(self.name)
-
                 for client in self.data['clients']:
-                    name = client.get('name')
-                    if name == self.name:
-                        self.my_data = client
-                        #multi_lobby_page에 접속 하도록 
-                        self.multi_setting_page.enter = True
+                    if client.get('enter_lobby'):
+                        name = client.get('name')
+                        if name == self.name:
+                            self.my_data = client
+                            #multi_lobby_page에 접속 하도록 
+                            self.multi_setting_page.enter = True
+                    else:
+                        self.multi_setting_page.over_five = True
                 break
             except:
                 print("client error!")
@@ -56,6 +57,8 @@ class Client:
                 message = json.loads(json_data)
                 print(message)
                 self.multi_lobby_page.client_data = message
+
+                self.multi_lobby_page.update_lobby_page = True
                 
             except:
                 break

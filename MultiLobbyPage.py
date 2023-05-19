@@ -2,7 +2,6 @@ import pygame
 from Colors import *
 from Button import Button, TextButton, Reverse_TextButton
 from Text import *
-import socket
 import threading
 from multigame.Client import Client
 from multigame.Server import Server
@@ -20,6 +19,7 @@ class MultiLobbyPage():
         self.btn_server = TextButton(0.5, 0.1, 200, 50, "Client")
         self.btn_clients = [Reverse_TextButton(0.5, 0.1 * (i + 1) + 0.15, 200, 50, "") for i in range(5)]
         self.btn_start = Button(0.5, 0.8, 200, 50, "Start Game")
+        self.btn_ip = TextButton(0.5, 0.9, 150, 25, "127.0.0.1")
         self.player_selected = [False for _ in range(5)]
         self.thread = threading.Thread(target=self.running_server).start()
         self.player_names = []
@@ -28,6 +28,10 @@ class MultiLobbyPage():
         self.update_client = True
         self.run_server = False
         self.thread = None
+        self.update_lobby_page = False
+        self.client_num = 0
+        self.text_error = Text(0.35, 0.15, "More than 5 people", RED)
+        self.over_five = False
         
         
     def running_server(self):
@@ -46,8 +50,8 @@ class MultiLobbyPage():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.multi_setting_page.client.disconnect()
-                    # pygame.quit()
-                    # quit()
+                    pygame.quit()
+                    quit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.btn_server.rect.collidepoint(event.pos):
                         selected_idx = -1
@@ -89,6 +93,7 @@ class MultiLobbyPage():
 
             # processing if client enter lobby
             self.enter_lobby()
+            self.update_lobby()
 
             # processing computer player buttons
             for i, btn in enumerate(self.btn_clients):
@@ -102,6 +107,14 @@ class MultiLobbyPage():
             # processing start button
             self.btn_start.process(self.screen)
 
+
+            self.btn_ip.process(self.screen)
+            pygame.draw.rect(self.screen, BLACK, self.btn_ip, 2)
+
+
+            if self.over_five:
+                self.text_error.render(self.screen)
+
             # Update the display
             pygame.display.update()
 
@@ -110,6 +123,18 @@ class MultiLobbyPage():
         if self.enter_client:
             self.multi_setting_page.client.send_data("enter_lobby")
             self.enter_client = False
+    
+    def update_lobby(self):
+        if self.update_lobby_page:
+            for i, player in enumerate(self.client_data['player_selected']):
+                if player:
+                    self.player_selected[i] = player
+                    if i < len(self.client_data['clients']):
+                        self.multi_lobby_page.btn_clients[i].text = self.client_data['clients'][i]['name']
+                    
+            self.update_lobby_page = False
+            # 클라이언트 숫자만큼 
+
 
 
             

@@ -33,11 +33,15 @@ class Server:
                 pwd = message.get("pwd")
                 name = message.get("name")
                 self.clients_name.append(name)
-                if str(pwd) == "1234":
-                    data = {'name' : name, 'enter_lobby' : True}
+                if len(self.clients_name) > 5:
+                    data = {'name' : name, 'enter_lobby' : False}
                     self.data['clients'].append(data)
                 else:
-                    break
+                    if str(pwd) == "1234":
+                        data = {'name' : name, 'enter_lobby' : True}
+                        self.data['clients'].append(data)
+                    else:
+                        break
 
                 # 응답 처리해서 클라이언트에게 다시 보내기 
                 json_data = json.dumps(self.data)
@@ -55,15 +59,21 @@ class Server:
                 
                 if data == "enter_lobby":
                     for i, c in enumerate(self.clients):
+                        # player_selected도 같이 보내줌 
+                        self.data['player_selected'] = self.multi_lobby_page.player_selected
                         json_data = json.dumps(self.data)
                         c.sendall(json_data.encode())
                     # 여기서 업데이트 
                     print(self.clients_name)
+                    if len(self.clients_name) > 1:
+                        print("5명을 초과하였습니다!")
+                        self.multi_lobby_page.over_five = True
+                    
                     for i, player in enumerate(self.multi_lobby_page.player_selected):
                         if player and self.multi_lobby_page.btn_clients[i].text is "":
                             self.multi_lobby_page.btn_clients[i].text = self.clients_name[i]
 
-                    
+
             except:
                 break
 

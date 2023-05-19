@@ -68,6 +68,8 @@ class GamePage():
         self.count = True
         self.uiManager = pygame_gui.UIManager(setting.screen_size)
         self.clock = pygame.time.Clock()
+        self.key_idx = 0
+        self.deck_rect = None
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -392,53 +394,116 @@ class GamePage():
     def handle_card_hover(self, card_rect_list):
         mouse_pos = pygame.mouse.get_pos()
         global openned_cards
-
+        
         card_reacted = False
-        for i, card_rect in enumerate(card_rect_list):
-
-            if i >= len(self.game.players[0].cards):
-                continue  # 유효하지 않은 인덱스를 건너뛰기
-            card_front_img = pygame.image.load(
-                self.game.players[0].cards[i].front).convert_alpha()
-
-            if not card_reacted and card_rect.collidepoint(mouse_pos):
-                card_rect.top = self.screen_height * 0.75
-                darkened_image = self.apply_shadow(card_front_img)
-                self.screen.blit(darkened_image, card_rect)
-                card_reacted = True
-
-                if self.valid_play(self.game.players[0].cards[i], openned_cards[-1]):
-                    self.screen.blit(card_front_img, card_rect)
-
-                    # 카드 클릭 로직
-                    for event in pygame.event.get():
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            chosen_card = self.game.players[0].cards[i]
+        # 키보드 인덱스 
+        if self.setting.keys_idx == 2:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        if self.valid_play(self.game.players[0].cards[self.key_idx], self.game.current_card):
+                            chosen_card = self.game.players[0].cards[self.key_idx]
                             openned_cards.append(chosen_card)
 
                             # 클릭한 카드 pop
-                            self.game.players[0].cards.pop(i)
+                            self.game.players[0].cards.pop(self.key_idx)
 
                             # 사운드 함수 호출
                             self.card_sound()
 
                             # 카드 이동 애니메이션
-                            chosen_card_rect = card_rect_list[i]
-                            start_pos = card_rect_list[i]
+                            chosen_card_rect = card_rect_list[self.key_idx]
+                            start_pos = card_rect_list[self.key_idx]
                             chosen_card_img = pygame.image.load(
                                 chosen_card.front).convert_alpha()
-                            self.move_card_animation(chosen_card_img, chosen_card_rect,
-                                                     (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
+                            self.move_card_animation(chosen_card_img, chosen_card_rect,(start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
 
                             # 현재 카드 업데이트
                             self.game.current_card = openned_cards[-1]
 
                             self.func_card_clicked(
-                                i, card_rect, chosen_card, card_rect_list)
+                                self.key_idx, card_rect_list[self.key_idx], chosen_card, card_rect_list)
+                        else:
+                            print("no")
+                    elif event.key == pygame.K_LEFT:
+                        self.key_idx -= 1
+                        if self.key_idx < 0:
+                            self.key_idx = 0
+                    elif event.key == pygame.K_RIGHT:
+                        self.key_idx += 1
+                        if self.key_idx >= len(card_rect_list):
+                            self.key_idx = len(card_rect_list) - 1
+                    elif event.key == pygame.K_SPACE:
+                        if self.game.current_player_index == 0:
+                            self.process_deck_clicked(
+                                self.deck_rect, card_rect_list[-1]) 
+                        else:
+                            Message(self.screen,
+                                    "It's not your turn!", RED).draw()
 
-            else:
-                card_rect.top = self.screen_height * 0.80
-                self.screen.blit(card_front_img, card_rect)
+            for i, card_rect in enumerate(card_rect_list):
+                if i >= len(self.game.players[0].cards):
+                    continue  # 유효하지 않은 인덱스를 건너뛰기
+                card_front_img = pygame.image.load(self.game.players[0].cards[i].front).convert_alpha()
+
+                if self.key_idx == i:
+                    card_rect.top = self.screen_height * 0.75
+                    if self.game.current_card is not None:
+                        if self.valid_play(self.game.players[0].cards[i], self.game.current_card):
+                            self.screen.blit(card_front_img, card_rect)
+                        else:
+                            darkened_image = self.apply_shadow(card_front_img)
+                            self.screen.blit(darkened_image, card_rect)
+
+                else:
+                    card_rect.top = self.screen_height * 0.80
+                    self.screen.blit(card_front_img, card_rect)
+                    
+        else:
+            for i, card_rect in enumerate(card_rect_list):
+                if i >= len(self.game.players[0].cards):
+                    continue  # 유효하지 않은 인덱스를 건너뛰기
+                card_front_img = pygame.image.load(
+                    self.game.players[0].cards[i].front).convert_alpha()
+
+                if not card_reacted and card_rect.collidepoint(mouse_pos):
+                    card_rect.top = self.screen_height * 0.75
+                    darkened_image = self.apply_shadow(card_front_img)
+                    self.screen.blit(darkened_image, card_rect)
+                    card_reacted = True
+                    if self.game.current_card is not None:
+                        if self.valid_play(self.game.players[0].cards[i], self.game.current_card):
+                            self.screen.blit(card_front_img, card_rect)
+
+                        # 카드 클릭 로직
+                        for event in pygame.event.get():
+                            if event.type == pygame.MOUSEBUTTONDOWN:
+                                chosen_card = self.game.players[0].cards[i]
+                                openned_cards.append(chosen_card)
+
+                                # 클릭한 카드 pop
+                                self.game.players[0].cards.pop(i)
+
+                                # 사운드 함수 호출
+                                self.card_sound()
+
+                                # 카드 이동 애니메이션
+                                chosen_card_rect = card_rect_list[i]
+                                start_pos = card_rect_list[i]
+                                chosen_card_img = pygame.image.load(
+                                    chosen_card.front).convert_alpha()
+                                self.move_card_animation(chosen_card_img, chosen_card_rect,(start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
+
+                                # 현재 카드 업데이트
+                                self.game.current_card = openned_cards[-1]
+
+                                self.func_card_clicked(
+                                    i, card_rect, chosen_card, card_rect_list)
+                            
+
+                else:
+                    card_rect.top = self.screen_height * 0.80
+                    self.screen.blit(card_front_img, card_rect)
 
     def display_player_cards(self):
         card_rect_list = []
@@ -683,6 +748,8 @@ class GamePage():
         if isinstance(self.game, StoryGameB):
             while test_deal_cards(self.game) == False:
                 self.game.deal_cards()
+        else:
+            self.game.deal_cards()
 
         pygame.mixer.music.load(resource_path('./assets/background.mp3'))
         pygame.mixer.music.play(-1)
@@ -818,6 +885,7 @@ class GamePage():
                         draw_card_front(
                             self.screen, openned_cards[-1], self.screen_height * 0.25, card_loc)
 
+                        # TODO popped_card가 list일 때 처리
                         popped_card = self.game.players[self.game.current_player_index].play_card(
                             self.game)
 
@@ -843,8 +911,6 @@ class GamePage():
                         # function card 일 때
                         self.computer_function_card()
 
-                        print(
-                            f"\n현재 뒤집어진 카드는 {self.game.current_card} 입니다.")
 
                     else:
                         print(
