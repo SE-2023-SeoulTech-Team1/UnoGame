@@ -15,6 +15,7 @@ from resource_path import *
 import pickle
 import os
 from threading import Event, Timer
+from Test.storymode_test import test_deal_cards
 
 
 class GamePage():
@@ -679,7 +680,10 @@ class GamePage():
     def running(self):
 
         # 카드 초기 세팅
-        self.game.deal_cards()
+        if isinstance(self.game, StoryGameB):
+            while test_deal_cards(self.game) == False:
+                self.game.deal_cards()
+
         pygame.mixer.music.load(resource_path('./assets/background.mp3'))
         pygame.mixer.music.play(-1)
         pygame.mixer.music.set_volume(
