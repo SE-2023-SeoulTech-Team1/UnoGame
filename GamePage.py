@@ -767,7 +767,7 @@ class GamePage():
         paused = False
 
         draw_game_screen(self)
-        deck_rect = self.draw_deck()
+        self.deck_rect = self.draw_deck()
         self.draw_computer_cards()
 
         self.uno_button.draw()
@@ -803,10 +803,10 @@ class GamePage():
                         return "pause"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if deck_rect.collidepoint(event.pos):
+                    if self.deck_rect.collidepoint(event.pos):
                         if self.game.current_player_index == 0:
                             self.process_deck_clicked(
-                                deck_rect, card_rect_list[-1])
+                                self.deck_rect, card_rect_list[-1])
                         else:
                             Message(self.screen,
                                     "It's not your turn!", RED).draw()
@@ -827,7 +827,7 @@ class GamePage():
             else:
                 draw_game_screen(self)
                 self.uno_button.draw()
-                deck_rect = self.draw_deck()
+                self.deck_rect = self.draw_deck()
                 self.current_card_color()
                 self.flip_deck_card(None)
                 self.draw_computer_cards()
@@ -917,7 +917,8 @@ class GamePage():
                             self.card_move_sound.play()
                             self.card_move_sound.set_volume(
                                 self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
-                            self.move_card_animation(popped_card.back_img, popped_card_rect,
+                            popped_card_back_img = pygame.image.load(popped_card.back).convert_alpha()
+                            self.move_card_animation(popped_card_back_img, popped_card_rect,
                                                      (start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
                             # current card 업데이트
                             self.game.current_card = openned_cards[-1]
@@ -950,7 +951,7 @@ class GamePage():
                         self.card_move_sound.set_volume(
                             self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                         self.move_card_animation(new_computer_card_img, new_computer_card_rect,
-                                                 (deck_rect.x, deck_rect.y), (end_pos.x, end_pos.y))
+                                                 (self.deck_rect.x, self.deck_rect.y), (end_pos.x, end_pos.y))
                         self.game.next_turn()
 
                 self.uiManager.update(dt)
