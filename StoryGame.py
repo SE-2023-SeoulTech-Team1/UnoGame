@@ -1,8 +1,11 @@
-import random
+import sys
+sys.path.append('Test')
+
+from random import random, choice
 from Card import *
 from Game import Game
 from Player import *
-
+from Test.storymode_test import test_probability
 
 class StoryGameA(Game):
     """
@@ -10,15 +13,13 @@ class StoryGameA(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [AlienA(name)
+                                                   for name in self.player_names[1:]]
 
     def deal_cards(self):
-        # TODO 테스트 코드 작성
         for i in range(7):
             for player in self.players:
-                if isinstance(player, Computer):
-                    player.cards.append(self.deck.choice_card())
-                else:
-                    player.cards.append(self.deck.pop_card())
+                player.cards.append(self.deck.pop_card())
 
 class StoryGameB(Game):
     """
@@ -27,13 +28,17 @@ class StoryGameB(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [AlienB(name)
+                                                   for name in self.player_names[1:]]
 
     def deal_cards(self):
-        # TODO 테스트 코드 작성
         for i in range(7):
             for player in self.players:
                 if isinstance(player, Computer):
-                    player.cards.append(self.deck.choice_card())
+                    if random() < 0.5:
+                        player.cards.append(self.deck.pop_skill_card())
+                    else:
+                        player.cards.append(self.deck.pop_number_card())
                 else:
                     player.cards.append(self.deck.pop_card())
 
@@ -44,6 +49,8 @@ class StoryGameC(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien1", "Alien2", "Alien3"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [Computer(name)
+                                                   for name in self.player_names[1:]]
 
     def deal_cards(self):
         for i in range(12):
@@ -58,10 +65,12 @@ class StoryGameD(Game):
     """
     def __init__(self, color_weak_mode=False):
         super().__init__(["Player", "Alien1", "Alien2"], color_weak_mode)
+        self.players = [Player(self.player_names[0])] + [Computer(name)
+                                                   for name in self.player_names[1:]]
 
     # TODO 매 5턴마다 낼 수 있는 카드 색상 무작위 변경
     def next_turn(self):
         self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
         self.turn_count += 1
         if self.turn_count % 5 == 0:
-            self.current_card.color = random.choice(["red", "blue", "green", "yellow", "black"])
+            self.current_card.color = choice(["red", "blue", "green", "yellow", "black"])
