@@ -14,7 +14,7 @@ from SelectPage import SelectPage
 import pickle
 import os
 import atexit
-import threading
+
 
 def delete_pickle():
     if os.path.exists('game_state.pkl'):

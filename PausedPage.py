@@ -16,6 +16,10 @@ class PausedPage():
         self.setting_btn = Button(0.5, 0.4, 200, 50, "SETTING",text_size=40)
         self.back_btn = Button(0.5, 0.5, 200, 50, "BACK",text_size=40)
         self.buttons = [self.pause_btn, self.setting_btn, self.back_btn]
+    
+    def delete_pickle(self):
+        if os.path.exists('game_state.pkl'):
+            os.remove('game_state.pkl')
 
     def running(self):
 
@@ -33,6 +37,7 @@ class PausedPage():
                 elif self.setting_btn.rect.collidepoint(event.pos):
                     return "setting", "game"
                 elif self.back_btn.rect.collidepoint(event.pos):
+                    self.delete_pickle()
                     return "main"
 
             elif event.type == pygame.KEYDOWN:
