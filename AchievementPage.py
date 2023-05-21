@@ -25,9 +25,10 @@ class AchievementPage:
         self.medal_imgs = [self.single_medal_img, self.level0_medal_img, self.level1_medal_img, self.level2_medal_img,
                             self.level3_medal_img, self.turn10_medal_img, self.turn15_medal_img, self.turn20_medal_img,
                             self.skill_medal_img, self.uno_medal_img]
-        if os.path.exists('achievements.pickle'):
-            with open('achievements.pickle', 'rb') as f:
+        if os.path.exists('achievements.pkl'):
+            with open('achievements.pkl', 'rb') as f:
                 self.achievements = pickle.load(f)
+                print("achievements 실행")
         else:
             self.achievements = [
                 Achievement("Win Single Player Game", "Win a single player game"),

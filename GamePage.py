@@ -19,9 +19,10 @@ from Test.storymode_test import test_deal_cards
 
 
 class GamePage():
-    def __init__(self, screen, setting, player_names=None, story_mode=None):
+    def __init__(self, screen, setting, player_names=None, story_mode=None, achievement_page = None):
         self.setting = setting
         self.player_names = player_names
+        self.achievement_page = achievement_page
         if story_mode is None:
             self.game = Game(self.player_names, self.setting.color_weak)
         elif story_mode == "A":
@@ -71,6 +72,7 @@ class GamePage():
         self.key_idx = 0
         self.deck_rect = None
         self.openned_cards = []
+        self.achievements = None
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -401,8 +403,11 @@ class GamePage():
         if self.setting.keys_idx == 2:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
+                    
                     if event.key == pygame.K_RETURN:
                         if self.valid_play(self.game.players[0].cards[self.key_idx], self.game.current_card):
+                            
+                            print("game turn : " + str(self.game.turn_count))
                             chosen_card = self.game.players[0].cards[self.key_idx]
                             self.openned_cards.append(chosen_card)
 
@@ -436,6 +441,7 @@ class GamePage():
                             self.key_idx = len(card_rect_list) - 1
                     elif event.key == pygame.K_SPACE:
                         if self.game.current_player_index == 0:
+                            print("game turn : " + str(self.game.turn_count))
                             self.process_deck_clicked(
                                 self.deck_rect, card_rect_list[-1]) 
                         else:
@@ -479,8 +485,9 @@ class GamePage():
                         # 카드 클릭 로직
                         for event in pygame.event.get():
                             if event.type == pygame.MOUSEBUTTONDOWN:
+                                print("game turn : " + str(self.game.turn_count))
                                 chosen_card = self.game.players[0].cards[i]
-                                openned_cards.append(chosen_card)
+                                self.openned_cards.append(chosen_card)
 
                                 # 클릭한 카드 pop
                                 self.game.players[0].cards.pop(i)
@@ -496,7 +503,7 @@ class GamePage():
                                 self.move_card_animation(chosen_card_img, chosen_card_rect,(start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
 
                                 # 현재 카드 업데이트
-                                self.game.current_card = openned_cards[-1]
+                                self.game.current_card = self.openned_cards[-1]
 
                                 self.func_card_clicked(
                                     i, card_rect, chosen_card, card_rect_list)
@@ -791,6 +798,14 @@ class GamePage():
                 game_state = pickle.load(f)
                 print("load pickle")
             self.game = game_state
+        
+        if os.path.exists('achievements.pkl'):
+            with open('achievements.pkl', 'rb') as f:
+                achievements = pickle.load(f)
+                print("load achievements pickle")
+            self.achievements = achievements
+        else:
+            print("No achievements")
 
         print("current card : "+str(self.game.current_card))
 
@@ -798,6 +813,7 @@ class GamePage():
 
         while running:
             dt = self.clock.tick(60)/1000.0
+            
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -817,6 +833,7 @@ class GamePage():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.deck_rect.collidepoint(event.pos):
                         if self.game.current_player_index == 0:
+                            print("game turn : " + str(self.game.turn_count))
                             self.process_deck_clicked(
                                 self.deck_rect, card_rect_list[-1])
                         else:
@@ -851,46 +868,49 @@ class GamePage():
                 player_with_no_card = [
                     player for player in self.game.players if len(player.cards) == 0]
 
-                if player_with_one_card:
-                    # for i, computer in enumerate(self.game.players[1:]):
-                    #     if randint(0, 1) and not self.uno_button_pressed:
-                    #         timer = Timer(random()*3, self.game.uno_button_clicked(i + 1))
-                    #         timer.start()
-                    #         timer.join()
-                    #         self.uno_button_pressed = True
-                    #         Message(self.screen, f"UNO BUTTON CLICKED - {computer.name}", RED).draw()
+                # if player_with_one_card:
 
-                    if randint(0, 1) and not self.uno_button_pressed:
-                        pygame.display.flip()
-                        pygame.time.delay(int(random()*1500))
-                        who_pressed_uno = choice(self.game.players[1:])
-                        uno_index = self.game.players.index(who_pressed_uno)
-                        self.game.uno_button_clicked(uno_index)
-                        self.uno_button_pressed = True
-                        Message(self.screen, f"UNO BUTTON CLICKED - {who_pressed_uno.name}", RED).draw()
-                        print(f"UNO button clicked - {who_pressed_uno.name}")
+                #     if randint(0, 1) and not self.uno_button_pressed:
+                #         pygame.display.flip()
+                #         pygame.time.delay(int(random()*1500))
+                #         who_pressed_uno = choice(self.game.players[1:])
+                #         uno_index = self.game.players.index(who_pressed_uno)
+                #         self.game.uno_button_clicked(uno_index)
+                #         self.uno_button_pressed = True
+                #         Message(self.screen, f"UNO BUTTON CLICKED - {who_pressed_uno.name}", RED).draw()
+                #         print(f"UNO button clicked - {who_pressed_uno.name}")
 
                 if not player_with_one_card and self.uno_button_pressed:
                     self.uno_button_pressed = False
 
                 if player_with_no_card:
+                    if player_with_no_card[0].name == self.game.player_names[0]:
+                        if self.game.turn_count <= 10:
+                            self.achievements[5].complete()
+                            print("achivement 5 : " + str(self.achievements[5].completed))
+                        elif self.game.turn_count <= 15:
+                            self.achievements[6].complete()
+                            print("achivement 6 : " + str(self.achievements[6].completed))
+                        elif self.game.turn_count <= 20:
+                            self.achievements[7].complete()
+                            print("achivement 7 : " + str(self.achievements[7].completed))
+                        with open('achievements.pkl', 'wb') as f:
+                            pickle.dump(self.achievements, f, pickle.HIGHEST_PROTOCOL)
+                            print("achievements save!!")
+                            # pkl 바로 적용 안돼서 직접 객체를 가져와서 업데이트 함 
+                            self.achievement_page.achievements = self.achievements
+                            
                     winner_box = pygame.Rect(self.screen_width * 0.05, self.screen_height * 0.2,
                                             self.screen_width * 0.9, self.screen_height * 0.6)
                     pygame.draw.rect(self.screen, DARK_GRAY, winner_box)
                     Message(
                         self.screen, f"{player_with_no_card[0].name} WIN", WHITE).winner_draw()
-                    # Message(self.screen, "Press ESC to go back",
-                    #         WHITE).press_esc_draw()
                     self.timerFlag = False
                     pygame.time.delay(3000)
                     # 우승자 표시하고 paused page로
+                    
+
                     return "pause"
-                    # if event.type == pygame.KEYDOWN:
-                    #     if event.key == pygame.K_ESCAPE:
-                    #         paused = True
-                    #         return "pause"
-                    #     else:
-                    #         print("press esc")
 
                 # 우노 게임카드 다 썼을 때
                 # TODO : 카드 다 썼을 때, openned card에서 deck으로 카드 옮기기
@@ -949,7 +969,6 @@ class GamePage():
 
                             # function card 일 때
                             self.computer_function_card()
-
 
                     elif self.game.deck.len_card() >= 1:
                         print(

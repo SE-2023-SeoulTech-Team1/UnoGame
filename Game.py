@@ -65,8 +65,7 @@ class Game:
         player.draw_card(self.deck)
 
     def next_turn(self):
-        self.current_player_index = (
-                                            self.current_player_index + self.direction) % len(self.players)
+        self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
         self.turn_count += 1
 
     def reverse_card_clicked(self):

@@ -39,6 +39,8 @@ if __name__ == "__main__":
         with open('../setting_state.pkl', 'rb') as f:
             setting_state = pickle.load(f)
         setting = setting_state
+
+
     screen = pygame.display.set_mode(setting.screen_size)
     pygame.display.set_caption("Uno Game")
     main_page = MainPage(screen)
@@ -49,6 +51,13 @@ if __name__ == "__main__":
     multi_setting_page = MultiSettingPage(screen, setting)
     achievement_page = AchievementPage(screen, setting)
     select_page = SelectPage(screen, setting)
+    
+    # 시작했을 때 achievements유무 파악 -> 없으면 생성함
+    if os.path.exists('achievements.pkl'):
+        print("achievement 존재")
+    else:
+        save_achievements(achievement_page.achievements)
+        print("achievement 생성")
 
     page = main_page.running()
     while True:
@@ -68,7 +77,7 @@ if __name__ == "__main__":
                 page = multi_lobby_page.running()
 
             else: 
-                game_page = GamePage(screen, setting, page[1])
+                game_page = GamePage(screen, setting, page[1], None, achievement_page)
                 page = game_page.running()
         if page == "main":
             page = main_page.running()
@@ -78,7 +87,7 @@ if __name__ == "__main__":
             lobby_page = LobbyPage(screen, setting)
             page = lobby_page.running()
         elif page == "game":
-            game_page = GamePage(screen, setting)
+            game_page = GamePage(screen, setting, None, None, achievement_page)
             page = game_page.running()
         elif page == "multi_lobby":
             multi_lobby_page = MultiLobbyPage(screen, setting)
