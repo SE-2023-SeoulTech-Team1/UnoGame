@@ -4,7 +4,7 @@ import json
 
 class Server:
     def __init__(self, multi_lobby_page):
-        self.host = ''
+        self.host = str(self.get_ip_address())
         self.port = 12345
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((self.host, self.port))
@@ -15,7 +15,19 @@ class Server:
         self.data = {'clients' : []}
         self.ready_clients = {}
         self.player_seleceted = [False for _ in range(5)]
+        self.multi_lobby_page.btn_ip.text = self.host
         self.run()
+
+    def get_ip_address(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            s.connect(("10.255.255.255", 1))  # 아무 IP 주소
+            IP = s.getsockname()[0]
+        except:
+            IP = "127.0.0.1"
+        finally:
+            s.close()
+        return IP
 
     def handle_client(self, client_socket, client_address):
 
@@ -65,7 +77,7 @@ class Server:
                         c.sendall(json_data.encode())
                     # 여기서 업데이트 
                     print(self.clients_name)
-                    if len(self.clients_name) > 1:
+                    if len(self.clients_name) > 5:
                         print("5명을 초과하였습니다!")
                         self.multi_lobby_page.over_five = True
                     

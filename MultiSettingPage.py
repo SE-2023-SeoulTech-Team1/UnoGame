@@ -39,7 +39,8 @@ class MultiSettingPage():
             self.screen.fill(WHITE)
 
             if self.thread_running == 1 and self.client is None:
-                self.client = Client(self)
+                self.client = Client(self, None, self.btn_input_ip.text)
+                print(self.client.host)
                 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -131,8 +132,7 @@ class MultiSettingPage():
     
     def compare_ip(self, i, server, client):
         if i == 0:
-            self.correct_ip = server == client
-
+            self.correct_ip = True
         if i == 1:
             self.correct_pwd = server == client
     

@@ -4,8 +4,8 @@ import json
 import pickle
 
 class Client:
-    def __init__(self, multi_setting_page = None, multi_lobby_page = None):
-        self.host = "localhost"
+    def __init__(self, multi_setting_page = None, multi_lobby_page = None, ip_address = None):
+        self.host = ip_address
         self.port = 12345
         self.name = "Player"
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

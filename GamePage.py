@@ -243,7 +243,7 @@ class GamePage():
                     for idx, color_rect in enumerate(self.color_rects):
                         if color_rect.collidepoint(mouse_pos):
                             chosen_color = list(SELECT_COLOR.keys())[idx]
-                            if chosen_card.type == 'wildcard':
+                            if chosen_card.type == 'wildcard' and self.game.deck.len_card() >= 1:
                                 self.game.wildcard_card_clicked(chosen_color)
                             elif chosen_card.type == '+4' and self.game.deck.len_card() >= 4:
                                 if self.game.direction == 1:
@@ -293,7 +293,7 @@ class GamePage():
                                     pygame.display.flip()
                                 self.game.bombcard_card_clicked(chosen_color)
 
-                            elif chosen_card.type == 'all':
+                            elif chosen_card.type == 'all' and self.game.deck.len_card() >= 1:
                                 current_name = self.game.players[self.game.current_player_index].name
                                 target_name = self.game.players[self.game.current_player_index + 1].name
                                 all_change_icon = pygame.image.load(
@@ -303,7 +303,8 @@ class GamePage():
                                 display_all_change_animation(
                                     self.screen, all_change_icon, current_name, target_name)
                                 self.game.change_all_clicked(1, chosen_color)
-
+                            else:
+                                self.game.deck.cards = self.game_deck_used_all()
                             color_selected = True
                             break
 
@@ -361,7 +362,7 @@ class GamePage():
                 self.draw_computer_cards()[self.game.current_player_index]
                 pygame.display.flip()
             self.game.plus2_card_clicked(self.game.players[0])
-        elif self.game.current_card.type == 'reverse':
+        elif self.game.current_card.type == 'reverse' and self.game.deck.len_card() >= 1:
             # 클릭했을 때 오른쪽 카드 이미지들 누락 방지를 위한 코드
             self.redraw_card(i, self.screen, card_rect, card_rect_list)
 
@@ -381,7 +382,7 @@ class GamePage():
             # 다시 오른쪽카드들 그려지므로 삭제
             del card_rect_list[i+1: len(self.game.players[0].cards)]
 
-        elif self.game.current_card.type == 'skip':
+        elif self.game.current_card.type == 'skip' and self.game.deck.len_card() >= 1:
             self.redraw_card(i, self.screen, card_rect, card_rect_list)
             skip_name = self.game.current_player_index + 1 if self.game.direction == 1 else len(self.game.players) - 1
 
@@ -389,11 +390,12 @@ class GamePage():
             display_skip_animation(self.screen, self.game.player_names[skip_name])
 
             del card_rect_list[i+1: len(self.game.players[0].cards)]
-        elif self.game.current_card.type in range(1, 10):
+        elif self.game.current_card.type in range(1, 10) and self.game.deck.len_card() >= 1:
             # 그냥 number카드 일 때
             self.game.next_turn()
         else:
             self.game.deck.cards = self.game_deck_used_all()
+            self.func_card_clicked(i, card_rect, chosen_card, card_rect_list)
 
     def handle_card_hover(self, card_rect_list):
         mouse_pos = pygame.mouse.get_pos()
@@ -481,32 +483,31 @@ class GamePage():
                     if self.game.current_card is not None:
                         if self.valid_play(self.game.players[0].cards[i], self.game.current_card):
                             self.screen.blit(card_front_img, card_rect)
-
                         # 카드 클릭 로직
-                        for event in pygame.event.get():
-                            if event.type == pygame.MOUSEBUTTONDOWN:
-                                print("game turn : " + str(self.game.turn_count))
-                                chosen_card = self.game.players[0].cards[i]
-                                self.openned_cards.append(chosen_card)
+                            for event in pygame.event.get():
+                                if event.type == pygame.MOUSEBUTTONDOWN:
+                                    print("game turn : " + str(self.game.turn_count))
+                                    chosen_card = self.game.players[0].cards[i]
+                                    self.openned_cards.append(chosen_card)
 
-                                # 클릭한 카드 pop
-                                self.game.players[0].cards.pop(i)
+                                    # 클릭한 카드 pop
+                                    self.game.players[0].cards.pop(i)
 
-                                # 사운드 함수 호출
-                                self.card_sound()
+                                    # 사운드 함수 호출
+                                    self.card_sound()
 
-                                # 카드 이동 애니메이션
-                                chosen_card_rect = card_rect_list[i]
-                                start_pos = card_rect_list[i]
-                                chosen_card_img = pygame.image.load(
-                                    chosen_card.front).convert_alpha()
-                                self.move_card_animation(chosen_card_img, chosen_card_rect,(start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
+                                    # 카드 이동 애니메이션
+                                    chosen_card_rect = card_rect_list[i]
+                                    start_pos = card_rect_list[i]
+                                    chosen_card_img = pygame.image.load(
+                                        chosen_card.front).convert_alpha()
+                                    self.move_card_animation(chosen_card_img, chosen_card_rect,(start_pos.x, start_pos.y), (self.screen_width*0.4, self.screen_height*0.25))
 
-                                # 현재 카드 업데이트
-                                self.game.current_card = self.openned_cards[-1]
+                                    # 현재 카드 업데이트
+                                    self.game.current_card = self.openned_cards[-1]
 
-                                self.func_card_clicked(
-                                    i, card_rect, chosen_card, card_rect_list)
+                                    self.func_card_clicked(
+                                        i, card_rect, chosen_card, card_rect_list)
                             
 
                 else:
@@ -641,68 +642,75 @@ class GamePage():
                 end_pos = card_rect_list[1][next_idx][0]
 
         return end_pos
+
+    # 컴퓨터가 black card 낼 때    
+    def computer_black_card(self, chosen_card):
+        choiced_color = self.game.players[self.game.current_player_index].black_card_clicked()
+        self.game.current_card.color = choiced_color
+        if chosen_card.type == 'wildcard' and self.game.deck.len_card() >= 1:
+            self.game.wildcard_card_clicked(choiced_color)
+        elif chosen_card.type == '+4' and self.game.deck.len_card() >= 4:
+            end_pos = self.computer_function_animation()
+                    
+            for i in range(4):
+                added_card = self.game.deck.cards[-(i+1)]
+                added_card_img = pygame.image.load(
+                    added_card.front).convert_alpha()
+                added_card_rect = added_card_img.get_rect()
+                start_pos = self.draw_deck()
+                end_pos.x = end_pos.x - (self.screen_width * 0.03)
+                self.card_move_sound.play()
+                self.card_move_sound.set_volume(
+                    self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
+                self.move_card_animation(added_card_img, added_card_rect,
+                                        (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
+            self.game.plus4_card_clicked(choiced_color)
+        elif chosen_card.type == 'bomb' and self.game.deck.len_card() >= (3 * (len(self.game.players)-1)):
+            bomb_icon = pygame.image.load(
+                resource_path("./assets/bomb.png"))
+            bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
+            display_bomb_animation(self.screen, bomb_icon)
+            end_pos = self.display_player_cards()[-1]
+            for i in range(3):
+                added_card = self.game.deck.cards[-(i+1)]
+                added_card_img = pygame.image.load(
+                    added_card.front).convert_alpha()
+                added_card_rect = added_card_img.get_rect()
+                start_pos = self.draw_deck()
+                end_pos.x = end_pos.x + (self.screen_width * 0.05)
+                self.card_move_sound.play()
+                self.card_move_sound.set_volume(
+                    self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
+                self.move_card_animation(added_card_img, added_card_rect,(start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                
+            self.game.bombcard_card_clicked(choiced_color)
+
+        elif chosen_card.type == 'all' and self.game.deck.len_card() >= 1:
+            # 다음 turn player와 card 바꿈
+            current_name = self.game.players[self.game.current_player_index].name
+            target_name = self.game.players[self.game.current_player_index - 1].name
+            all_change_icon = pygame.image.load(
+                resource_path("./assets/all_change.png"))
+            all_change_icon = pygame.transform.scale(
+                all_change_icon, (200, 200))
+            display_all_change_animation(
+                self.screen, all_change_icon, current_name, target_name)
+
+            self.game.change_all_clicked(((self.game.current_player_index + 1) % len(self.game.players)), choiced_color)
+
     # 컴퓨터가 기능 카드 낼 때
     def computer_function_card(self):
-        
-        if self.game.current_card.color == 'black':
-            choiced_color = self.game.players[self.game.current_player_index].black_card_clicked(
-            )
-            if self.game.current_card.type == 'wildcard':
-                self.game.wildcard_card_clicked(choiced_color)
-            elif self.game.current_card.type == '+4' and self.game.deck.len_card() >= 4:
-                # 이부분을 플레이어가 아니라 다음 idx에게 보내야됨
-                # 일단 플레이어, 컴1, 컴2 순으로 리스트에 넣고 
-                end_pos = self.computer_function_animation()
-                        
-                for i in range(4):
-                    added_card = self.game.deck.cards[-(i+1)]
-                    added_card_img = pygame.image.load(
-                        added_card.front).convert_alpha()
-                    added_card_rect = added_card_img.get_rect()
-                    start_pos = self.draw_deck()
-                    end_pos.x = end_pos.x - (self.screen_width * 0.03)
-                    self.card_move_sound.play()
-                    self.card_move_sound.set_volume(
-                        self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
-                    self.move_card_animation(added_card_img, added_card_rect,
-                                            (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                    self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
-                self.game.plus4_card_clicked(choiced_color)
-            elif self.game.current_card.type == 'bomb' and self.game.deck.len_card() >= (3 * (len(self.game.players)-1)):
-                bomb_icon = pygame.image.load(
-                    resource_path("./assets/bomb.png"))
-                bomb_icon = pygame.transform.scale(bomb_icon, (250, 250))
-                display_bomb_animation(self.screen, bomb_icon)
-                end_pos = self.display_player_cards()[-1]
-                for i in range(3):
-                    added_card = self.game.deck.cards[-(i+1)]
-                    added_card_img = pygame.image.load(
-                        added_card.front).convert_alpha()
-                    added_card_rect = added_card_img.get_rect()
-                    start_pos = self.draw_deck()
-                    end_pos.x = end_pos.x + (self.screen_width * 0.05)
-                    self.card_move_sound.play()
-                    self.card_move_sound.set_volume(
-                        self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
-                    self.move_card_animation(added_card_img, added_card_rect,(start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
-                    
-                self.game.bombcard_card_clicked(choiced_color)
-
-            elif self.game.current_card.type == 'all':
-                # 일단 user와 바꿈
-                current_name = self.game.players[self.game.current_player_index].name
-                target_name = self.game.players[self.game.current_player_index - 1].name
-                all_change_icon = pygame.image.load(
-                    resource_path("./assets/all_change.png"))
-                all_change_icon = pygame.transform.scale(
-                    all_change_icon, (200, 200))
-                display_all_change_animation(
-                    self.screen, all_change_icon, current_name, target_name)
-
-                self.game.change_all_clicked(0, choiced_color)
+        if self.game.current_card.type == 'all':
+            self.computer_black_card(self.game.current_card)
+        elif self.game.current_card.type == 'wildcard':
+            self.computer_black_card(self.game.current_card)
+        elif self.game.current_card.type == '+4':
+            self.computer_black_card(self.game.current_card)
+        elif self.game.current_card.type == 'bomb':
+            self.computer_black_card(self.game.current_card)
 
         elif self.game.current_card.type == '+2' and self.game.deck.len_card() >= 2:
-
             end_pos = self.computer_function_animation()
 
             for i in range(2):
@@ -716,11 +724,11 @@ class GamePage():
                 self.card_move_sound.set_volume(
                     self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                 self.move_card_animation(added_card_img, added_card_rect,
-                                         (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
+                                        (start_pos.x, start_pos.y), (end_pos.x, end_pos.y))
                 self.screen.blit(added_card_img, (end_pos.x, end_pos.y))
             self.game.plus2_card_clicked(
                 self.game.players[self.game.current_player_index])
-        elif self.game.current_card.type == 'reverse':
+        elif self.game.current_card.type == 'reverse' and self.game.deck.len_card() >= 1:
             if self.game.direction == 1:
                 reverse_icon = pygame.image.load(
                     resource_path("./assets/counterclockwise.png"))
@@ -731,23 +739,27 @@ class GamePage():
                 reverse_icon = pygame.transform.scale(reverse_icon, (200, 200))
             display_reverse_animation(self.screen, reverse_icon)
             self.game.reverse_card_clicked()
-        elif self.game.current_card.type == 'skip':
+        elif self.game.current_card.type == 'skip' and self.game.deck.len_card() >= 1:
             self.game.skip_card_clicked()
             # 게임 function card 버그 고쳐지면 수정 --> 지금은 애니메이션만 일시적으로 해놓음
             display_skip_animation(self.screen, self.game.players[(
                 self.game.current_player_index + 1) % len(self.game.players)].name)
-        elif self.game.current_card.type in range(1, 10):
+        elif self.game.current_card.type in range(1, 10) and self.game.deck.len_card() >= 1:
             self.game.next_turn()
         else:
             self.game.deck.cards = self.game_deck_used_all()
+            self.computer_function_card()
+
 
     def game_deck_used_all(self, event=None):
+        cards_list = []
         while len(self.openned_cards) > 1:
                         card = self.openned_cards.pop(0)
                         self.game.deck.cards.append(card)
                         cards_list = self.game.deck.cards.copy()
                         shuffle(cards_list)
         print("openned cards moved to deck.")
+        self.deck_rect = self.draw_deck()
         return cards_list
         # winner_box = pygame.Rect(self.screen_width * 0.05, self.screen_height * 0.2,
         #                                     self.screen_width * 0.9, self.screen_height * 0.6)
@@ -913,7 +925,7 @@ class GamePage():
                     return "pause"
 
                 # 우노 게임카드 다 썼을 때
-                # TODO : 카드 다 썼을 때, openned card에서 deck으로 카드 옮기기
+                # TODO : 카드 다 썼을 때, openned card에서 deck으로 카드 옮기기 -> 수정 완료
                 while self.game.deck.len_card() == 0:                  
                     self.game.deck.cards = self.game_deck_used_all(event)
                     deck_rect = self.draw_deck()
@@ -994,7 +1006,8 @@ class GamePage():
                         self.card_move_sound.set_volume(
                             self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
                         self.move_card_animation(new_computer_card_img, new_computer_card_rect,
-                                                 (self.deck_rect.x, self.deck_rect.y), (end_pos.x, end_pos.y))
+                                                 (self.deck_rect.x, self.deck_rect.y),
+                                                 (end_pos.x, end_pos.y))
                         self.game.next_turn()
                     else:
                         self.game.deck.cards = self.game_deck_used_all()
