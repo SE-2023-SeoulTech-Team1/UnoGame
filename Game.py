@@ -75,8 +75,7 @@ class Game:
         return self
 
     def skip_card_clicked(self):
-        self.current_player_index = (
-                                            self.current_player_index + self.direction) % len(self.players)
+        self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
         self.next_turn()
         return self
 
