@@ -923,6 +923,16 @@ class GamePage():
                     
 
                     return "pause"
+<<<<<<< Updated upstream
+=======
+
+                    # if event.type == pygame.KEYDOWN:
+                    #     if event.key == pygame.K_ESCAPE:
+                    #         paused = True
+                    #         return "pause"
+                    #     else:
+                    #         print("press esc")
+>>>>>>> Stashed changes
 
                 # 우노 게임카드 다 썼을 때
                 # TODO : 카드 다 썼을 때, openned card에서 deck으로 카드 옮기기 -> 수정 완료
