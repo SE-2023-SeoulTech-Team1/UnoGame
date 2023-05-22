@@ -41,7 +41,7 @@ class GamePage():
         self.screen_width = screen.get_width()
         self.screen_height = screen.get_height()
         self.computer_players_names = [
-            Text(text=name, x=0.8, y=0.17 * (i + 1) - 0.03, size=24, color=WHITE)
+            Text(text=name, x=0.8, y=0.16 * (i + 1) - 0.03, size=24, color=WHITE)
             for i, name in enumerate(self.player_names[1:])
         ]
         # card_rec.top = self.screen_height * 0.17 * (computer_player_idx + 1)
