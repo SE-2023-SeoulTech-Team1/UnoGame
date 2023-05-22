@@ -12,6 +12,7 @@ class SettingPage():
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.setting = setting
         self.key_idx = 0
+        self.player_names = ''
         self.pre_page = pre_page
         if os.path.exists("../setting_state.pkl"):
             self.size_idx = setting.size_idx
@@ -107,9 +108,9 @@ class SettingPage():
                         if os.path.exists('game_state.pkl'):
                             with open('game_state.pkl', 'rb') as f:
                                 game_state = pickle.load(f)
-                            player_names = game_state.player_names
+                            self.player_names = game_state.player_names
 
-                        return "game", player_names 
+                        return "game", self.player_names 
                     else:
                         
                         return "main"

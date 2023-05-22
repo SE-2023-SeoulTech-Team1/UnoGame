@@ -30,6 +30,8 @@ class Game:
         self.uno = None
         self.color_weak_mode = color_weak_mode
         self.turn_count = 0
+        self.skill_card_used = False
+        self.uno_by_others = False
 
     def reset_deck(self, color_weak_mode=False):
         cards = [Card(color, type, color_weak_mode)
@@ -170,6 +172,8 @@ class Game:
         return self
 
     def uno_button_clicked(self, player_idx):
+        if player_idx != 0:
+            self.uno_by_others = True
 
         player_with_one_card = [
             player for player in self.players if len(player.cards) == 1]

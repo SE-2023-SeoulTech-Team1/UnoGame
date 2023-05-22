@@ -330,6 +330,7 @@ class GamePage():
 
     # 기능 카드 눌렸을 때
     def func_card_clicked(self, i, card_rect, chosen_card, card_rect_list):
+        self.game.skill_card_used = True
         if self.game.current_card.type == 'all':
             self.handle_black(card_rect, i, chosen_card, self.screen,
                               card_rect_list, self.screen_width, self.screen_height)
@@ -925,6 +926,12 @@ class GamePage():
                         elif self.game.turn_count <= 20:
                             self.achievements[7].complete()
                             print("achivement 7 : " + str(self.achievements[7].completed))
+                        elif self.game.skill_card_used == False:
+                            self.achievements[8].complete()
+                            print("achivement 8 : " + str(self.achievements[8].completed))
+                        elif self.game.uno_by_others == True:
+                            self.achievements[9].complete()
+                            print("achivement 9 : " + str(self.achievements[9].completed))
                         with open('achievements.pkl', 'wb') as f:
                             pickle.dump(self.achievements, f, pickle.HIGHEST_PROTOCOL)
                             print("achievements save!!")
