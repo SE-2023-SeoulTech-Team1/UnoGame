@@ -4,6 +4,7 @@ from Colors import *
 from Button import Button
 import pickle
 import os
+from resource_path import *
 
 class PausedPage():
     def __init__(self, screen, setting):
@@ -20,8 +21,8 @@ class PausedPage():
                          self.achieve_btn, self.end_game_btn]
     
     def delete_pickle(self):
-        if os.path.exists('game_state.pkl'):
-            os.remove('game_state.pkl')
+        if os.path.exists(resource_path('game_state.pkl')):
+            os.remove(resource_path('game_state.pkl'))
 
     def running(self):
 
@@ -31,8 +32,8 @@ class PausedPage():
                 return "exit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.pause_btn.rect.collidepoint(event.pos):
-                    if os.path.exists('game_state.pkl'):
-                        with open('game_state.pkl', 'rb') as f:
+                    if os.path.exists(resource_path('game_state.pkl')):
+                        with open(resource_path('game_state.pkl'), 'rb') as f:
                             game_state = pickle.load(f)
                         player_names = game_state.player_names
                     return "game", player_names 

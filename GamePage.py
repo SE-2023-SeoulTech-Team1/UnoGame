@@ -75,14 +75,14 @@ class GamePage():
         self.achievements = None
 
         # 피클 세팅
-        if os.path.exists('game_state.pkl'):
-            with open('game_state.pkl', 'rb') as f:
+        if os.path.exists(resource_path('game_state.pkl')):
+            with open(resource_path('game_state.pkl'), 'rb') as f:
                 game_state = pickle.load(f)
                 print("load pickle")
             self.game = game_state
 
-        if os.path.exists('achievements.pkl'):
-            with open('achievements.pkl', 'rb') as f:
+        if os.path.exists(resource_path('achievements.pkl')):
+            with open(resource_path('achievements.pkl'), 'rb') as f:
                 achievements = pickle.load(f)
                 print("load achievements pickle")
             self.achievements = achievements
@@ -150,7 +150,7 @@ class GamePage():
         for computer_player_idx, computer_player in enumerate(computer_players):
             rect_list = []
             for card_idx, card in enumerate(computer_player.cards):
-                card_back_img = pygame.image.load(card.front).convert_alpha()
+                card_back_img = pygame.image.load(card.back).convert_alpha()
                 card_rec = card_back_img.get_rect()
                 card_back_img = pygame.transform.scale(
                     card_back_img, (card_rec.size[0] * 0.7, card_rec.size[1] * 0.7))
@@ -168,7 +168,7 @@ class GamePage():
 
         # game의 pick_current_card 사용해서 게임 시작 직후 current card 정보 불러오고 open된 카드 리스트에 저장
         if flip_card is True:
-            if os.path.exists('game_state.pkl'):
+            if os.path.exists(resource_path('game_state.pkl')):
                 pass
             else:
                 self.game.pick_current_card()
@@ -863,7 +863,7 @@ class GamePage():
                     if event.key == pygame.K_ESCAPE:
                         print("esc")
                         paused = True
-                        with open("game_state.pkl", "wb") as f:
+                        with open(resource_path("game_state.pkl"), "wb") as f:
                             pickle.dump(self.game, f)
                         return "pause"
 
@@ -947,7 +947,7 @@ class GamePage():
                         elif self.game.uno_by_others == True:
                             self.achievements[9].complete()
                             print("achivement 9 : " + str(self.achievements[9].completed))
-                        with open('achievements.pkl', 'wb') as f:
+                        with open(resource_path('achievements.pkl'), 'wb') as f:
                             pickle.dump(self.achievements, f, pickle.HIGHEST_PROTOCOL)
                             print("achievements save!!")
                             # pkl 바로 적용 안돼서 직접 객체를 가져와서 업데이트 함 

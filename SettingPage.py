@@ -3,7 +3,8 @@ import pygame
 from Button import Button, TextButton, Slider
 from Colors import *
 import pickle
-import os 
+import os
+from resource_path import *
 
 class SettingPage():
     def __init__(self, screen, setting, pre_page = None):
@@ -14,7 +15,7 @@ class SettingPage():
         self.key_idx = 0
         self.player_names = ''
         self.pre_page = pre_page
-        if os.path.exists("../setting_state.pkl"):
+        if os.path.exists(resource_path("../setting_state.pkl")):
             self.size_idx = setting.size_idx
             self.color_idx = setting.color_idx
             self.keys_idx = setting.keys_idx
@@ -102,11 +103,11 @@ class SettingPage():
                     setting2 = self.setting
 
                     # pickle에 현재 데이터 저장 
-                    with open("../setting_state.pkl", "wb") as f:
+                    with open(resource_path("../setting_state.pkl"), "wb") as f:
                         pickle.dump(setting2, f)
                     if self.pre_page is not None:
-                        if os.path.exists('game_state.pkl'):
-                            with open('game_state.pkl', 'rb') as f:
+                        if os.path.exists(resource_path('game_state.pkl')):
+                            with open(resource_path('game_state.pkl'), 'rb') as f:
                                 game_state = pickle.load(f)
                             self.player_names = game_state.player_names
 
@@ -125,7 +126,7 @@ class SettingPage():
                     self.effect_volume_slider.value = 50
                     self.setting.reset()
                     setting2 = self.setting
-                    with open("../setting_state.pkl", "wb") as f:
+                    with open(resource_path("../setting_state.pkl"), "wb") as f:
                         pickle.dump(setting2, f)
                     return "main"
 
