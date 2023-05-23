@@ -20,6 +20,16 @@ class Message():
         pygame.display.update()
         time.sleep(1)
 
+    def draw_achievement(self):
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        text = pygame.font.SysFont(None, 30).render(self.text, True, GREEN, None)
+        text_rec = text.get_rect()
+        text_rec.centerx = round(screen_width*0.5)
+        text_rec.centery= round(screen_height*0.3)
+        self.screen.blit(text, text_rec)
+        pygame.display.update()
+        time.sleep(1)
+
     def winner_draw(self):
         screen_width, screen_height = pygame.display.get_surface().get_size()
         text = WINNERFONT.render(self.text, True, self.color, None)
