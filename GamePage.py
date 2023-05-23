@@ -917,6 +917,17 @@ class GamePage():
 
                 if player_with_no_card:
                     if player_with_no_card[0].name == self.game.player_names[0]:
+                        if isinstance(self.game, StoryGameA):
+                            self.achievements[1].complete()
+                        elif isinstance(self.game, StoryGameB):
+                            self.achievements[2].complete()
+                        elif isinstance(self.game, StoryGameC):
+                            self.achievements[3].complete()
+                        elif isinstance(self.game, StoryGameD):
+                            self.achievements[4].complete()
+                        else:
+                            self.achievements[0].complete()
+
                         if self.game.turn_count <= 10:
                             self.achievements[5].complete()
                             print("achivement 5 : " + str(self.achievements[5].completed))
