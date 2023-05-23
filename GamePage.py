@@ -918,33 +918,38 @@ class GamePage():
                     self.uno_button_pressed = False
 
                 if player_with_no_card:
+                    achievement_message = None
                     if player_with_no_card[0].name == self.game.player_names[0]:
                         if isinstance(self.game, StoryGameA):
                             self.achievements[1].complete()
+                            achievement_message = Message(self.screen, f"{achievements[1].name} COMPLETED", WHITE)
                         elif isinstance(self.game, StoryGameB):
                             self.achievements[2].complete()
+                            achievement_message = Message(self.screen, f"{achievements[2].name} COMPLETED", WHITE)
                         elif isinstance(self.game, StoryGameC):
                             self.achievements[3].complete()
+                            achievement_message = Message(self.screen, f"{achievements[3].name} COMPLETED", WHITE)
                         elif isinstance(self.game, StoryGameD):
                             self.achievements[4].complete()
+                            achievement_message = Message(self.screen, f"{achievements[4].name} COMPLETED", WHITE)
                         else:
                             self.achievements[0].complete()
+                            achievement_message = Message(self.screen, f"{achievements[0].name} COMPLETED", WHITE)
 
                         if self.game.turn_count <= 10:
                             self.achievements[5].complete()
-                            print("achivement 5 : " + str(self.achievements[5].completed))
+                            achievement_message = Message(self.screen, f"{achievements[5].name} COMPLETED", WHITE)
                         elif self.game.turn_count <= 15:
                             self.achievements[6].complete()
-                            print("achivement 6 : " + str(self.achievements[6].completed))
+                            achievement_message = Message(self.screen, f"{achievements[6].name} COMPLETED", WHITE)
                         elif self.game.turn_count <= 20:
                             self.achievements[7].complete()
-                            print("achivement 7 : " + str(self.achievements[7].completed))
+                            achievement_message = Message(self.screen, f"{achievements[7].name} COMPLETED", WHITE)
                         elif self.game.skill_card_used == False:
                             self.achievements[8].complete()
-                            print("achivement 8 : " + str(self.achievements[8].completed))
+                            achievement_message = Message(self.screen, f"{achievements[8].name} COMPLETED", WHITE)
                         elif self.game.uno_by_others == True:
                             self.achievements[9].complete()
-                            print("achivement 9 : " + str(self.achievements[9].completed))
                         with open(resource_path('achievements.pkl'), 'wb') as f:
                             pickle.dump(self.achievements, f, pickle.HIGHEST_PROTOCOL)
                             print("achievements save!!")
@@ -956,6 +961,8 @@ class GamePage():
                     pygame.draw.rect(self.screen, DARK_GRAY, winner_box)
                     Message(
                         self.screen, f"{player_with_no_card[0].name} WIN", WHITE).winner_draw()
+                    if achievements is not None:
+                        achievement_message.draw()
                     self.timerFlag = False
                     pygame.time.delay(3000)
                     # 우승자 표시하고 paused page로
