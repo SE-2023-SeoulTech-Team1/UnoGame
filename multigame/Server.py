@@ -48,6 +48,9 @@ class Server:
                 if len(self.clients_name) > 5:
                     data = {'name' : name, 'enter_lobby' : False}
                     self.data['clients'].append(data)
+                    self.multi_lobby_page.over_five = True
+
+                    
                 else:
                     if str(pwd) == "1234":
                         data = {'name' : name, 'enter_lobby' : True}
@@ -79,7 +82,6 @@ class Server:
                     print(self.clients_name)
                     if len(self.clients_name) > 5:
                         print("5명을 초과하였습니다!")
-                        self.multi_lobby_page.over_five = True
                     
                     for i, player in enumerate(self.multi_lobby_page.player_selected):
                         if player and self.multi_lobby_page.btn_clients[i].text is "":

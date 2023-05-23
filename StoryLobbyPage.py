@@ -21,7 +21,7 @@ class StoryLobbyPage:
         self.start_btn.key_hovered = True
         self.map_btn = Button(0.5, 0.4, 200, 50, "MAP",text_size=32)
         self.exit_btn = Button(0.5, 0.5, 200, 50, 'EXIT', text_size=32)
-
+        
         self.buttons = [self.start_btn, self.map_btn, self.exit_btn]
     
 

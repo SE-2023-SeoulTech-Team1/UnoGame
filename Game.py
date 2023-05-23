@@ -56,7 +56,7 @@ class Game:
 
     def deal_cards(self):
         self.deck.shuffle()
-        for i in range(1):
+        for i in range(4):
             for player in self.players:
                 player.cards.append(self.deck.pop_card())
 

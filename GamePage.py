@@ -797,6 +797,9 @@ class GamePage():
 
     def running(self):
 
+        
+        
+
         # 카드 초기 세팅
         if isinstance(self.game, StoryGameB):
             while test_deal_cards(self.game) == False:
@@ -827,11 +830,14 @@ class GamePage():
         card_rect_list = self.display_player_cards()
 
         # 피클 세팅
+
         if os.path.exists(resource_path('game_state.pkl')):
             with open(resource_path('game_state.pkl'), 'rb') as f:
                 game_state = pickle.load(f)
                 print("load pickle")
             self.game = game_state
+            self.game.color_weak_mode = self.setting.color_weak
+        
 
         if os.path.exists(resource_path('achievements.pkl')):
             with open(resource_path('achievements.pkl'), 'rb') as f:
@@ -861,6 +867,7 @@ class GamePage():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         print("esc")
+                        self.game.color_weak_mode = self.setting.color_weak
                         paused = True
                         with open(resource_path("game_state.pkl"), "wb") as f:
                             pickle.dump(self.game, f)

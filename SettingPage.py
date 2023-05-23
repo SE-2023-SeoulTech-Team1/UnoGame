@@ -174,6 +174,7 @@ class SettingPage():
                                 with open(resource_path('game_state.pkl'), 'rb') as f:
                                     game_state = pickle.load(f)
                                 self.player_names = game_state.player_names
+                                
 
                             return "game", self.player_names
                         else:
