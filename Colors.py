@@ -4,7 +4,7 @@ fps = 60
 fpsClock = pygame.time.Clock()
 
 pygame.init()
-FONT = pygame.font.SysFont('arialroundedmtbold', 32)
+FONT = pygame.font.SysFont(None, 32)
 WINNERFONT = pygame.font.SysFont('arialroundedmtblod', 100, True, True)
 
 # 색상 정의

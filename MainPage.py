@@ -22,17 +22,17 @@ class MainPage():
         self.screen_width, self.screen_height = pygame.display.get_surface().get_size()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
 
-        self.title = TextButton(1/2, 1/6, 200, 50, "UNO GAME", hover_color=WHITE, text_color=BLUE)
+        self.title = TextButton(1/2, 1/6, 250, 50, "UNO GAME", hover_color=WHITE, text_color=BLUE)
 
         self.key_idx = 0
-        self.start_btn = Button(0.5, 0.3, 200, 50, 'START', text_size=32)
-        self.multi_start_btn = Button(0.5, 0.4, 200, 50, 'MULTI-GAME', text_size=32)
-        self.achievment_btn = Button(0.5, 0.5, 200, 50, 'ACHEIVEMENT', text_size=32)
+        self.start_btn = Button(0.5, 0.3, 250, 50, 'START', text_size=32)
+        self.multi_start_btn = Button(0.5, 0.4, 250, 50, 'MULTI-GAME', text_size=32)
+        self.achievment_btn = Button(0.5, 0.5, 250, 50, 'ACHEIVEMENT', text_size=32)
 
         self.start_btn.key_hovered = True
-        self.map_btn = Button(0.5, 0.6, 200, 50, 'GO TO MAP', text_size=32)
-        self.setting_btn = Button(0.5, 0.7, 200, 50, 'SETTINGS', text_size=32)
-        self.exit_btn = Button(0.5, 0.8, 200, 50, 'EXIT', text_size=32)
+        self.map_btn = Button(0.5, 0.6, 250, 50, 'GO TO MAP', text_size=32)
+        self.setting_btn = Button(0.5, 0.7, 250, 50, 'SETTINGS', text_size=32)
+        self.exit_btn = Button(0.5, 0.8, 250, 50, 'EXIT', text_size=32)
 
         self.buttons = [self.start_btn, self.multi_start_btn, self.achievment_btn, self.map_btn, self.setting_btn, self.exit_btn]
 
