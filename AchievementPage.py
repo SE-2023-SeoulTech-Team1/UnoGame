@@ -16,14 +16,15 @@ class AchievementPage:
         self.level0_medal_img =  pygame.image.load(resource_path("./assets/level0_medal.png"))
         self.level1_medal_img =  pygame.image.load(resource_path("./assets/level1_medal.png"))
         self.level2_medal_img =  pygame.image.load(resource_path("./assets/level2_medal.png"))
-        self.level3_medal_img =  pygame.image.load(resource_path("./assets/level3_medal.png"))      
+        self.level3_medal_img =  pygame.image.load(resource_path("./assets/level3_medal.png"))
+        self.turn5_medal_img =  pygame.image.load(resource_path("./assets/10turn_medal.png"))      
         self.turn10_medal_img =  pygame.image.load(resource_path("./assets/10turn_medal.png"))
         self.turn15_medal_img =  pygame.image.load(resource_path("./assets/15turn_medal.png"))
         self.turn20_medal_img =  pygame.image.load(resource_path("./assets/20turn_medal.png"))
         self.skill_medal_img =  pygame.image.load(resource_path("./assets/skill_medal.png"))
         self.uno_medal_img =  pygame.image.load(resource_path("./assets/uno_medal.png"))
         self.medal_imgs = [self.single_medal_img, self.level0_medal_img, self.level1_medal_img, self.level2_medal_img,
-                            self.level3_medal_img, self.turn10_medal_img, self.turn15_medal_img, self.turn20_medal_img,
+                            self.level3_medal_img, self.turn5_medal_img, self.turn10_medal_img, self.turn15_medal_img, self.turn20_medal_img,
                             self.skill_medal_img, self.uno_medal_img]
         if os.path.exists(resource_path('achievements.pkl')):
             with open(resource_path('achievements.pkl'), 'rb') as f:
@@ -36,6 +37,7 @@ class AchievementPage:
                 Achievement("Win Story Game(level1)", "Win a story game(level1)"),
                 Achievement("Win Story Game(level2)", "Win a story game(level2)"),
                 Achievement("Win Story Game(level3)", "Win a story game(level3)"),
+                Achievement("In 5 turns", "Win a single player game in 5 turns"),
                 Achievement("In 10 turns", "Win a single player game in 10 turns"),
                 Achievement("In 15 turns", "Win a single player game in 15 turns"),
                 Achievement("In 20 turns", "Win a single player game in 20 turns"),
