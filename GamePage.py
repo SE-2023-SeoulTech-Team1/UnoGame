@@ -74,22 +74,6 @@ class GamePage():
         self.openned_cards = []
         self.achievements = None
 
-        # 피클 세팅
-        if os.path.exists(resource_path('game_state.pkl')):
-            with open(resource_path('game_state.pkl'), 'rb') as f:
-                game_state = pickle.load(f)
-                print("load pickle")
-            self.game = game_state
-
-        if os.path.exists(resource_path('achievements.pkl')):
-            with open(resource_path('achievements.pkl'), 'rb') as f:
-                achievements = pickle.load(f)
-                print("load achievements pickle")
-            self.achievements = achievements
-        else:
-            self.achievements = None
-            print("No achievements")
-
 
     def timer(self, setTimer, totalTime):
         global timerFlag, startTicks, count, deck_cards_num, player_cards_num
@@ -842,7 +826,21 @@ class GamePage():
         self.uno_button.draw()
         card_rect_list = self.display_player_cards()
 
+        # 피클 세팅
+        if os.path.exists(resource_path('game_state.pkl')):
+            with open(resource_path('game_state.pkl'), 'rb') as f:
+                game_state = pickle.load(f)
+                print("load pickle")
+            self.game = game_state
 
+        if os.path.exists(resource_path('achievements.pkl')):
+            with open(resource_path('achievements.pkl'), 'rb') as f:
+                achievements = pickle.load(f)
+                print("load achievements pickle")
+            self.achievements = achievements
+        else:
+            self.achievements = None
+            print("No achievements")
 
         print("current card : "+str(self.game.current_card))
 
