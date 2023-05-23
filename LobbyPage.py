@@ -35,8 +35,6 @@ class LobbyPage():
                                 player_selected[i] = False
                                 self.btn_computer_players[i].text = ""
                                 selected_idx = None
-                                
-                            
                             else:
                                 player_selected[i] = True
                                 selected_idx = i
@@ -46,6 +44,14 @@ class LobbyPage():
                         if player_selected.count(True) == 0:
                             pass
                         else:
+                            # if self.btn_computer_players[0].text == "AlienA":
+                            #     return "game_level0"
+                            # elif self.btn_computer_players[0].text == "AlienB":
+                            #     return "game_level1"
+                            if self.btn_computer_players[0].text == "AlienC":
+                                return "game_level2"
+                            elif self.btn_computer_players[0].text == "AlienD":
+                                return "game_level3"
                             player_names = [self.btn_player.text] + [self.btn_computer_players[i].text for i in range(5) if player_selected[i]]
                             return "game", player_names
 

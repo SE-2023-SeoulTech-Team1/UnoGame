@@ -993,7 +993,8 @@ class GamePage():
                                 self.card_move_sound.play()
                                 self.card_move_sound.set_volume(
                                     self.setting.volume * 0.01 * self.setting.effect_volume * 0.01)
-                                self.move_card_animation(card.back_img, card_rect,
+                                card_back_img = pygame.image.load(card.back).convert_alpha()
+                                self.move_card_animation(card_back_img, card_rect,
                                                          (start_pos.x, start_pos.y),
                                                          (self.screen_width * 0.4, self.screen_height * 0.25))
                                 # current card 업데이트

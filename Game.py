@@ -22,8 +22,14 @@ class Game:
             pass
         else:
             self.deck.shuffle()
-        self.players = [Player(player_names[0])] + [Computer(name)
-                                                    for name in player_names[1:]]
+        self.players = [Player(player_names[0])]
+        for player_name in player_names:
+            if player_name == "AlienA":
+                self.players.append(AlienA(player_name))
+            elif player_name == "AlienB":
+                self.players.append(AlienB(player_name))
+            else:
+                self.players.append(Computer(player_name))
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
