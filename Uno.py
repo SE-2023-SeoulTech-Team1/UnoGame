@@ -14,20 +14,20 @@ from SelectPage import SelectPage
 import pickle
 import os
 import atexit
-
+from resource_path import *
 
 def delete_pickle():
-    if os.path.exists('game_state.pkl'):
-        os.remove('game_state.pkl')
+    if os.path.exists(resource_path('game_state.pkl')):
+        os.remove(resource_path('game_state.pkl'))
 
 
 def load_achievements():
-    with open('achievements.pkl', 'rb') as f:
+    with open(resource_path('achievements.pkl'), 'rb') as f:
         achievements = pickle.load(f)
 
 
 def save_achievements(achievements):
-    with open('achievements.pkl', 'wb') as f:
+    with open(resource_path('achievements.pkl'), 'wb') as f:
         pickle.dump(achievements, f, pickle.HIGHEST_PROTOCOL)
 
 

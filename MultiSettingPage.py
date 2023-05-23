@@ -126,6 +126,7 @@ class MultiSettingPage():
                 self.multi_lobby_page.client = self.client
                 self.multi_lobby_page.enter_client = True
                 self.client.multi_lobby_page = self.multi_lobby_page
+                self.client.multi_lobby_page.btn_server.text = "Client"
                 return "multi_lobby", self.multi_lobby_page
 
             pygame.display.update()

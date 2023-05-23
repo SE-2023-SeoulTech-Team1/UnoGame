@@ -35,6 +35,6 @@ class Achievement:
         Text(0.2, y + 0.03, self.description, size=15).render(screen)
         if self.completed:
             Text(0.7, y, "complete", color=GREEN, size=30).render(screen)
-            Text(0.7, y + 0.03, self.completed_date.strftime("%Y-%m-%d %H:%M:%S"), color=GREEN, size=15).render(screen)
+            Text(0.7, y + 0.04, self.completed_date.strftime("%Y-%m-%d %H:%M:%S"), color=GREEN, size=15).render(screen)
         else:
             Text(0.7, y, "incomplete", color=RED, size=30).render(screen)

@@ -16,10 +16,10 @@ class MultiLobbyPage():
         self.is_host = is_host
         self.multi_setting_page = multi_setting_page
         self.multi_lobby_page = self
-        self.btn_server = TextButton(0.5, 0.1, 200, 50, "Client")
+        self.btn_server = TextButton(0.5, 0.1, 200, 50, "Server")
         self.btn_clients = [Reverse_TextButton(0.5, 0.1 * (i + 1) + 0.15, 200, 50, "") for i in range(5)]
         self.btn_start = Button(0.5, 0.8, 200, 50, "Start Game")
-        self.btn_ip = TextButton(0.5, 0.9, 150, 25, "127.0.0.1")
+        self.btn_ip = TextButton(0.5, 0.9, 150, 25, "")
         self.player_selected = [False for _ in range(5)]
         self.thread = threading.Thread(target=self.running_server).start()
         self.player_names = []

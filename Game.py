@@ -2,6 +2,7 @@ from Card import *
 from random import shuffle
 from Player import *
 import os
+from resource_path import *
 
 TIMEOUT = 10
 
@@ -18,7 +19,7 @@ class Game:
         cards += [Card("black", type, color_weak_mode)
                   for type in BLACK_CARD_TYPES]
         self.deck = Deck(cards)
-        if os.path.exists('game_state.pkl'):
+        if os.path.exists(resource_path('game_state.pkl')):
             pass
         else:
             self.deck.shuffle()
@@ -55,7 +56,7 @@ class Game:
 
     def deal_cards(self):
         self.deck.shuffle()
-        for i in range(7):
+        for i in range(2):
             for player in self.players:
                 player.cards.append(self.deck.pop_card())
 
