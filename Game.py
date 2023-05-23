@@ -23,7 +23,7 @@ class Game:
         else:
             self.deck.shuffle()
         self.players = [Player(player_names[0])]
-        for player_name in player_names:
+        for player_name in player_names[1:]:
             if player_name == "AlienA":
                 self.players.append(AlienA(player_name))
             elif player_name == "AlienB":
