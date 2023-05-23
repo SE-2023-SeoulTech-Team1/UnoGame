@@ -1031,6 +1031,8 @@ class GamePage():
                         self.who_is_current_player()
                         draw_card_front(
                             self.screen, self.openned_cards[-1], self.screen_height * 0.25, card_loc)
+                            
+                        computer_card_rect_list = self.draw_computer_cards()
 
                         print(
                             f"\n{self.game.players[self.game.current_player_index].name}이 deck에서 카드를 한 장 받습니다.")
