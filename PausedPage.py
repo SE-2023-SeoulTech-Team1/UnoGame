@@ -63,6 +63,8 @@ class PausedPage():
                     elif self.key_idx == 1:
                         return "setting"
                     elif self.key_idx == 2:
+                        return "achievement"
+                    elif self.key_idx == 3:
                         return "main"
         
         for button in self.buttons:
