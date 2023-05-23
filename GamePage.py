@@ -966,8 +966,8 @@ class GamePage():
                     Message(
                         self.screen, f"{player_with_no_card[0].name} WIN", WHITE).winner_draw()
                     if len(achievement_message) > 0:
-                        for message in achievement_message:
-                            message.draw_achievement()
+                        for i, message in enumerate(achievement_message):
+                            message.draw_achievement(i)
                     self.timerFlag = False
                     pygame.time.delay(3000)
                     # 우승자 표시하고 paused page로

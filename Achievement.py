@@ -6,13 +6,14 @@ from Colors import *
 from datetime import datetime
 
 class Achievement:
-    def __init__(self, name, description):
+    def __init__(self, name, description, loc = 0):
         self.name = name
         self.description = description
         self.completed = False
         self.file = file = base_path() + f"/data/achievement/{self.name}.pickle"
         self.icon = None
         self.completed_date = None
+        self.loc = 0
 
     def complete(self):
         self.completed = True
