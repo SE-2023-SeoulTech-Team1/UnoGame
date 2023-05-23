@@ -94,7 +94,7 @@ class MapPage:
 
         mouse_pos = pygame.mouse.get_pos()
         for i, rect in enumerate(self.level_rects):
-            if rect.collidepoint(mouse_pos):
+            if rect.collidepoint(mouse_pos) or self.key_idx == i:
                 # hover = pygame.transform.scale(
                 #         self.level_imgs[i], (rect.size[0]*1.2, rect.size[1]*1.2))
                 self.screen.blit(self.level_hover_imgs[i], self.level_rects[i])
@@ -139,6 +139,10 @@ class MapPage:
                         Message(self.screen, "You have to complete previous level", RED).draw()
                         pass
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    self.key_idx  = self.key_idx + 1 if self.key_idx < 3 else 0
+                elif event.key == pygame.K_LEFT:
+                    self.key_idx = self.key_idx - 1 if self.key_idx > 0 else 3
                 if event.key == pygame.K_ESCAPE:
                     self.paused = True
                     return "pause"
