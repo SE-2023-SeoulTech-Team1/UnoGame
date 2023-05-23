@@ -22,14 +22,22 @@ class Game:
             pass
         else:
             self.deck.shuffle()
-        self.players = [Player(player_names[0])] + [Computer(name)
-                                                    for name in player_names[1:]]
+        self.players = [Player(player_names[0])]
+        for player_name in player_names[1:]:
+            if player_name == "AlienA":
+                self.players.append(AlienA(player_name))
+            elif player_name == "AlienB":
+                self.players.append(AlienB(player_name))
+            else:
+                self.players.append(Computer(player_name))
         self.current_player_index = 0
         self.current_card = None
         self.direction = 1
         self.uno = None
         self.color_weak_mode = color_weak_mode
         self.turn_count = 0
+        self.skill_card_used = False
+        self.uno_by_others = False
 
     def reset_deck(self, color_weak_mode=False):
         cards = [Card(color, type, color_weak_mode)
@@ -75,8 +83,7 @@ class Game:
         return self
 
     def skip_card_clicked(self):
-        self.current_player_index = (
-                                            self.current_player_index + self.direction) % len(self.players)
+        self.current_player_index = (self.current_player_index + self.direction) % len(self.players)
         self.next_turn()
         return self
 
@@ -171,6 +178,8 @@ class Game:
         return self
 
     def uno_button_clicked(self, player_idx):
+        if player_idx != 0:
+            self.uno_by_others = True
 
         player_with_one_card = [
             player for player in self.players if len(player.cards) == 1]

@@ -7,6 +7,9 @@ from Colors import *
 from Text import *
 from resource_path import *
 from PausedPage import PausedPage
+import pickle
+import threading
+from Message import *
 
 class MapPage:
     def __init__(self, screen, setting):
@@ -33,6 +36,15 @@ class MapPage:
 
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
+
+        if os.path.exists('achievements.pkl'):
+            with open('achievements.pkl', 'rb') as f:
+                achievements = pickle.load(f)
+                print("load achievements pickle")
+            self.achievements = achievements
+        else:
+            self.achievements = None
+            print("No achievements")
 
 
     def about_stage(self, screen, x, y):
@@ -94,8 +106,9 @@ class MapPage:
             else:
                 self.screen.blit(self.level_imgs[i], rect)
 
-
-
+    def warning(self):
+        message = Message(self.screen, "You have to complete previous level", RED)
+        message.draw()
 
     def running(self):
 
@@ -108,11 +121,23 @@ class MapPage:
                 if self.level0_rect.collidepoint(event.pos):
                     return "story_lobby_0"
                 elif self.level1_rect.collidepoint(event.pos):
-                    return "story_lobby_1"
+                    if self.achievements[1].completed:
+                        return "story_lobby_1"
+                    else:
+                        Message(self.screen, "You have to complete previous level", RED).draw()
+                        pass
                 elif self.level2_rect.collidepoint(event.pos):
-                    return "story_lobby_2"
+                    if self.achievements[2].completed:
+                        return "story_lobby_2"
+                    else:
+                        Message(self.screen, "You have to complete previous level", RED).draw()
+                        pass
                 elif self.level3_rect.collidepoint(event.pos):
-                    return "story_lobby_3"
+                    if self.achievements[3].completed:
+                        return "story_lobby_3"
+                    else:
+                        Message(self.screen, "You have to complete previous level", RED).draw()
+                        pass
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.paused = True

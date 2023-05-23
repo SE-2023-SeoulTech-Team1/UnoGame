@@ -14,8 +14,10 @@ class PausedPage():
         self.pause_btn = Button(0.5, 0.3, 200, 50, "RESUME",text_size=40)
         self.pause_btn.key_hovered = True
         self.setting_btn = Button(0.5, 0.4, 200, 50, "SETTING",text_size=40)
-        self.back_btn = Button(0.5, 0.5, 200, 50, "BACK",text_size=40)
-        self.buttons = [self.pause_btn, self.setting_btn, self.back_btn]
+        self.achieve_btn = Button(0.5, 0.5, 200, 50, "ACHIEVEMENT",text_size=40)
+        self.end_game_btn = Button(0.5, 0.6, 200, 50, "END GAME",text_size=40)
+        self.buttons = [self.pause_btn, self.setting_btn,
+                         self.achieve_btn, self.end_game_btn]
     
     def delete_pickle(self):
         if os.path.exists('game_state.pkl'):
@@ -36,7 +38,9 @@ class PausedPage():
                     return "game", player_names 
                 elif self.setting_btn.rect.collidepoint(event.pos):
                     return "setting", "game"
-                elif self.back_btn.rect.collidepoint(event.pos):
+                elif self.achieve_btn.rect.collidepoint(event.pos):
+                    return "achievement"
+                elif self.end_game_btn.rect.collidepoint(event.pos):
                     self.delete_pickle()
                     return "main"
 

@@ -42,6 +42,7 @@ class AchievementPage:
                 Achievement("Win without skill cards", "Win a single player game without using skill cards"),
                 Achievement("Win without uno button", "Win a single player game without using uno button"),
             ]
+        # self.achievements[0].complete()
 
     def running(self):
         while True:

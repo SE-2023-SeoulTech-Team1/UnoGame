@@ -19,10 +19,10 @@ class StoryLobbyPage:
 
         self.start_btn = Button(0.5, 0.3, 200, 50, 'START', text_size=32)
         self.start_btn.key_hovered = True
-        self.back_btn = Button(0.5, 0.4, 200, 50, "MAP",text_size=32)
+        self.map_btn = Button(0.5, 0.4, 200, 50, "MAP",text_size=32)
         self.exit_btn = Button(0.5, 0.5, 200, 50, 'EXIT', text_size=32)
 
-        self.buttons = [self.start_btn, self.back_btn, self.exit_btn]
+        self.buttons = [self.start_btn, self.map_btn, self.exit_btn]
     
 
     def running(self, game_level):
@@ -44,7 +44,7 @@ class StoryLobbyPage:
                         return "game_level2"
                     elif self.game_level == 3:
                         return "game_level3"
-                elif self.back_btn.rect.collidepoint(event.pos):
+                elif self.map_btn.rect.collidepoint(event.pos):
                     return "map"
                 elif self.exit_btn.rect.collidepoint(event.pos):
                     return "exit"

@@ -2,6 +2,7 @@ import pygame
 from Colors import *
 from Button import Button, TextButton
 from Text import *
+from Message import *
 
 class LobbyPage():
     def __init__(self, screen, setting):
@@ -11,7 +12,7 @@ class LobbyPage():
         self.btn_player = TextButton(0.5, 0.1, 200, 50, "Your name")
         self.btn_computer_players = [TextButton(0.5, 0.1 * (i + 1) + 0.15, 200, 50, "") for i in range(5)]
         self.btn_start = Button(0.5, 0.8, 200, 50, "Start Game")
-        # self.btn_input = [self.btn_player] + self.btn_computer_players
+        self.txt_info = Text(0.2, 0.16, "You can enter AlienA, AlienB, AlienC, AlienD to select Alien Player.", BLACK, 24)
 
     def running(self):
         selected_idx = None
@@ -35,8 +36,6 @@ class LobbyPage():
                                 player_selected[i] = False
                                 self.btn_computer_players[i].text = ""
                                 selected_idx = None
-                                
-                            
                             else:
                                 player_selected[i] = True
                                 selected_idx = i
@@ -46,6 +45,14 @@ class LobbyPage():
                         if player_selected.count(True) == 0:
                             pass
                         else:
+                            # if self.btn_computer_players[0].text == "AlienA":
+                            #     return "game_level0"
+                            # elif self.btn_computer_players[0].text == "AlienB":
+                            #     return "game_level1"
+                            if self.btn_computer_players[0].text == "AlienC":
+                                return "game_level2"
+                            elif self.btn_computer_players[0].text == "AlienD":
+                                return "game_level3"
                             player_names = [self.btn_player.text] + [self.btn_computer_players[i].text for i in range(5) if player_selected[i]]
                             return "game", player_names
 
@@ -65,6 +72,7 @@ class LobbyPage():
 
             # draw the background
             self.screen.fill(WHITE)
+            self.txt_info.render(self.screen)
 
             # processing computer player buttons
             for i, btn in enumerate(self.btn_computer_players):
