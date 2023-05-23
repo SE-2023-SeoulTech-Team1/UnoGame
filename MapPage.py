@@ -37,8 +37,8 @@ class MapPage:
         self.paused = False
         self.pause_page = PausedPage(self.screen, self.setting)
 
-        if os.path.exists('achievements.pkl'):
-            with open('achievements.pkl', 'rb') as f:
+        if os.path.exists(resource_path('achievements.pkl')):
+            with open(resource_path('achievements.pkl'), 'rb') as f:
                 achievements = pickle.load(f)
                 print("load achievements pickle")
             self.achievements = achievements
