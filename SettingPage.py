@@ -164,7 +164,20 @@ class SettingPage():
                         color_weak = True if self.color_weak_opt_btn.text == "on" else False
                         key = self.key_opt_btn.text
                         self.setting.set(screen_size, color_weak, key)
-                        return "main"
+
+                        setting2 = self.setting
+                        # pickle에 현재 데이터 저장
+                        with open(resource_path("./setting_state.pkl"), "wb") as f:
+                            pickle.dump(setting2, f)
+                        if self.pre_page is not None:
+                            if os.path.exists(resource_path('game_state.pkl')):
+                                with open(resource_path('game_state.pkl'), 'rb') as f:
+                                    game_state = pickle.load(f)
+                                self.player_names = game_state.player_names
+
+                            return "game", self.player_names
+                        else:
+                            return "main"
 
                     elif self.key_idx == 5:
                         self.setting.reset()
